@@ -38,80 +38,25 @@ elif [ $step = "anal" ]; then
 
 elif [ $step = "fcst" ]; then
 
-#   export wtime_fcst="08:20:00"
-#   export wtime_fcst_gfs="08:20:00"
-    export wtime_fcst="15:50:00"
-    export wtime_fcst_gfs="15:50:00"
-    export wtime_fcst="04:50:00"
-    export wtime_fcst_gfs="04:50:00"
-echo ' before queue' $QUEUE
-    if [ $QUEUE = debug ] ; then
-      export wtime_fcst="00:30:00"
-      export wtime_fcst_gfs="00:30:00"
+    export wtime_fcst="07:58:00"
+    export wtime_fcst_gfs="07:58:00"
+    export npe_fcst=$(echo "$layout_x * $layout_y * 6" | bc)
+    export npe_ocn=360
+    export npe_ice=24
+    export npe_node_fcst=${npe_node_fcst:-12}
+    export nth_fcst=2
+    if [[ "$machine" == "WCOSS_C" ]]; then
+        export memory_fcst="1024M"
     fi
-
-    export npe_fcst=$((layout_x*layout_y*6))
-
-#   export Verbosity=max
-    export Verbosity=0
-    if [ $machine == WCOSS_DELL_P3 ] ; then
-      export npe_node_fcst=${npe_node_fcst:-14}
-      export npe_node_max=${npe_node_max:-28}
-    else
-      export npe_node_fcst=${npe_node_fcst:-12}
-      export npe_node_max=${npe_node_max:-24}
+    if [[ "$machine" == "WCOSS" ]]; then
+        export wtime_fcst="05:58:00"
+        export wtime_fcst_gfs="05:58:00" 
     fi
-    export nth_fcst=$((npe_node_max/npe_node_fcst))
-    if [[ $machine == WCOSS_C ]] ; then
-      export memory_fcst="1024M"
-    fi
-
-    if [ $CPLDFV3_MOM6_CICE = YES ] ; then
-      export npe_ocn=120
-#     export npe_ice=24
-      export npe_ocn=140
-#     export npe_ocn=70
-#     export npe_ocn=105
-#     export npe_ocn=80
-      export npe_ice=24
-#     export npe_ice=18
-#     export npe_ice=36
-#     export npe_ice=28
-    fi
-    if [ $CPLDWAV = YES ] ; then
-#     npe_ww3=${npe_ww3:-$((npe_node_fcst*3))}
-      npe_ww3=${npe_ww3:-$((npe_node_fcst*3*nth_fcst))}
-    fi
-    export npe_ocn=${npe_ocn:-0}
-    export npe_ice=${npe_ice:-0}
-    export npe_ww3=${npe_ww3:-0}
-
-#
-    if [ $QUILTING = .true. ] ; then
-      export WRITE_GROUP=${WRITE_GROUP:-1}
-      export WRTTASK_MIN=${WRTTASK_MIN:-$((npe_node_max/2))}
-      ttasks=$((npe_fcst+npe_ocn+npe_ice+npe_ww3))
-      nodes=$((1+(ttasks*nth_fcst)/npe_node_max))
-      export WRTTASK_PER_GROUP=$(((nodes*npe_node_fcst-ttasks)/WRITE_GROUP))
-      alltasks=$((ttasks+WRTTASK_PER_GROUP*WRITE_GROUP))
-      xx=$((nodes*npe_node_fcst))
-#     while [ $WRTTASK_PER_GROUP -lt $npe_node_fcst -o $WRTTASK_PER_GROUP -lt $WRTTASK_MIN ] ; do
-      while [ $WRTTASK_PER_GROUP -lt $WRTTASK_MIN ] ; do
-#     if [ $alltasks -lt $xx -o $WRTTASK_PER_GROUP -lt $npe_node_fcst ] ; then
-        nodes=$((nodes+WRITE_GROUP))
-        export WRTTASK_PER_GROUP=$((WRTTASK_PER_GROUP+npe_node_fcst))
-        alltasks=$((ttasks+WRTTASK_PER_GROUP*WRITE_GROUP))
-        xx=$((nodes*npe_node_fcst))
-#       export npe_ocn=$((npe_ocn+xx-alltasks))
-      done
-    fi
-#   export npe_med=$((alltasks-1))
-#   export npe_med_max=48
 
 elif [ $step = "post" ]; then
 
-    export wtime_post="08:00:00"
-    export wtime_post_gfs="08:00:00"
+    export wtime_post="06:00:00"
+    export wtime_post_gfs="06:00:00"
     export npe_post=72
     export nth_post=1
     export npe_node_post=12
@@ -148,7 +93,7 @@ elif [ $step = "vrfy" ]; then
 
 elif [ $step = "arch" -o $step = "earc" -o $step = "getic" ]; then
 
-    eval "export wtime_$step='02:00:00'"
+    eval "export wtime_$step='03:00:00'"
     eval "export npe_$step=1"
     eval "export npe_node_$step=1"
     eval "export nth_$step=1"

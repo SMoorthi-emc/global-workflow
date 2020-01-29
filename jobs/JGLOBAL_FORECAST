@@ -105,22 +105,35 @@ postmsg "$jlogfile" "$msg"
 $LOGSCRIPT
 
 # If coupled, run a cold start for 1 hour
-if [ $cpl = ".true." ] ; then
+export CPLDFV3_MOM6_CICE=${CPLDFV3_MOM6_CICE:-NO}
+if [ $CPLDFV3_MOM6_CICE = YES ] ; then
 
-  export FHMAX=$FHMAX_COLD
-  . $CPLPREPSH cold
-  status=$?
-  [[ $status -ne 0 ]] && exit $status
+  if [ ${warm_start:-.false.} = .false. ] ; then
+    export FHMAX=$FHMAX_COLD
+    export nsout=0
+    . $CPLPREPSH cold
+    status=$?
+    [[ $status -ne 0 ]] && exit $status
 
-  ${FORECASTSH:-$SCRgfs/exglobal_fcst_nemsfv3gfs.sh.ecf}
-  status=$?
-  [[ $status -ne 0 ]] && exit $status
+    ${FORECASTSH:-$SCRgfs/exglobal_fcst_nemsfv3gfs.sh.ecf}
+    status=$?
+#   status=999
+    [[ $status -ne 0 ]] && exit $status
 
-  export FHMAX=$FHMAX_GFS
-  . $CPLPREPSH warm
-  status=$?
-  [[ $status -ne 0 ]] && exit $status
-
+    export FHMAX=$FHMAX_GFS
+    export nsout=${NSOUT:-0}
+    . $CPLPREPSH warm
+    status=$?
+    [[ $status -ne 0 ]] && exit $status
+  else
+    export FHMAX=$FHMAX_GFS
+    export nsout=${NSOUT:-0}
+    . $CPLPREPSH restart
+    status=$?
+    [[ $status -ne 0 ]] && exit $status
+  fi
+else
+  export nsout=${NSOUT:-0}
 fi
 
 ${FORECASTSH:-$SCRgfs/exglobal_fcst_nemsfv3gfs.sh.ecf}

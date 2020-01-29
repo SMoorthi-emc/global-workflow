@@ -1,7 +1,7 @@
 #!/bin/ksh -x
 
-########## config.fv3 ##########
-# FV3 model resolution specific parameters
+########## config.atm ##########
+# FV3 atm model resolution specific parameters
 # e.g. time-step, processor layout, physics and dynamics parameters
 # This config sets default variables for FV3 for a given resolution
 # User can over-ride after sourcing this config file
@@ -17,106 +17,164 @@ fi
 
 case_in=$1
 
-echo "BEGIN: config.fv3"
+echo "BEGIN: config.atm"
 
 # (Standard) Model resolution dependent variables
 case $case_in in
-    "C48")
+    C48)
         export DELTIM=450
         export layout_x=2
         export layout_y=4
-        export npe_node_fcst=24
-        export nth_fv3=1
+        export npe_node_fcst=28
+        export nth_f=1
         export cdmbgwd="0.062,3.5"  # mountain blocking and gravity wave drag
         export WRITE_GROUP=1
-        OUTPUT_HISTORY=".true."
-        WRITE_DOPOST=".false."
-        export WRTTASK_PER_GROUP=24
+        export WRTTASK_PER_GROUP=28
         export WRTIOBUF="4M"
         ;;
-    "C96")
+    C96)
         export DELTIM=450
         #export DELTIM=1800
         # PT - for now OCNTIM (fast loop in run sequence) same as DELTIM until CICE is fully coupled
         export OCNTIM=450
         export layout_x=4
         export layout_y=6
-        export npe_node_fcst=24
-        export nth_fv3=1
-        # export cdmbgwd="0.125,3.0"  # mountain blocking and gravity wave drag
+        export npe_node_fcst=28
+        export nth_f=1
+       #export cdmbgwd="0.125,3.0"  # mountain blocking and gravity wave drag
         export cdmbgwd="3.5,0.25"   # mountain blocking and gravity wave drag
         export WRITE_GROUP=1
-        OUTPUT_HISTORY=".true."
-        WRITE_DOPOST=".false."
-        #export WRTTASK_PER_GROUP=24
-        export WRTTASK_PER_GROUP=6
+       #export WRTTASK_PER_GROUP=24
+        export WRTTASK_PER_GROUP=28
         export WRTIOBUF="4M"
         ;;
-    "C192")
+    C192)
         export DELTIM=450
         export layout_x=4
         export layout_y=6
-        export npe_node_fcst=12
-        export nth_fv3=2
+        export npe_node_fcst=14
+        export nth_f=2
         export cdmbgwd="0.2,2.5"  # mountain blocking and gravity wave drag
         export WRITE_GROUP=2
-        OUTPUT_HISTORY=".true."
-        WRITE_DOPOST=".false."
-        export WRTTASK_PER_GROUP=24
+        export WRTTASK_PER_GROUP=14
         export WRTIOBUF="8M"
         ;;
-    "C384")
-        #BL2018
+    C384)
+        export DELTIM=300
+#       export DELTIM=225
+#       export DELTIM=180
+#       export DELTIM=120
+#       export DELTIM=90
         export DELTIM=450
-        # PT - for now OCNTIM (fast loop in run sequence) same as DELTIM until CICE is fully coupled
-        export OCNTIM=1800
+        export k_split=2
+        export n_split=6
+#       export n_split=8
+        export OCNTIM=300
+        export OCNTIM=450
+        export OCNTIM=900
+#       export OCNTIM=1800
+#       export DT_THERM=$OCNTIM
+        export DT_THERM=1800
+        export ICETIM=$DELTIM
+#       export ICETIM=300
+
         export layout_x=6
+#       export layout_x=8
         export layout_y=8
-        export npe_node_fcst=6
-        #export npe_node_fcst=24
-        export nth_fv3=4
-        export cdmbgwd="1.0,1.2"  # mountain blocking and gravity wave drag
+#       export layout_y=12
+        export io_layout_x=2
+        export io_layout_y=2
+        if [ $machine == WCOSS_DELL_P3 ] ; then
+          export npe_node_max=28
+        else
+          export npe_node_max=24
+        fi
+#       export nth_f=7
+        export nth_f=1
+#       export nth_f=2
+        export nth_f=${nth_f:-4}
+        export npe_node_fcst=$((npe_node_max/nth_f))
+        export cdmbgwd="1.0,1.2"           # mountain blocking and gravity wave drag
+#       export cdmbgwd="-1.0,1.2"          # mountain blocking and gravity wave drag
+#       export cdmbgwd="1.0,1.2,1.0,10.0"  # mountain blocking and gravity wave drag
+#       export cdmbgwd="1.0,1.2,1.0,2.0"   # mountain blocking and gravity wave drag
+        export cdmbgwd="1.0,1.2,1.0,0.5"   # mountain blocking and gravity wave drag
+#       export cdmbgwd="-1.0,1.2,0.0,0.0"  # mountain blocking and gravity wave drag
         export WRITE_GROUP=1
-        OUTPUT_HISTORY=".true."
-        WRITE_DOPOST=".false."
-        export WRTTASK_PER_GROUP=24
+        export WRITE_GROUP=2
+#       export WRITE_GROUP=3
         export WRTIOBUF="16M"
         ;;
-    "C768")
+    C768)
+        export DELTIM=300
         export DELTIM=225
-        export layout_x=8
+#       export DELTIM=120
+#       export DELTIM=90
+#       export DELTIM=180
+#       export k_split=1
+#       export n_split=3
+        export k_split=2
+        export n_split=6
+#       export DELTIM=450
+#       export DELTIM=450
+#       export OCNTIM=300
+#       export OCNTIM=450
+        export OCNTIM=900
+#       export OCNTIM=1800
+        export ICETIM=$DELTIM
+        export ICETIM=450
+#       export ICETIM=360
+        export DT_THERM=1800
+
+#
+#       export DELTIM=225
+#       export OCNTIM=900
+#       export ICETIM=$DELTIM
+#       export DT_THERM=1800
+
+#       export layout_x=8
+#       export layout_y=8
+#       export layout_x=12
+        export layout_x=16
+#       export layout_y=12
         export layout_y=16
-        export npe_node_fcst=12
-        export nth_fv3=2
+#       export layout_y=24
+        if [ $machine == WCOSS_DELL_P3 ] ; then
+          export npe_node_max=28
+          export npe_node_max=24
+        else
+          export npe_node_max=24
+        fi
+#       export nth_f=7
+#       export nth_f=1
+        export nth_f=2
+        export nth_f=${nth_f:-4}
+        export npe_node_fcst=$((npe_node_max/nth_f))
         export cdmbgwd="3.5,0.25" # mountain blocking and gravity wave drag
-        export WRITE_GROUP=4
-        OUTPUT_HISTORY=".true."
-        WRITE_DOPOST=".false."
-        export WRTTASK_PER_GROUP=60
+        export WRITE_GROUP=2
+        export WRTTASK_MIN=10
+#       export WRITE_GROUP=3
+#       export WRTTASK_PER_GROUP=60
         export WRTIOBUF="32M"
         ;;
-    "C1152")
+    C1152)
         export DELTIM=150
         export layout_x=8
         export layout_y=16
-        export npe_node_fcst=6
-        export nth_fv3=4
-        export WRITE_GROUP=4
-        OUTPUT_HISTORY=".true."
-        WRITE_DOPOST=".false."
-        export WRTTASK_PER_GROUP=84
+        export npe_node_fcst=7
+        export nth_f=4
+        export WRITE_GROUP=3
+        export WRTTASK_PER_GROUP=7
         export WRTIOBUF="48M"
         ;;
-    "C3072")
+    C3072)
         export DELTIM=90
         export layout_x=16
         export layout_y=32
         export npe_node_fcst=6
-        export nth_fv3=4
+        export nth_f=4
         export WRITE_GROUP=4
-        OUTPUT_HISTORY=".true."
-        WRITE_DOPOST=".false."
-        export WRTTASK_PER_GROUP=120
+        export WRTTASK_PER_GROUP=7
         export WRTIOBUF="64M"
         ;;
     *)

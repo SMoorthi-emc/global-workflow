@@ -9,5 +9,6 @@ echo "BEGIN: config.fv3ic"
 export wtime_fv3ic="00:30:00"
 export npe_fv3ic=24
 export npe_node_fv3ic=24
+export nth_fv3ic=1
 
 echo "END: config.fv3ic"

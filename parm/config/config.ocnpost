@@ -26,5 +26,6 @@ export NPOSTGRP=1
 #
 #export npe_postgp=$npe_post
 #export nth_postgp=1
+ export nth_ocnpost=1
 
 echo "END: config.ocnpost"

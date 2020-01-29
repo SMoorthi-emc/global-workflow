@@ -105,14 +105,14 @@ Create COMROT experiment directory structure'''
 
     args = parser.parse_args()
 
-    if os.path.exists('/scratch3'):
-        machine = 'THEIA'
+    if os.path.exists('/scratch1') or os.path.exists('/scratch2'):
+        machine = 'HERA'
     elif os.path.exists('/gpfs') and os.path.exists('/etc/SuSE-release'):
         machine = 'WCOSS_C'
-    elif os.path.exists('/gpfs/gd2') or os.path.exists('/gpfs/td2'): #JW
-        machine = 'WCOSS'  
     elif os.path.exists('/gpfs/dell2'):
         machine = 'WCOSS_DELL_P3'
+    elif os.path.exists('/gpfs/gd2') or os.path.exists('/gpfs/td2'):
+        machine = 'WCOSS'  
     else:
         print 'workflow is currently only supported on: %s' % ' '.join(machines)
         raise NotImplementedError('Cannot auto-detect platform, ABORT!')

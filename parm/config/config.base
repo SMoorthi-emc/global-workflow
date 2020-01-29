@@ -9,31 +9,28 @@ echo "BEGIN: config.base"
 export machine="@MACHINE@"
 
 # EMC parallel or NCO production
-export RUN_ENVIR="emc"
+export RUN_ENVIR=emc
 
 # Account, queue, etc.
-if [ $machine = "THEIA" ]; then
+if [ $machine = THEIA ]; then
 
-    export ACCOUNT="fv3-cpu"
-    export QUEUE="batch"
-    export QUEUE_ARCH="service"
+#   export ACCOUNT=marine-cpu
+    export ACCOUNT=fv3-cpu
+    export QUEUE=batch
+    export QUEUE_ARCH=service
 
-elif [ $machine = "WCOSS_C" -o $machine = "WCOSS_DELL_P3" ]; then
-#elif [ $machine = "WCOSS_C" -o $machine = "WCOSS_DELL_P3" -o $machine = "WCOSS" ]; then
+elif [ $machine = WCOSS_C -o $machine = WCOSS_DELL_P3 ] ; then
 
-    export ACCOUNT="FV3GFS-T2O"
-    export QUEUE="dev2"
-    export QUEUE_ARCH="dev_transfer"
-
-elif [ $machine = "WCOSS" ]; then
-    export ACCOUNT="CFS-T2O"
-    export QUEUE="dev2"
-    export QUEUE_ARCH="transfer"
+#   export ACCOUNT=FV3GFS-T2O
+    export ACCOUNT=GFS-DEV
+    export QUEUE=dev
+    export QUEUE=debug
+    export QUEUE_ARCH=dev_transfer
 
 fi
 
 # Project to use in mass store:
-HPSS_PROJECT=emc-climate
+HPSS_PROJECT=emc-global
 
 # Directories relative to installation areas:
 export HOMEgfs=@HOMEgfs@
@@ -54,47 +51,32 @@ export OCNFIXDIR=$HOMEgfs/fix/fix_ocnice
 ########################################################################
 
 # GLOBAL static environment parameters
-if [ $machine = "THEIA" ]; then
+if [ $machine = THEIA ]; then
 
     export NWPROD="/scratch4/NCEPDEV/global/save/glopara/nwpara"
     export DMPDIR="/scratch4/NCEPDEV/global/noscrub/dump"
     export RTMFIX="/scratch4/NCEPDEV/da/save/Michael.Lueken/nwprod/lib/crtm/2.2.3/fix_update"
 
-elif [ $machine = "WCOSS_C" ]; then
+elif [ $machine = WCOSS_C ] ; then
 
     export NWPROD="/gpfs/hps/nco/ops/nwprod"
-    if [ -d /gpfs/tp1 ]; then
-        export SITE="LUNA"
+    if [ -d /gpfs/tp1 ] ; then
+        export SITE=LUNA
         export DMPDIR="/gpfs/tp1/emc/globaldump"
-    elif [ -d /gpfs/gp1 ]; then
-        export SITE="SURGE"
-        export DMPDIR="/gpfs/gp1/emc/globaldump"
-    elif [ -d /gpfs/gp1 ]; then  #JW
-        export SITE="GYRE"
+    elif [ -d /gpfs/gp1 ] ; then
+        export SITE=SURGE
         export DMPDIR="/gpfs/gp1/emc/globaldump"
     fi
     export RTMFIX=$CRTM_FIX
 
-elif [ $machine = "WCOSS" ]; then
-
-    export NWPROD="/gpfs/hps/nco/ops/nwprod"
-    if [ -d /gpfs/tp1 ]; then
-        export SITE="TIDE"
-        export DMPDIR="/gpfs/tp1/emc/globaldump"
-    elif [ -d /gpfs/gp1 ]; then
-        export SITE="GYRE"
-        export DMPDIR="/gpfs/gp1/emc/globaldump"
-    fi
-    export RTMFIX=$CRTM_FIX
-
-elif [ $machine = "WCOSS_DELL_P3" ]; then
+elif [ $machine = WCOSS_DELL_P3 ] ; then
 
     export NWPROD="/gpfs/dell1/nco/ops/nwprod"
-    if [ -d /gpfs/tp1 ]; then
-        export SITE="MARS"
+    if [ -d /gpfs/tp1 ] ; then
+        export SITE=MARS
         export DMPDIR="/gpfs/tp1/emc/globaldump"
-    elif [ -d /gpfs/gp1 ]; then
-        export SITE="VENUS"
+    elif [ -d /gpfs/gp1 ] ; then
+        export SITE=VENUS
         export DMPDIR="/gpfs/gp1/emc/globaldump"
     fi
     export RTMFIX=$CRTM_FIX
@@ -102,11 +84,11 @@ fi
 
 
 # Machine specific paths used everywhere
-if [ $machine = "THEIA" ]; then
+if [ $machine = THEIA ] ; then
 
     # USER specific paths
     export HOMEDIR="/scratch4/NCEPDEV/nems/save/$USER"
-    export STMP="/scratch4/NCEPDEV/stmp3/$USER"
+    export STMP="/scratch3/NCEPDEV/stmp1/$USER"
     export PTMP="/scratch4/NCEPDEV/stmp4/$USER"
     export NOSCRUB="/scratch4/NCEPDEV/nems/noscrub/$USER"
 
@@ -114,7 +96,7 @@ if [ $machine = "THEIA" ]; then
     export BASE_GIT="/scratch4/NCEPDEV/global/save/glopara/git"
     export BASE_SVN="/scratch4/NCEPDEV/global/save/glopara/svn"
 
-elif [ $machine = "WCOSS_C" ]; then
+elif [ $machine = WCOSS_C ] ; then
 
     # USER specific paths
     export HOMEDIR="/gpfs/hps3/emc/global/noscrub/$USER"
@@ -126,19 +108,7 @@ elif [ $machine = "WCOSS_C" ]; then
     export BASE_GIT="/gpfs/hps3/emc/global/noscrub/emc.glopara/git"
     export BASE_SVN="/gpfs/hps3/emc/global/noscrub/emc.glopara/svn"
 
-elif [ $machine = "WCOSS" ]; then
-
-    # USER specific paths
-    export HOMEDIR="/gpfs/hps3/emc/global/noscrub/$USER"
-    export STMP="/stmpd2/$USER"
-    export PTMP="/ptmpp2/$USER"
-    export NOSCRUB="/gpfs/hps3/emc/global/noscrub/$USER"
-
-    # Base directories for various builds
-    export BASE_GIT="/gpfs/hps3/emc/global/noscrub/emc.glopara/git"
-    export BASE_SVN="/gpfs/hps3/emc/global/noscrub/emc.glopara/svn"
-
-elif [ $machine = "WCOSS_DELL_P3" ]; then
+elif [ $machine = WCOSS_DELL_P3 ] ; then
 
     # USER specific paths
     export HOMEDIR="/gpfs/dell2/emc/modeling/noscrub/$USER"
@@ -153,7 +123,7 @@ elif [ $machine = "WCOSS_DELL_P3" ]; then
 fi
 
 # Utilities needed in the scripts (mostly post)
-if [ $machine = "THEIA" ]; then
+if [ $machine = THEIA ] ; then
 
     export NDATE="$NWPROD/util/exec/ndate"
     export NHOUR="$NWPROD/util/exec/nhour"
@@ -169,30 +139,108 @@ if [ $machine = "THEIA" ]; then
 
 fi
 
-if [ $machine = "WCOSS" ]; then
+ export print_esmf=.false.
+ export print_esmf=.true.
+ export ESMF_RUNTIME_PROFILE=ON
+ export ESMF_RUNTIME_PROFILE_OUTPUT=SUMMARY
+# Toggle to turn on/off GFS downstream processing.
+export DO_BUFRSND=NO
+export DO_GEMPAK=NO
+export DO_AWIPS=NO
 
-    export WGRIB="/nwprod/util/exec/wgrib"
-#    export WGRIB2="/nwprod/util/exec/wgrib2"
-    export WGRIB2="/nwprod2/grib_util.v1.1.0/exec/wgrib2"
-    export COPYGB="/nwprod/util/exec/copygb"
-    export COPYGB2="/nwprod/util/exec/copygb2"
-    export GRBINDEX="/nwprod/util/exec/grbindex"
-    export GRB2INDEX="/nwprod/util/exec/grb2index"
+# NO for retrospective parallel; YES for real-time parallel
+export REALTIME=NO
+
+g0nosc=/gpfs/dell2/emc/modeling/noscrub
+export FIX_LAKE_ORO=$g0nosc/$LOGNAME/oro_lake
+export use_lake_oro=YES
+
+export RUN_CCPP=YES
+ export cplflx=.true.
+ export CPLD_APP=YES
+
+ RUN_CCPP=${RUN_CCPP:-NO}
+
+export cplflx=${cplflx:-.false.}
+if [ $cplflx = .true. ] ; then
+ app=ufs-s2s-model
+ appdir=cfv3_git_jan08
+ export cpl=.true.
+#export cplwav=.true.
+#export cplwav2atm=.true.
+ export CPLDFV3_MOM6_CICE=YES
+#export CPLDWAV=YES
+ export IC_FROM=bench1
+ export NUMOM=YES
+ export CPLD_APP=YES
+fi
+export CPLD_APP=${CPLD_APP:-NO}
+if [ $CPLD_APP = YES ] ; then
+ app=ufs-s2s-model
+ appdir=cfv3_git_jan08
+else
+ app=ufs-weather-model
+ appdir=fv3_git1230
+fi
+
+if [ ${RUN_CCPP:-YES} = YES ] ; then
+ export nn=${nn:-""}
+ export CCPPDIR=$g0nosc/$LOGNAME/$appdir/${app}$nn/FV3/ccpp
+#ICSDIR=$g0nosc/Shrinivas.Moorthi/FV3IC/ICs
+
+
+#export CCPP_SUITE=FV3_GFS_v15
+#export FCSTEXEC=fv3_ccpp.exe
+#export CCPP_SUITE=FV3_GFS_v15_ras
+#export FCSTEXEC=fv3_ccppr.exe
+#export FCSTEXEC=fv3_ccpp15r.exe
+#export CCPP_SUITE=${CCPP_SUITE:-FV3_GFS_v15plus}
+#export FCSTEXEC=fv3_ccpps.exe
+
+#export CCPP_SUITE=${CCPP_SUITE:-FV3_GFS_v15plusras}
+#export FCSTEXEC=fv3_ccppr.exe
+
+#export CCPP_SUITE=${CCPP_SUITE:-FV3_GFS_v16rasmg}
+#export FCSTEXEC=fv3_ccpprmd.exe
+#export FCSTEXEC=fv3_ccpprm.exe              # RAS, MG3
+
+#export CCPP_SUITE=${CCPP_SUITE:-FV3_GFS_v16rasmgshoc}
+#export CCPP_SUITE=${CCPP_SUITE:-FV3_GFS_rasmgshoc}
+#export FCSTEXEC=fv3_ccpprms0.exe             # RAS, MG3, SHOC
+
+ export CCPP_SUITE=FV3_GFS_cpld_rasmgshoc
+ export CCPP_SUITE=${CCPP_SUITE:-FV3_GFS_v15_rasmgshoc}
+if [ $CPLD_APP = NO ] ; then
+ export FCSTEXEC=fv3_ccpprms.exe             # RAS, MG3, SHOC
+fi
+#export FCSTEXEC=fv3_ccpprms0.exe             # RAS, MG3, SHOC
+#export FCSTEXEC=fv3_ccpprmsd.exe            # RAS, MG3, SHOC
+#export CCPP_SUITE=${CCPP_SUITE:-FV3_GFS_v15plusras}
+#export FCSTEXEC=fv3_ccpprplus.exe           # RAS, MG3, SHOC
+
+ export CCPP_LIB_DIR=${CCPP_LIB_DIR:-$CCPPDIR/lib}
+#export RAS=YES
+ if [ $CCPP_SUITE = FV3_GFS_v15 ]           ; then export isatmedmf=0 ; fi
+ if [ $CCPP_SUITE = FV3_GFS_v15_ras ]       ; then export isatmedmf=0 ; fi
+ if [ $CCPP_SUITE = FV3_GFS_v15plus ]       ; then export isatmedmf=0 ; fi
+ if [ $CCPP_SUITE = FV3_GFS_v15plusras ]    ; then export isatmedmf=0 ; fi
+ if [ $CCPP_SUITE = FV3_GFS_v16rasmg ]      ; then export isatmedmf=0 ; fi
+ if [ $CCPP_SUITE = FV3_GFS_rasmgshoc ]     ; then export isatmedmf=0 ; fi
+ if [ $CCPP_SUITE = FV3_GFS_v15_rasmgshoc ] ; then export isatmedmf=0 ; fi
+ if [ $CCPP_SUITE = FV3_GFS_v16rasmgshoc ]  ; then export isatmedmf=0 ; fi
+ if [ $CCPP_SUITE = FV3_GFS_cpld_rasmgshoc ]  ; then export isatmedmf=0 ; fi
 
 fi
 
-export print_esmf=".false."
-# Toggle to turn on/off GFS downstream processing.
-export DO_BUFRSND="NO"
-export DO_GEMPAK="NO"
-export DO_AWIPS="NO"
+#export IC_FROM=bench2
+#export CPC_ICE=YES
 
-# NO for retrospective parallel; YES for real-time parallel
-export REALTIME="NO"
-
-# Coupled model options
-export cplflx=".T."
-export cpl=".true."
+#export cplflx=${cplflx:-.false.}
+#export cpl=${cpl:-.false.}
+ export CPLDFV3_MOM6_CICE=${CPLDFV3_MOM6_CICE:-NO}
+ export CPLDWAV=${CPLDWAV:-NO}
+ export CPC_ICE=${CPC_ICE:-NO}
+if [ $CPC_ICE = YES ] ; then export runid=cpcice ; fi
 
 ####################################################
 # DO NOT ADD MACHINE DEPENDENT STUFF BELOW THIS LINE
@@ -213,8 +261,9 @@ export BASE_VERIF="$BASE_SVN/verif/global/tags/vsdb"
 export NCP="/bin/cp -p"
 export NMV="/bin/mv"
 export NLN="/bin/ln -sf"
-export VERBOSE="YES"
-export KEEPDATA="YES"
+export VERBOSE=YES
+export KEEPDATA=YES
+export KEEPREST=YES
 export CHGRP_CMD="chgrp rstprod"
 export NEMSIOGET="$HOMEgfs/exec/nemsio_get"
 
@@ -229,23 +278,42 @@ export assim_freq=6
 export PSLOT="@PSLOT@"
 export EXPDIR="@EXPDIR@/$PSLOT"
 export ROTDIR="@ROTDIR@/$PSLOT"
-#export RUNDIR="$STMP/RUNDIRS/$PSLOT"
-export RUNDIR="/stmpd2/Jiande.Wang/RUNDIRS/$PSLOT"
+export RUNDIR="$STMP/RUNDIRS/$PSLOT"
 export ARCDIR="$NOSCRUB/archive/$PSLOT"
 export ICSDIR="@ICSDIR@"
-#export ATARDIR="/NCEPDEV/$HPSS_PROJECT/5year/$USER/$machine/scratch/benchmark2/$PSLOT"
-export ATARDIR="/NCEPDEV/$HPSS_PROJECT/5year/$USER/$machine/scratch/pre-BM3/$PSLOT"
+export ATARDIR="/NCEPDEV/$HPSS_PROJECT/5year/$USER/$machine/benchmark1/$PSLOT"
+export CDATE
+PDY=$(echo $CDATE | cut -c1-8)
+cyc=$(echo $CDATE | cut -c9-10)
+export ATM_RESTDIR="$ROTDIR/gfs.$PDY/$cyc/ATM_RESTART"
+mkdir -p $ATM_RESTDIR
+if [ $CPLDFV3_MOM6_CICE = YES ] ; then
+ export OCN_RESTDIR="$ROTDIR/gfs.$PDY/$cyc/OCN_RESTART"
+ export ICE_RESTDIR="$ROTDIR/gfs.$PDY/$cyc/ICE_RESTART"
+ export MED_RESTDIR="$ROTDIR/gfs.$PDY/$cyc/MED_RESTART"
+ export OCN_OUTDIR="$ROTDIR/gfs.$PDY/$cyc/OCN_HISTORY"
+ export ICE_OUTDIR="$ROTDIR/gfs.$PDY/$cyc/ICE_HISTORY"
+ mkdir -p $OCN_RESTDIR
+ mkdir -p $ICE_RESTDIR
+ mkdir -p $MED_RESTDIR
+ mkdir -p $OCN_OUTDIR
+ mkdir -p $ICE_OUTDIR
+fi
+if [ -d $ROTDIR/gfs. ] ; then rm -rf $ROTDIR/gfs. ; fi
 
 # For coupled
-#export UGCSICSDIR="$NOSCRUB/UGCS/ugcsics_cfsv2op"
-export UGCSICSDIR="/scratch4/NCEPDEV/stmp4/Bin.Li/EMC_ugcs_hycom/ugcsics_cfsv2op"
-export UGCSsrc="/scratch4/NCEPDEV/stmp3/Bin.Li/EMC_ugcs"
-#export UGCSsrc="$NOSCRUB/EMC_ugcs"
+if [ $machine = THEIA ] ; then
+ export UGCSICSDIR="/scratch4/NCEPDEV/stmp4/Bin.Li/EMC_ugcs_hycom/ugcsics_cfsv2op"
+ export UGCSsrc="/scratch4/NCEPDEV/stmp3/Bin.Li/EMC_ugcs"
+elif [ $machine = WCOSS_DELL_P3 ] ; then
+ export UGCSICSDIR="$NOSCRUB/UGCS/ugcsics_cfsv2op"
+ export UGCSsrc="$NOSCRUB/EMC_ugcs"
+fi
 
 # Commonly defined parameters in JJOBS
-export envir=${envir:-"prod"}
-export NET="gfs"
-export RUN=${RUN:-${CDUMP:-"gfs"}}
+export envir=${envir:-prod}
+export NET=gfs
+export RUN=${RUN:-${CDUMP:-gfs}}
 export jlogfile="${EXPDIR}/logs/jlogfile"
 export ERRSCRIPT=${ERRSCRIPT:-'eval [[ $err = 0 ]]'}
 export LOGSCRIPT=${LOGSCRIPT:-""}
@@ -254,18 +322,21 @@ export LOGSCRIPT=${LOGSCRIPT:-""}
 export REDOUT="1>"
 export REDERR="2>"
 
-export SENDECF="NO"
-export SENDCOM="NO"
-export SENDDBN="NO"
-export SENDSDM="NO"
+export SENDECF=NO
+export SENDCOM=NO
+export SENDDBN=NO
+export SENDSDM=NO
 
 # Resolution specific parameters
-export LEVS=65
+ export LEVS=65
+#export LEVS=128
+if [ $LEVS -eq 128 ] ; then  export LEVR=C ; fi
 export CASE="@CASECTL@"
 export CASE_ENKF="@CASEENS@"
 
 # Surface cycle update frequency
 export FHCYC=24
+ export FHCYC=0
 
 # Output frequency of the forecast model (for cycling)
 export FHMIN=0
@@ -278,21 +349,86 @@ export gfs_cyc=@gfs_cyc@ # 0: no GFS cycle, 1: 00Z only, 2: 00Z and 12Z only, 4:
 # GFS output and frequency
 export FHMIN_GFS=0
 
-export FHMAX=840
-export FHMAX_GFS_00=840
-export FHMAX_GFS=840
+ export warm_start=.true.   # for warm_start need to set FHMIN (i.e. starting time)
+#export FHMIN=1
+#export FHMIN=2
+#export FHMIN=3
+#export FHMIN=6
+#export FHMIN=12
+ export FHMIN=24
+#export FHMIN=48
+#export FHMIN=66
+#export FHMIN=72
+#export FHMIN=120
+#export FHMIN=132
+#export FHMIN=168
+#export FHMIN=216
+#export FHMIN=288
+#export FHMIN=294
+#export FHMIN=504
+#export FHMIN=1056
+#export FHMIN=1080
+#export FHMIN=1731
+
+ export restart_interval=432000
+ export restart_interval=86400
+ export restart_interval=43200
+#export restart_interval=21600
+#export restart_interval=10800
+#export restart_interval=7200
+#export restart_interval=3600
+ export restart_interval_atm=$((restart_interval/3600))
+
+ export FHMAX=1080
+ export FHMAX_GFS_00=48
+#export FHMAX_GFS_00=120
+#export FHMAX_GFS_00=72
+#export FHMAX_GFS_00=96
+#export FHMAX_GFS_00=24
+#export FHMAX_GFS_00=15
+#export FHMAX_GFS_00=12
+#export FHMAX_GFS_00=9
+#export FHMAX_GFS_00=6
+#export FHMAX_GFS_00=84
+#export FHMAX_GFS_00=93
+#export FHMAX_GFS_00=99
+#export FHMAX_GFS_00=04
+#export FHMAX_GFS_00=03
+#export FHMAX_GFS_00=02
+#export FHMAX_GFS_00=01
+#export FHMAX_GFS_00=240
+#export FHMAX_GFS_00=132
+#export FHMAX_GFS_00=138
+#export FHMAX_GFS_00=360
+#export FHMAX_GFS_00=840
+#export FHMAX_GFS_00=1080 # uncomment this line for 45 day run
+#export FHMAX_GFS_00=300  # uncomment this line for 45 day run
+#export FHMAX_GFS_00=2160 # uncomment this line for 45 day run
+#export FHMAX_GFS_00=1806 # uncomment this line for 45 day run
+#export FHMAX_GFS=1080
+#export FHMAX_GFS_00=1440
+
+#export FHMAX_GFS=840
 export FHMAX_GFS_06=840
-export FHMAX_GFS_12=840
+export FHMAX_GFS_840=840
 export FHMAX_GFS_18=840
 export FHMAX_GFS=$(eval echo \${FHMAX_GFS_$cyc})
 
 #BL2018
-#export FHOUT_GFS=3
-export FHOUT_GFS=6
+ export FHOUT_GFS=3
+#export FHOUT_GFS=6
+#export FHOUT_GFS=1
+export FHOUT=$FHOUT_GFS
+
 #BL2018
-export FHMAX_HF_GFS=0
-#export FHOUT_HF_GFS=1
-export FHOUT_HF_GFS=-1
+export FHMAX_HF_GFS=$FHMAX_GFS_00
+export FHOUT_HF_GFS=$FHOUT_GFS
+#export NSOUT=1
+ export NSOUT=${NSOUT:-0}
+#if [ $NSOUT -gt 0 ] ; then
+# export FHOUT_HF_GFS=0
+# export FHOUT_HF_GFS=-1
+#fi
 
 # Output for coldstart only 1 hour
 export FHMAX_COLD=1
@@ -300,45 +436,92 @@ export FHMAX_COLD=1
 # I/O QUILTING, true--use Write Component; false--use GFDL FMS
 # if quilting=true, choose OUTPUT_GRID as cubed_sphere_grid in netcdf or gaussian_grid
 # if gaussian_grid, set OUTPUT_FILE for nemsio or netcdf
-export QUILTING=".true."
-export OUTPUT_GRID="gaussian_grid"
-export OUTPUT_FILE="nemsio"
+export QUILTING=.true.
+export OUTPUT_GRID=gaussian_grid
+export OUTPUT_FILE=nemsio
 
 # Microphysics Options: 99-ZhaoCarr, 8-Thompson; 6-WSM6, 10-MG, 11-GFDL
-export imp_physics=11
+ export imp_physics=10
+ export MGVER=2
+#export imp_physics=99
+#export imp_physics=11
+#export MGVER=-1
+ export RAS=YES
+ export SHOC=YES
+#export CSAW=YES
+
+#export RAS=NO
+#export SHOC=NO
+ export CSAW=NO
+#export do_ugwp=.false.
 
 # CPL
 #export imp_physics=99
 
 # Shared parameters
 # Hybrid related
-export DOHYBVAR="YES"
+export DOHYBVAR=YES
 export NMEM_ENKF=@NMEM_ENKF@
-export SMOOTH_ENKF="YES"
-export l4densvar=".false."
-export lwrite4danl=".false."
+export SMOOTH_ENKF=YES
+export l4densvar=.false.
+export lwrite4danl=.false.
 
 # EnKF output frequency
-if [ $DOHYBVAR = "YES" ]; then
+if [ $DOHYBVAR = YES ] ; then
     export FHMIN_ENKF=3
     export FHMAX_ENKF=9
-    if [ $l4densvar = ".true." ]; then
+    if [ $l4densvar = .true. ] ; then
         export FHOUT=1
         export FHOUT_ENKF=1
     else
         export FHOUT_ENKF=3
     fi
 fi
+export SCRDIR=$HOMEgfs/scripts
+#FORECASTSH="$SCRDIR/exglobal_fcst_nemsfv3_res.sh"   # with    UGW
+ export FORECASTSH="$SCRDIR/exglobal_fcst_emcufs.sh"    # with    UGW
+#export FORECASTSH="$SCRDIR/exglobal_fcst_emcufs0.sh"    # with    UGW
+if [ $CPLD_APP = YES ] ; then
+  export FCSTEXECDIR="$HOMEgfs/exec"
+# export FCSTEXEC="fv3_gfs_nh.prod.32bit.x"
+# export FCSTEXEC="nems_fv3_mom6_cice5.x"
+# export FCSTEXEC="nems_fv3_mom6_cice5.xn"
+# export FCSTEXEC="nems_fv3_mom6_cice5.xn2"
+# export FCSTEXEC="nems_fv3_mom6_cice5.xf"
+  export FCSTEXEC="nems_fv3_mom6_cice5.xfg2"
+  export FCSTEXEC="nems_fv3_mom6_cice5.xfgn"
+  export FCSTEXEC="nems_fv3_mom6_cice5.xfgn2"
+  export FCSTEXEC="nems_fv3_mom6_cice5.xfgn3"
+  export FCSTEXEC="nems_fv3_mom6_cice5.xfgn4"
+  export FCSTEXEC="nems_fv3_mom6_cice5.xfgn5"
+  export FCSTEXEC="nems_fv3_mom6_cice5.ccpp"
+  export FCSTEXEC="nems_fv3_mom6_cice5.ccppn"
+# export FCSTEXEC="nems_fv3_mom6_cice5.ccppo"
+elif [ $RUN_CCPP = NO ] ; then
+  g0nosc=/gpfs/dell2/emc/modeling/noscrub
+# export FCSTEXECDIR=$g0nosc/Shrinivas.Moorthi/fv3_git1104/ufs-weather-model3/tests
+# export FCSTEXECDIR=$g0nosc/Shrinivas.Moorthi/fv3_git1230/ufs-weather-model/tests
+  export FCSTEXECDIR=$g0nosc/$LOGNAME/$appdir/$app/tests
+  export FCSTEXEC="fv3_5.exe"
+  export isatmedmf=0
+fi
 
+if [ ${NUMOM:-NO} = NO ] ; then
+ export MIN_Z_DIAG_INTERVAL=21600
+#Z_OUTPUT_GRID_FILE="analysis_vgrid_lev35.v1.nc"
+ export Z_OUTPUT_GRID_FILE="interpolate_zgrid_40L.nc"
+fi
+
+if [ $CPLDFV3_MOM6_CICE = YES ] ; then
+  export CPLPREPSH=$HOMEgfs/scripts/prep_coupled_fcst_emcufs.sh
+# export CPLPREPSH=$HOMEgfs/scripts/prep_coupled_fcst_res.sh
+# export CPLPREPSH=$HOMEgfs/scripts/prep_coupled_fcst.sh
 # If YES, NSST is turned on in anal and/or fcst steps
-export DONST="NO"
-
-# CPL
-#export DONST="NO"
+  export DONST=NO
 
 # The switch to apply SST elevation correction or not
-export nst_anl=.false.
-
+  export nst_anl=.false.
+fi
 # CPL
 #export nst_anl=.false.
 
@@ -347,10 +530,12 @@ export INCREMENTS_TO_ZERO="'delz_inc','clwmr_inc','icmr_inc'"
 
 
 # Archiving options
-export HPSSARCH="YES"        # save data to HPSS archive
-export ARCH_CYC=00           # Archive data at this cycle for warm_start capability. Cannot be 00
-export ARCH_WARMICFREQ=5     # Archive frequency in days for warm_start capability
-export ARCH_FCSTICFREQ=1     # Archive frequency in days for gdas and gfs forecast-only capability
+export HPSSARCH=YES        # save data to HPSS archive
+export ARCH_CYC=00         # Archive data at this cycle for warm_start capability. Cannot be 00
+export ARCH_WARMICFREQ=5   # Archive frequency in days for warm_start capability
+export ARCH_FCSTICFREQ=1   # Archive frequency in days for gdas and gfs forecast-only capability
 
+export DONST=${DONST:-YES}
+export nst_anl=${nst_anl:-.true.}
 
 echo "END: config.base"

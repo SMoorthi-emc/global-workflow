@@ -43,7 +43,7 @@ sh build_all.sh $machine
 sh link_fv3gfs.sh emc $machine
 
 cd $fv3gfs/gfs.${gfs_ver}/ush/rocoto
-python setup_expt.py --pslot $pslot --comrot $comrot --expdir $expdir --idate $idate --edate $edate --icsdir $icsdir --configdir ../parm/config
+python setup_expt.py --pslot $pslot --comrot $comrot --expdir $expdir --idate $idate --edate $edate --icsdir $icsdir --configdir ../../parm/config
 python setup_workflow.py --expdir $expdir/$pslot
 
 cd $expdir/$pslot

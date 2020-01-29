@@ -5,231 +5,1001 @@
 
 echo "BEGIN: config.fcst"
 
-# Source model specific information that is resolution dependent
-. $EXPDIR/config.fv3 $CASE
+set -a
+machine=${machine:-WCOSS_C}
+#KEEPDATA=YES
 
-# Get task specific resources
-. $EXPDIR/config.resources fcst
+###########################################################################
+if [ $machine = WCOSS ] ; then
+ launcher=${launcher:-mpirun.lsf}
+elif [ $machine = WCOSS_C ] ; then
+ launcher=${launcher:-aprun}
+#launcher=${launcher:-/opt/cray/alps/5.2.4-2.0502.9822.32.1.ari/bin/stuff/aprun}
+elif [ $machine = WCOSS_DELL_P3 ] ; then
+ launcher=${launcher:-"mpirun -n"}
+#launcher=${launcher:-/usrx/local/prod/intel/2018UP01/compilers_and_libraries/linux/mpi/bin64/mpirun}
+#launcher=${launcher:-/apps/mpt/2.06/bin/mpiexec_mpt}
+#launcher=${launcher:-/opt/sgi/mpt/mpt-2.05/bin/mpiexec_mpt}
+elif [ $machine = THEIA ] ; then
+ launcher=${launcher:-mpirun}
+elif [ $machine = GAEA ] ; then
+ launcher=${launcher:-/opt/cray/alps/5.2.1-2.0502.9649.23.1.gem/bin/aprun}
+else
+ echo ' machine not supported'
+fi
+###########################################################################
 
-if [ $DONST = "YES" ]; then
-    . $EXPDIR/config.nsst
+cycn=${cycn:-$(echo $CDATE | cut -c9-10)}
+QUILTING=${QUILTING:-.false.}
+output_1st_tstep_rst=${output_1st_tstep_rst:-.false.}
+if [ $QUILTING = .true. ] ; then
+ WRITE_GROUP=${WRITE_GROUP:-3}
+ WRTTASK_PER_GROUP=${WRTTASK_PER_GROUP:-24}
+#WRITE_GROUP=${WRITE_GROUP:-1}
+#WRTTASK_PER_GROUP=${WRTTASK_PER_GROUP:-6}
+ NUM_FILES=${NUM_FILES:-2}
+# FILENAME_BASE=${FILENAME_BASE:-'dyn phy'}
+# FILENAME_BASE=${FILENAME_BASE:-\'"gfs.t${cycn}z.atm' 'gfs.t${cycn}z.sfc"\'}
+ CDUMP=${CDUMP:-gfs}
+ dump=$(echo $CDUMP|tr '[A-Z]' '[a-z]')
+ FILENAME_BASE=${FILENAME_BASE:-\'"$dump.t${cycn}z.atm' '$dump.t${cycn}z.sfc"\'}
+
+ REMAP_GRID=${REMAP_GRID:-gaussian}
+else
+ WRITE_GROUP=0
+ WRTTASK_PER_GROUP=0
+fi
+SCRDIR=${SCRDIR:-$HOMEgfs/scripts}
+FORECASTSH=${FORECASTSH:-$SCRDIR/exglobal_fcst_fv3.sh}
+#FORECASTSH=${FORECASTSH:-$SCRDIR/exglobal_fcst_fv3gfs.sh.ecf}
+FCSTEXECDIR=${FCSTEXECDIR:-$HOMEgfs/sorc/fv3gfs.fd/BUILD/bin}
+PTMP=${PTMP:-/gpfs/hps/ptmp}
+IC_DIR=${IC_DIR:-${ICDIR:-$PTMP/$LOGNAME/FV3IC/ICs}}
+ncep_plevels=${ncep_plevels:-.true.}
+MONO=""
+MONO=${MONO:-non-mono}
+NSP=2
+NSP=${NSP:-1}
+if [ $LEVS -le 65 ] ; then
+ n_sponge=24
+else
+#n_sponge=32
+ n_sponge=$((LEVS-NSP))
 fi
 
-export FORECASTSH="$HOMEgfs/scripts/exglobal_fcst_nemsfv3gfs.sh"
-#export FCSTEXECDIR="$HOMEfv3gfs/NEMS/exe"
-export FCSTEXECDIR="$HOMEgfs/exec"
-#export FCSTEXEC="fv3_gfs_nh.prod.32bit.x"
-export FCSTEXEC="nems_fv3_mom6_cice5.x"
+################# Coupled FV3_MOM6_CICE Wave Model ######################
+if [ ${CPLDFV3_MOM6_CICE:-NO} = YES ] ; then
+ export cplflx=.true.
+ export cpl=.true.
+fi
+################# Wave Model ######################
+if [ ${CPLDWAV:-NO} = YES ] ; then
+#cplflx=.true.
+ cpl=.true.
+ cplwav=.true.
+ cplwav2atm=.true.
+#ww3_coupling_interval_sec=1800
+fi
+################# Wave Model ######################
 
-export CPLPREPSH=${CPLPREPSH:-$HOMEgfs/scripts/prep_coupled_fcst.sh}
+cplflx=${cplflx:-.false.}
+cpl=${cpl:-.false.}
+cplwav=${cplwav:-.false.}
+cplwav2atm=${cplwav2atm:-.false.}
 
-export npe_fv3=$npe_fcst # This is model resolution dependent, see note above
+#################    CCPP    ######################
+if [ ${CCPP_SUITE:-none} != none ] ; then
+ atmos_model_nml="ccpp_suite = '$CCPP_SUITE'"
+fi
+atmos_model_nml=${atmos_model_nml:-''}
+#################    CCPP    ######################
 
-if [ $QUILTING = ".true." ]; then
-    export npe_fv3=$(echo " $npe_fv3 + $WRITE_GROUP * $WRTTASK_PER_GROUP" | bc)
-    export npe_fcst=$npe_fv3
+#if [ $CASE = C768 ] ; then
+# cdmbgwd=2.0,0.5
+#elif [ $CASE = C384 ] ; then
+# cdmbgwd=1.0,1.20
+##cdmbgwd=3.5,0.25
+#elif [ $CASE = C192 ] ; then
+# cdmbgwd=1.5,1.0
+#fi
+
+#n_sponge=48
+#n_sponge=10
+#n_sponge=24
+#nord=1           # 0 - 2nd, 1 - 4th, 2 - 6th and 3 - 8th order
+#nord_tr=1
+ nord=2           # 0 - 2nd, 1 - 4th, 2 - 6th and 3 - 8th order
+ nord_tr=2
+#nord=3           # 0 - 2nd, 1 - 4th, 2 - 6th and 3 - 8th order
+#nord_tr=3
+
+#hord_mt=6
+#hord_vt=6
+#hord_tm=6
+#hord_dp=-6
+
+ d4_bg=0.16
+#d4_bg=0.2
+#trdm2=2.0e-4
+#nord=2
+#n_sponge=16
+#n_sponge=0
+#n_sponge=8
+#fv_sg_adj=200
+#fv_sg_adj=225
+#fv_sg_adj=450
+#fv_sg_adj=600
+#fv_sg_adj=900
+#d2_bg=0.005
+#d2_bg_k1=0.2
+ d2_bg_k1=0.16
+ d2_bg_k2=0.05
+ d_ext=0.01
+ do_vort_damp=.true.
+#
+#REMAP_GRID=${REMAP_GRID:-latlon}
+REMAP_GRID=${REMAP_GRID:-gaussian}
+if [ $REMAP_GRID = latlon ] ; then
+ DIAGTABLE=${DIAGTABLE:-$HOMEgfs/parm/parm_fv3diag/diag_table}
+ DSUF=""
+else
+ DIAGTABLE=${DIAGTABLE:-$HOMEgfs/parm/parm_fv3diag/diag_table_history}
+ DSUF="_history"
 fi
 
-if [ $cpl = ".true." ] ; then
-  export npe_fv3=$(echo " $npe_fv3 + $npe_ocn + $npe_ice" | bc )
-  export npe_fcst=$npe_fv3
+#na_init=5        # number of initial adiabatic pre-conditioning steps
+ na_init=1        # number of initial adiabatic pre-conditioning steps
+#na_init=3        # number of initial adiabatic pre-conditioning steps
+# for debugging
+#########################
+#na_init=0
+#no_dycore=.true.
+#dycore_only=.true.
+#########################
+#a_imp=0.55
+#beta=0.45
+
+a_imp=${a_imp:-1.0}
+beta=${beta:-0.0}
+
+
+#MODE=32bit          # choices:  32bit, 64bit
+MODE=64bit           # choices:  32bit, 64bit
+TYPE=nh              # choices:  nh, hydro
+HYPT=off             # choices:  on, off  (controls hyperthreading)
+COMP="prod"          # choices:  debug, repro, prod
+if [ $HYPT = on ] ; then
+ hyperthread=.true.
+ j_opt="-j 2"
+else
+ hyperthread=.false.
+ j_opt="-j 1"
 fi
+
+#TIMELIMFCSTGFS1=${TIMELIMFCSTGFS1:-10:00:00}
+#TIMELIMFCSTGFS1=${TIMELIMFCSTGFS1:-06:00:00}
+#TIMELIMFCSTGFS2=${TIMELIMFCSTGFS2:-03:00:00}
+#TIMELIMFCSTGDAS1=${TIMELIMFCSTGDAS1:-03:00:00}
+
+#FHMIN=${FHMIN:-0}                    #forecast starting hour
+#FHRES=${FHRES:-264}                  #interval to write restart files
+#if [ $CSTEP = fcst2 ] ; then
+# FHMIN=$fmax1
+# FHRES=400
+#fi
+#fdiag=$FHMIN
+FHOUT=${FHOUT:-3}
+nsout=${nsout:-0}
+#if [ $nsout > 0 ] ; then
+#printf %.10f\\n "$((1000000000 *   450/3600  ))e-9"
+
+fdiag=$((FHMIN+FHOUT))
+
+USE_RESTART=${USE_RESTART:-NO}      # use restart file under COMROT/ATM_RESTART if run is interruptted
+FHSTRT=6                            # restart from a given hour if USE_RESTART=YES
+
+warm_start=${warm_start:-.false.}
+
+if [ $warm_start = .true. ] ; then
+# RESTARTFILE=${RESTARTFILE:-$COMRES/fv3res_$FHMIN$CDATE.$CDUMP.tar}
+# RESTARTDIR=${RESTARTDIR:-${ATM_RESTDIR:-$ROTDIR/ATM_RESTDIR}/fv3res_$FHMIN.$CDATE}
+  RESTARTDIR=${RESTARTDIR:-${ATM_RESTDIR:-$ROTDIR/ATM_RESTDIR}}
+fi
+#PREFILE=${CDATE}0000.
+if [ $REMAP_GRID = latlon ] ; then
+  file_list='atmos_4xdaily atmos_static grid_spec nggps2d nggps3d fv3_history fv3_history2d'
+else
+  file_list='fv3_history fv3_history2d'
+fi
+
+ . $EXPDIR/config.fv3 $CASE       # Source model specific information that is resolution dependent
+
+ . $EXPDIR/config.resources fcst  # Get task specific resources
+
+# NSST Options
+# nstf_name contains the NSST related parameters
+# nstf_name(1) : 0 = NSSTM off, 1 = NSSTM on but uncoupled, 2 = NSSTM on and coupled
+# nstf_name(2) : 0 = NSSTM spin up off, 1 = NSSTM spin up on,
+# nstf_name(3) : 0 = NSSTM analysis off, 1 = NSST analysis on
+# nstf_name(4) : zsea1 in mm
+# nstf_name(5) : zsea2 in mm
+# nst_anl      : .true. or .false., NSST analysis over lake
+
+ if [ ${DONST:-NO} = YES ] ; then # nsst information
+   if [ $warm_start = .true. -o $FHMIN -gt 0 ] ; then
+     NST_SPINUP=0
+     NST_GSI=0
+   fi
+   . $EXPDIR/config.nsst
+#  nstf_name=2,1,0,0,5
+#  nstf_name=2,1,1,0,5
+ else
+   nstf_name=0,0,0,0,0
+ fi
+
+# FORECASTSH="$HOMEgfs/scripts/exglobal_fcst_nemsfv3gfs.sh"
+#FORECASTSH="$HOMEgfs/scripts/exglobal_fcst_nemsfv3.sh"      # without UGW
+#FORECASTSH="$HOMEgfs/scripts/exglobal_fcst_nemsfv3ugw.sh"   # with    UGW
+#FORECASTSH="$HOMEgfs/scripts/exglobal_fcst_nemsfv3_res.sh"   # with    UGW
+
+# FCSTEXECDIR="$HOMEfv3gfs/NEMS/exe"
+#FCSTEXECDIR="$HOMEgfs/exec"
+# FCSTEXEC="fv3_gfs_nh.prod.32bit.x"
+#FCSTEXEC="nems_fv3_mom6_cice5.x"
+#FCSTEXEC="nems_fv3_mom6_cice5.xn"
+#FCSTEXEC="nems_fv3_mom6_cice5.xn2"
+FCSTEXEC=${FCSTEXEC:-"nems_fv3_mom6_cice5.xn2"}
+
+CPLPREPSH=${CPLPREPSH:-$HOMEgfs/scripts/prep_coupled_fcst.sh}
+
+npes=$((layout_x*layout_y*6))
+#tasks=$npes                         # number of PEs for 1st segment
+#nth_f=2                             # number of threads for AM forecast
+#nth_f=3                             # number of threads for AM forecast
+#nth_f=4                             # number of threads for AM forecast
+#nth_f=8                            # number of threads for AM forecast
+#nth_f=6                            # number of threads for AM forecast
+#nth_f=1                            # number of threads for AM forecast
+#if [ $CASE = C1152 ] ; then nth_f=6 ; fi
+#if [ $CASE = C96 ] ; then nth_f=1 ; fi
+#if [ $CASE = C96 ] ; then nth_f=2 ; fi
+#if [ $machine = WCOSS_DELL_P3 ] ; then  nth_f=2 ; fi
+pe_node=${pe_node:-$npe_node_fcst}
+npe_node_f=$pe_node                 # number of pes per node for AM forecast
+#task_per_node=$((npe_node_f/nth_f))
+task_per_node=$npe_node_f
+
+if [ $QUILTING = .true. ] ; then
+ wrtpe=$((WRITE_GROUP*WRTTASK_PER_GROUP))
+ WRTTASK_PER_NODE=${WRTTASK_PER_NODE:-$pe_node}
+ if [ $machine = WCOSS_DELL_P3 ] ; then WRTTASK_PER_NODE=$task_per_node ; fi
+ tasks=$((npes+wrtpe))
+#if [ $WRTTASK_PER_NODE -ne $pe_node ] ; then
+# NUMTHRD_w=${NUMTHRD_w:-$((pe_node/WRTTASK_PER_NODE))}
+# APRUNW=': -n$wrtpe -N$WRTTASK_PER_GROUP -d$NUMTHRD_w -cc depth'
+#fi
+#nodes=$((npes/task_per_node+wrtpe/WRTTASK_PER_NODE))
+else
+ tasks=$npes                         # number of PEs for 1st segment
+ wrtpe=0
+#nodes=$((tasks/task_per_node))
+fi
+
+
+npe_fv3=$npe_fcst # This is model resolution dependent, see note above
+
+npe_med=${npe_med:-$((npe_fv3-1))}
+npe_med_max=${npe_med_max:-1024}
+#npe_med_max=${npe_med_max:-599}
+
+if [ $QUILTING = .true. ]; then
+  npe_fv3=$((npe_fv3 + WRITE_GROUP*WRTTASK_PER_GROUP))
+  npe_fcst=$npe_fv3
+fi
+npe_atm=$((npe_fcst-1))
+if [ $CPLDFV3_MOM6_CICE = YES ] ; then
+ npe_med=${npe_med:-$npe_atm}
+ if [ $npe_med -gt $npe_med_max ] ; then npe_med=$npe_med_max ; fi
+else
+ npe_med=0
+fi
+
+if [ $CPLDFV3_MOM6_CICE = YES -o $CPLDWAV = YES ] ; then
+  npe_fv3=$((npe_fv3 + npe_ocn + npe_ice + npe_ww3))
+  npe_fcst=$npe_fv3
+  ATM_petlist_bounds=\'"0' '$npe_atm"\'         #6*layout_x*layout_y+WRITE_GROUP*WRTTASK_PER_GROUP
+  if [ $npe_med -gt 0 ] ; then
+   MED_petlist_bounds=\'"0' '$npe_med"\'
+  fi
+# MED_petlist_bounds=$ATM_petlist_bounds
+  if [ $npe_ocn -gt 0 ] ; then
+   OCN_petlist_bounds=\'"$((npe_atm+1))' '$((npe_atm+npe_ocn))"\'          #140
+  fi
+  if [ $npe_ice -gt 0 ] ; then
+   ICE_petlist_bounds=\'"$((npe_atm+npe_ocn+1))' '$((npe_atm+npe_ocn+npe_ice))"\'  #24
+  fi
+  if [ $npe_ww3 -gt 0 ] ; then
+   WAV_petlist_bounds=\'"$((npe_atm+npe_ocn+npe_ice+1))' '$((npe_atm+npe_ocn+npe_ice+npe_ww3))"\'
+  fi
+fi
+
+#if [ $machine = WCOSS_C ] ; then
+#APRUN=${APRUN:-"aprun -n $tasks -N $task_per_node -d $nth_f $j_opt -cc depth"}
+#APRUN='$launcher -n$((tasks-wrtpe)) -N$pe_node -d$nth_f -$j_opt cc depth'
+#lif [ $machine = WCOSS ] ; then
+#APRUN=${APRUN:-mpirun.lsf}
+#lif [ $machine = THEIA ] ; then
+#APRUN=${APRUN:-"mpirun -np $tasks"}
+#lif [ $machine = GAEA ] ; then
+#APRUN=${APRUN:-"aprun -n $tasks -N $task_per_node -d $nth_f $j_opt -cc depth"}
+#fi
 
 # Model configuration
-export TYPE="nh"
-export MONO="non-mono"
+TYPE="nh"
+MONO="non-mono"
 
+fv_sg_adj=${fv_sg_adj:-${DELTIM:-300}}
 # Use stratosphere h2o physics
-export h2o_phys=".true."
+h2o_phys=".true."
 
 # Options of stratosphere O3 physics reaction coefficients
-export new_o3forc="YES"
-
-#BL2019
-#test2.4.0a:
-#use unified gravity-wave drag and  turbulent orographic form drag (TOFD)
-export do_ugwp=".false."
-export do_tofd=".false."
-export launch_level=$(echo "$LEVS/2.35" |bc)
-# PBL/turbulance schemes
-export hybedmf=".true."
-export satmedmf=".false."
-export isatmedmf=0
-tbf=""
-# Land surface model. (2--NoahMP, landice=F); (1--Noah, landice=T)
-export lsm=1
-
-#test2.4.0b: with gravity wave drag
-#use unified gravity-wave drag and  turbulent orographic form drag (TOFD)
-#export do_ugwp=".true."
-#export do_tofd=".true."
-#export launch_level=$(echo "$LEVS/2.35" |bc)
-# PBL/turbulance schemes
-#export hybedmf=".true."
-#export satmedmf=".false."
-#export isatmedmf=0
-#tbf=""
-# Land surface model. (2--NoahMP, landice=F); (1--Noah, landice=T)
-#export lsm=1
-
-#test2.4.0c: with PBL
-#use unified gravity-wave drag and  turbulent orographic form drag (TOFD)
-#export do_ugwp=".false."
-#export do_tofd=".false."
-#export launch_level=$(echo "$LEVS/2.35" |bc)
-# PBL/turbulance schemes
-#export hybedmf=".false."
-#export satmedmf=".true."
-#export isatmedmf=1
-#tbf=""
-# Land surface model. (2--NoahMP, landice=F); (1--Noah, landice=T)
-#export lsm=1
-
-#test2.4.0d: with Noah-MP
-#use unified gravity-wave drag and  turbulent orographic form drag (TOFD)
-#export do_ugwp=".false."
-#export do_tofd=".false."
-#export launch_level=$(echo "$LEVS/2.35" |bc)
-# PBL/turbulance schemes
-#export hybedmf=".true."
-#export satmedmf=".false."
-#export isatmedmf=0
-#tbf=""
-# Land surface model. (2--NoahMP, landice=F); (1--Noah, landice=T)
-#export lsm=2
-
-#test2.4.0:
-#use unified gravity-wave drag and  turbulent orographic form drag (TOFD)
-#export do_ugwp=".true."
-#export do_tofd=".true."
-#export launch_level=$(echo "$LEVS/2.35" |bc)
-# PBL/turbulance schemes
-#export hybedmf=".false."
-#export satmedmf=".true."
-#export isatmedmf=1
-#tbf=""
-# Land surface model. (2--NoahMP, landice=F); (1--Noah, landice=T)
-#export lsm=2
-
-if [ $satmedmf = ".true." ]; then tbf="_satmedmf" ; fi
-if [ $lsm -eq 2 ]; then
-    export lheatstrg=".false."
-    export landice=".false."
-else
-    export lheatstrg=".false."
-    export landice=".true."
-fi
-# Radiation options
-export IAER=111    ;#spectral band mapping method for aerosol optical properties
-export iovr_lw=1    ;#de-correlation length cloud overlap method (Barker, 2008)
-export iovr_sw=1    ;#de-correlation length cloud overlap method (Barker, 2008)
-export icliq_sw=1   ;#cloud optical coeffs from AER's newer version v3.9-v4.0 for hu and stamnes
+new_o3forc=YES
 
 # Microphysics configuration
-export dnats=0
-export cal_pre=".true."
-export do_sat_adj=".false."
-export random_clds=".true."
+dnats=0
+#cal_pre=".true."
+do_sat_adj=".false."
+random_clds=".true."
 
-if [ $imp_physics -eq 99 ]; then # ZhaoCarr
-    export ncld=1
-    export FIELD_TABLE="$HOMEgfs/parm/parm_fv3diag/field_table_zhaocarr"
-    export nwat=2
+MGVER=${MGVER:--1}
 
-    # PT adding these for coupled config
-    export n_sponge=24
-    export tau=5.
-    export nord=2
-    export dddmp=0.1
-    export d4_bg=0.12
-    export hord_mt_nh_nonmono=6
-    export hord_xx_nh_nonmono=6
-    export vtdm4_nh_nonmono=0.02
+NST_GSI=0
 
-elif [ $imp_physics -eq 6 ]; then # WSM6
-    export ncld=2
-    export FIELD_TABLE="$HOMEgfs/parm/parm_fv3diag/field_table_wsm6"
-    export nwat=6
+if [ ${RAS:-NO} = YES ] ; then
+  ras=.true.                      # turn on RAS
+# trans_trac=.false.
+# shal_cnv=.false.
+fi
 
-elif [ $imp_physics -eq 8 ]; then # Thompson
-    export ncld=2
-    export FIELD_TABLE="$HOMEgfs/parm/parm_fv3diag/field_table_thompson"
-    export nwat=6
+nord=2
+dddmp=0.1
+d4_bg=0.12
+dddmp=0.2
+d4_bg=0.16
+hord_mt_nh_nonmono=6
+hord_xx_nh_nonmono=6
+vtdm4_nh_nonmono=0.02
 
-elif [ $imp_physics -eq 11 ]; then # GFDL
-    export ncld=5
-    export FIELD_TABLE="$HOMEgfs/parm/parm_fv3diag/field_table_gfdl"
-    export nwat=6
-    export dnats=1
-    export cal_pre=".false."
-    export do_sat_adj=".true."
-    export random_clds=".false."
-    export lgfdlmprad=".true."
-    export effr_in=".true."
 
-    #export hord_mt_nh_nonmono=6
-    #export hord_xx_nh_nonmono=6
-    export hord_mt_nh_nonmono=5
-    export hord_xx_nh_nonmono=5
-    export vtdm4_nh_nonmono=0.02
-    export nord=2
-    export dddmp=0.1
-    export d4_bg=0.12
+imp_physics=${imp_physics:-99}
+
+if [ $imp_physics -eq 99 ] ; then # ZhaoCarr
+  ncld=1
+# FIELD_TABLE="$HOMEgfs/parm/parm_fv3diag/field_table_zhaocarr"
+# nwat=2
+
+# n_sponge=24
+# tau=5.
+  zhao_mic=.true.
+
+elif [ $imp_physics -eq 6 ] ; then # WSM6
+  ncld=2
+# FIELD_TABLE="$HOMEgfs/parm/parm_fv3diag/field_table_wsm6"
+# nwat=6
+  FVER=_wsm6
+
+elif [ $imp_physics -eq 8 ] ; then # Thompson
+  ncld=2
+# FIELD_TABLE="$HOMEgfs/parm/parm_fv3diag/field_table_thompson"
+# nwat=6
+  FVER=_thompson
+
+elif [ $imp_physics -eq 10 ] ; then # Morrison-Gettleman (1/2/3)
+
+  MGVER=${MGVER:-2}
+  if [ $MGVER -ge 0 ] ; then
+   ncld=2                          # MG2 microphysics
+#  fprcp=0                         # to turn off MG2 from NCAR
+#  fprcp=1                         # to turn on MG2 from NCAR
+#  fprcp=2                         # to turn on MG3 from NCAR
+   fprcp=${MGVER:-2}               # to turn on MG3 from NCAR
+#  fprcp=-1                        # to turn on rain-snow (MG2) using Anning's code
+#  mg_qcmin="1.0e-9,1.0e-7"
+#  mg_qcmin="1.0e-9,2.0e-7"
+#  mg_qcmin="1.0e-9,1.0e-6"
+#  mg_qcmin="1.0e-9,2.0e-6"        # use this for Moorthi tests
+#  mg_qcmin="1.0e-9,1.0e-9"
+   mg_qcmin="1.0e-8,1.0e-8"
+#  mg_qcmin="1.0e-10,1.0e-10"
+#  mg_alf=1.5
+   pdfflag=4
+   mg_do_ice_gmao=.false.
+#  mg_do_liq_liu=.true.
+#
+   if [ $fprcp -eq 2 ] ; then
+#   mg_do_graupel=.false.
+    mg_do_graupel=.true.
+#   mg_do_hail=.true.
+#   do_sb_physics=.false.
+   fi
+
+   iccn=.false.
+   aero_in=.false.
+   effr_in=.true.
+   ccnorm=.true.
+  else
+   echo "invalid MGVER for imp_physics = 10 - ABORTING"
+   exit 990
+  fi
+elif [ $imp_physics -eq 11 ] ; then # GFDL
+  ncld=5
+# FVER=_gfdl
+# FVER_diag=_gfdl
+  FVER=_ncld$ncld
+# FVER_diag=_ncld$ncld
+  lgfdlmprad=.true.
+  effr_in=.true.
+# FIELD_TABLE="$HOMEgfs/parm/parm_fv3diag/field_table_gfdl"
+# nwat=6
+  dnats=1
+  cal_pre=.false.
+  do_sat_adj=.true.
+# random_clds=.false.
+
+  hord_mt_nh_nonmono=5
+  hord_xx_nh_nonmono=5
+
+  tau_l2r=300.0
+# tau_l2r=600.0
+  tau_i2s=1000.0
+# tau_i2s=7200.0
+  rthresh=10.0e-6
+  crtrh='0.90,0.90,0.90'
+# crtrh='1.00,1.00,1.00'
+# crtrh='0.95,0.95,0.95'
+# crtrh='0.95,0.90,0.90'
+  rh_inc=${rh_inc:-0.30}
+  rh_inr=${rh_inr:-0.30}
+  rh_ins=${rh_ins:-0.30}
+  tau_i2s=${tau_i2s:-1000.0}
+  tau_l2r=${tau_l2r:-900.0}
+  tau_l2v=${tau_l2v:-300.}
+  tau_v2l=${tau_v2l:-150.}
+  tau_g2v=${tau_g2v:-900.}
+  rthresh=${rthresh:-10.e-6}
+  do_qa=${do_qa:-.true.}
 
 else
-    echo "Unknown microphysics option, ABORT!"
-
+  echo "Unknown microphysics option, ABORT!"
 fi
 #---------------------------------------------------------------------
 
 
 # Disable the use of coupler.res; get model start time from model_configure
-export USE_COUPLER_RES="NO"
+USE_COUPLER_RES=NO
 
-if [[ "$CDUMP" == "gdas" ]] ; then # GDAS cycle specific parameters
+if [[ $CDUMP == gdas ]] ; then # GDAS cycle specific parameters
 
-    # Variables used in DA cycling
-    if [ $QUILTING = ".true." -a $OUTPUT_GRID = "gaussian_grid" ]; then
-        export DIAG_TABLE="$HOMEgfs/parm/parm_fv3diag/diag_table_da"
-    else
-        export DIAG_TABLE="$HOMEgfs/parm/parm_fv3diag/diag_table_da_orig"
-    fi
+# Variables used in DA cycling
+  if [ $QUILTING = .true. -a $OUTPUT_GRID = gaussian_grid ]; then
+    FVER_diag=_da
+#   DIAG_TABLE="$HOMEgfs/parm/parm_fv3diag/diag_table_da"
+  else
+    FVER_diag=_da_orig
+#   DIAG_TABLE="$HOMEgfs/parm/parm_fv3diag/diag_table_da_orig"
+  fi
 
-    # Write restart files at next assimilation time
-    export restart_interval=6
+# Write restart files at next assimilation time
+  restart_interval=6
 
-elif [[ "$CDUMP" == "gfs" ]] ; then # GFS cycle specific parameters
+#elif [[ "$CDUMP" == "gfs" ]] ; then # GFS cycle specific parameters
 
-    # Write more variables to output
-    if [ $QUILTING = ".true." -a $OUTPUT_GRID = "gaussian_grid" ]; then
-        export DIAG_TABLE="$HOMEgfs/parm/parm_fv3diag/diag_table"
-    else
-        export DIAG_TABLE="$HOMEgfs/parm/parm_fv3diag/diag_table_orig"
-    fi
-
-    if [ $cpl = ".true." ] ; then
-        export DIAG_TABLE="$HOMEgfs/parm/parm_fv3diag/diag_table_cpl"
-    fi
+# Write more variables to output
+#    if [ $QUILTING = ".true." -a $OUTPUT_GRID = "gaussian_grid" ]; then
+#      DIAG_TABLE="$HOMEgfs/parm/parm_fv3diag/diag_table"
+#    else
+#      DIAG_TABLE="$HOMEgfs/parm/parm_fv3diag/diag_table_orig"
+#    fi
+#
+#    if [ $cpl = ".true." ] ; then
+#      DIAG_TABLE="$HOMEgfs/parm/parm_fv3diag/diag_table_cpl"
+#    fi
 fi
 
 # Regrid tiles to global Gaussian grid in NEMSIO
-export REGRID_NEMSIO_SH="$HOMEgfs/ush/fv3gfs_regrid_nemsio.sh"
+REGRID_NEMSIO_SH="$HOMEgfs/ush/fv3gfs_regrid_nemsio.sh"
 if [ $DONST = YES ]; then
-    export REGRID_NEMSIO_TBL="$HOMEgfs/parm/parm_fv3diag/variable_table_da.txt"
+  REGRID_NEMSIO_TBL="$HOMEgfs/parm/parm_fv3diag/variable_table_da.txt"
 else
-    export REGRID_NEMSIO_TBL="$HOMEgfs/parm/parm_fv3diag/variable_table_da_nonsst.txt"
+  REGRID_NEMSIO_TBL="$HOMEgfs/parm/parm_fv3diag/variable_table_da_nonsst.txt"
 fi
 
 # Remap tiles to global latlon grid in NetCDF
-export REMAPSH="$HOMEgfs/ush/fv3gfs_remap.sh"
-export master_grid="0p25deg"                   # 1deg 0p5deg 0p25deg 0p125deg etc
-export npe_remap=$((npe_fcst < 240 ? npe_fcst : 240))
+REMAPSH="$HOMEgfs/ush/fv3gfs_remap.sh"
+master_grid="0p25deg"                   # 1deg 0p5deg 0p25deg 0p125deg etc
+npe_remap=$((npe_fcst < 240 ? npe_fcst : 240))
 
 # Global latlon NetCDF to nemsio utility parameters
-export NC2NEMSIOSH="$HOMEgfs/ush/fv3gfs_nc2nemsio.sh"
+NC2NEMSIOSH="$HOMEgfs/ush/fv3gfs_nc2nemsio.sh"
 
 # Remember config.efcs will over-ride these values for ensemble forecasts
 # if these variables are re-defined there.
 # Otherwise, the ensemble forecast will inherit from config.fcst
 
+# from Moorthi's config_fcst
+
+#
+# physics options
+#
+#blocksize=96
+ blocksize=${blocksize:-32}
+ range_warn=.true.
+#fv_debug=.true.
+#print_freq=-1
+ print_freq=6
+#mountain=.false.
+#xkzm_h=0.25
+#xkzm_m=0.25
+ xkzm_h=0.5
+ xkzm_m=0.5
+#xkzm_h=0.75
+#xkzm_m=0.75
+#lwhtr=.false.
+#swhtr=.false.
+#lheatstrg=.false.
+ hybedmf=.true.
+ satmedmf=.false.
+#hybedmf=.false.
+#satmedmf=.true.
+ dspheat=.false.                 # to turn off dissipative heating in moninedmf
+
+# new ozone forcing - uncomment below
+ if [ $new_o3forc = YES ] ; then
+  O3FORC=ozprdlos_2015_new_sbuvO3_tclm15_nuchem.f77 # to use new ozone forcing
+ fi
+
+ hord_tr=13    # has 2dx filter for tracer
+
+ RAS=${RAS:-NO}
+ CSAW=${CSAW:-NO}
+ MGVER=${MGVER:--1}
+ SHOC=${SHOC:-NO}
+
+ dlqf="0.2,0.05"
+#dlqf="0.00,0.00"
+#dlqf="0.25,0.10"
+
+ if [ $RAS = YES ] ; then
+  ras=.true.                      # turn on RAS
+# trans_trac=.false.
+# shal_cnv=.false.
+ fi
+
+#ccnorm=.false.
+#effr_in=.false.
+
+
+ if [ ${SHOC:-NO} = YES ] ; then
+  do_shoc=.true.
+ fi
+ #shoc_parm="7000.0,1.0,2.0,0.7,-999.0"
+  shoc_parm="7000.0,1.5,3.0,0.7,-999.0"
+  shoc_parm="7000.0,1.0,2.0,0.7,999.0"
+  shoc_parm="7000.0,1.5,2.0,0.7,999.0"
+  shoc_parm="5000.0,1.5,2.0,0.7,999.0"
+# shoc_parm="5000.0,1.0,2.0,0.7,999.0"
+# shoc_parm="5000.0,2.0,2.0,0.7,999.0"
+# shoc_parm="3000.0,1.0,2.0,0.7,999.0"
+# shoc_parm="0.0,1.0,2.0,0.7,999.0"
+# shoc_parm="5000.0,1.0,2.0,0.7,999.0"
+# shoc_parm="3000.0,1.0,2.0,0.7,999.0"
+#######################################################################
+
+ ncld=${ncld:-1}                 # zhao-carr-sundqvist microphysics is default
+ if [ $ncld -eq 2 ] ; then fast_sat_adj=.false. ; fi
+
+ if [ $ncld -gt 1 ] ; then
+   cal_pre=.false.
+ fi
+
+                                 # currently works for imp_physics=10 and 99
+do_shoc=${do_shoc:-.false.}      # default
+
+#sup=1.05
+ sup=1.0
+#sup=1.1
+#sup=1.2
+
+#mg_dcs=100.0
+#mg_dcs=200.0
+#mg_qcvar=1.0
+#mg_ts_auto_ice=300.0
+
+ mg_dcs=350.0
+ mg_qcvar=2.0
+#mg_ts_auto_ice=180.0
+ mg_ts_auto_ice=300.0
+
+#######################################################################
+ if [ ${CSAW:-NO} = YES ] ; then
+  cscnv=.true.    # CSAW
+  do_aw=.true.
+ fi
+
+ cscnv=${cscnv:-.false.}
+ ras=${ras:-.false.}
+ cnvcld=.false.
+#cs_parm="8.0,4.0,1.0e3,4.0e3,20.0,1.0,0.0,1.0,0.0,0.0" # flux form AW Dec04
+ cs_parm="8.0,4.0,1.0e3,3.5e3,20.0,1.0,0.0,1.0,0.6,0.0" # flux form AW Dec04
+#cs_parm="8.0,4.0,1.0e3,3.5e3,20.0,1.0,0.0,1.0,0.7,0.0" # flux form AW Dec04
+#cs_parm="4.0,2.0,1.0e3,3.5e3,20.0,1.0,0.0,1.0,0.0,0.0" # flux form AW Dec04
+
+do_aw=${do_aw:-.false.}
+
+if [ $ras = .true. -a $cscnv = .true. ] ; then
+ echo 'cannot have borh ras and cscnv true'
+ exit 999
+fi
+
+#nsout=1
+
+#n_split=8
+#k_split=2
+#k_split=3
+#n_split=4
+#n_split=6
+#if [ $CASE = C1152 ] ; then
+# n_split=8
+#fi
+#n_split=8    # first vlab 768127 test
+#n_split=10
+#n_split=12
+#fhouri=2.0
+
+ k_split=${k_split:-1}
+ n_split=${n_split:-4}
+
+ fhouri=1.0
+ fhouri=3.0
+ fac_n_spl=2.0
+#fac_n_spl=1.5
+
+#
+#
+
+ tau=5.0            # GFDL Rayleigh friction
+                     # ----------------------
+#tau=10.0
+#tau=2.0
+rf_cutoff=750.0
+prslrd0=0.0
+
+ral_ts=0             # to turn on EMC Rayleigh friction 
+                     # --------------------------------
+if [ $ral_ts -gt 0 ] ; then
+ tau=10000
+ rf_cutoff=1.0
+ prslrd0=500.0
+fi
+#
+#tau=1.0 ;  rf_cutoff=1000 ; d2_bg_k1=0.25  ; d2_bg_k2=0 # from Jeff W.
+#
+
+if [ $ras = .true. ] ; then
+ hord_mt=6
+ hord_vt=6
+ hord_tm=6
+ hord_dp=-6
+#
+#hord_mt=5
+#hord_vt=5
+#hord_tm=5
+#hord_dp=-5
+fi
+FVER=""
+if [ $do_shoc = .true. ] ; then
+  shal_cnv=.false.
+  hybedmf=.false.
+  satmedmf=.false.
+  shoc_cld=.true.
+fi
+if [ $ncld -eq 2 -a $imp_physics -eq 10 ] ; then
+#
+#                                   -----
+ if [ $do_shoc = .true. ] ; then
+   FVER="_mgtke"
+#  n_sponge=$((LEVS-NSP))
+#  n_sponge=$((LEVS-1))
+#  n_sponge=$(((LEVS-1)/4))
+   ctei_rm='0.60,0.23'
+   if [ $ras = .true. ] ; then
+#   psauras="6.0d-4,3.0d-4"
+#   psauras="1.0d-3,1.0d-3"
+#   psauras="3.0d-4,6.0d-4"
+#   psauras="3.0d-4,3.0d-4"
+    psauras="1.0d-3,1.0d-3"
+#   psauras="6.0d-4,3.0d-4"
+#   psauras="5.0d-4,2.0d-4"
+    prauras="2.0d-3,2.0d-3"
+#   prauras="1.0d-3,1.0d-3"
+#   prauras="1.0d-3,2.0d-3"
+#   prauras="1.5d-3,2.0d-3"
+    wminras="1.0d-5,1.0d-5"
+#   wminras="1.0d-6,1.0d-6"
+#   dlqf="0.25,0.25"
+#   dlqf="0.10,0.05"
+    dlqf="0.15,0.15"
+#   dlqf="0.10,0.10"
+   fi
+   crtrh='1.00,1.00,1.00'
+#  crtrh='1.00,1.00,0.95'
+#  crtrh='1.00,1.00,0.90'
+#  crtrh='0.90,0.90,0.90'
+#  crtrh='0.97,0.90,0.90'
+#  crtrh='0.95,0.30,0.15'
+#  crtrh='0.98,0.30,0.15'
+#  crtrh='1.00,1.00,0.95'
+#  crtrh='0.90,0.85,0.80'
+#  crtrh='0.95,0.90,0.98'
+#  if [ $imp_physics -eq 10 ] ; then
+#    crtrh='0.85,0.25,0.20'   # Moorthi on nov 13, 2018
+#    crtrh='0.90,0.25,0.20'   # Moorthi on nov 13, 2018
+#    crtrh='0.92,0.25,0.20'   # Moorthi on nov 13, 2018
+#    crtrh='0.95,0.25,0.20'   # Moorthi on nov 13, 2018
+#    crtrh='0.97,0.25,0.20'   # Moorthi on nov 13, 2018
+#  fi
+#
+   mg_dcs=350.0
+#  mg_dcs=325.0
+#  mg_dcs=300.0
+#  mg_dcs=225.0
+#  mg_dcs=250.0
+#  mg_dcs=200.0
+#  mg_dcs=175.0
+#  mg_dcs=100.0
+#  mg_ts_auto_ice="180.0,900.0"     # first value is ts_auto_min
+#  mg_ts_auto_ice="300.0,1800.0"    # first value is ts_auto_min
+#  mg_ts_auto_ice="180.0,1800.0"    # first value is ts_auto_min
+#  mg_ts_auto_ice="600.0,600.0"     # first value is ts_auto_min
+#  mg_ts_auto_ice="1200.0,1200.0"   # first value is ts_auto_min
+   mg_ts_auto_ice="1800.0,1800.0"   # first value is ts_auto_min
+#  mg_qcvar=2.0
+#  mg_qcvar=1.0
+   mg_qcvar=1.0
+#  mg_qcvar=1.5
+#  mg_qcvar=0.8
+#  mg_qcvar=0.5
+   if [ $cscnv = .true. ] ; then
+     mg_dcs=300.0
+   fi
+
+#  xkzm_h=1.0
+#  xkzm_m=1.0
+ else
+   FVER="_mg"
+   if [ $satmedmf = .true. ] ; then FVER="_mgtke" ; fi
+   if [ $ras = .true. ] ; then
+#   psauras="6.0d-4,3.0d-4"
+#   psauras="5.0d-4,2.5d-4"
+#   psauras="5.0d-4,2.5d-4"
+#   psauras="5.0d-4,5.0d-4"
+#   psauras="4.0d-4,2.0d-4"
+#   psauras="5.0d-4,5.0d-4"
+    psauras="1.0d-3,1.0d-3"
+#   psauras="6.0d-4,3.0d-4"
+#   psauras="5.0d-4,2.5d-4"
+#   psauras="5.0d-4,2.0d-4"
+#   prauras="1.0d-3,2.0d-3"
+#   prauras="1.5d-3,2.0d-3"
+    prauras="2.0d-3,2.0d-3"
+#   prauras="2.0d-3,2.0d-3"
+#   wminras="1.0d-5,1.0d-5"
+    wminras="1.0d-5,1.0d-5"
+#   dlqf="0.25,0.05"
+#   dlqf="0.25,0.10"
+#
+#   wminras="1.0d-6,1.0d-6"
+    dlqf="0.25,0.25"
+   fi
+   if [ $ras = .true. -o $cscnv = .true. ] ; then
+    mg_dcs=300.0
+#   mg_dcs=250.0
+#   mg_dcs=200.0
+#   mg_dcs=225.0
+#   mg_dcs=180.0
+#   mg_dcs=175.0
+#   mg_dcs=170.0
+#   mg_dcs=150.0
+#   mg_dcs=100.0
+#   mg_dcs=250.0
+#   mg_ts_auto_ice="180.0,180.0"    # first value is ts_auto_min - second value >= first
+#   mg_ts_auto_ice="180.0,300.0"    # first value is ts_auto_min
+#   mg_ts_auto_ice="180.0,900.0"    # first value is ts_auto_min
+#   mg_ts_auto_ice="360.0,360.0"    # first value is ts_auto_min
+    mg_ts_auto_ice="360.0,360.0"    # first value is ts_auto_min
+    mg_ts_auto_ice="300.0,300.0"    # first value is ts_auto_min
+   mg_ts_auto_ice="1800.0,1800.0"   # first value is ts_auto_min
+#   mg_ts_auto_ice="600.0,180.0"    # first value is ts_auto_min
+#   mg_ts_auto_ice="600.0,600.0"    # first value is ts_auto_min
+    mg_qcvar=1.0
+#   mg_qcvar=0.5
+#   mg_qcvar=1.5  # CSAW  # first vlab test
+#   mg_qcvar=2.5  # CSAW
+#   mg_qcvar=2.0  # CSAW
+#   crtrh='0.95,0.90,0.95'   # reasonable
+#   crtrh='0.93,0.90,0.95'   # reasonable
+#   crtrh='0.95,0.90,0.95'   # reasonable
+#   crtrh='0.85,0.30,0.25'   # Moorthi on nov 13, 2018
+#   crtrh='0.87,0.30,0.20'   # Moorthi on nov 13, 2018
+#   crtrh='0.90,0.30,0.15'   # Moorthi on nov 13, 2018
+#   crtrh='0.92,0.30,0.20'   # Moorthi on nov 13, 2018
+    crtrh='0.92,0.25,0.20'   # Moorthi on nov 13, 2018
+#   crtrh='0.95,0.85,0.95'   # reasonable
+#   crtrh='1.0,1.0,1.0'
+   fi
+ fi
+else
+ if [ $do_shoc = .true. -o $satmedmf = .true. ] ; then FVER="_tke" ; fi
+ if [ $ncld -eq 1 ] ; then
+  if [ $do_shoc = .true. ] ; then
+#   psautco=${psautco:-"1.0d-2,1.0d-2"}
+#   psautco=${psautco:-"2.0d-3,1.0d-3"}
+    psautco=${psautco:-"1.0d-3,1.0d-3"}
+    prautco=${prautco:-"1.0d-3,1.0d-3"}
+#   psautco=${psautco:-"6.0d-4,3.0d-4"}
+#   prautco=${prautco:-"6.0d-4,3.0d-4"}
+    crtrh='1.00,1.00,1.00'
+    n_sponge=$((LEVS-NSP))
+    ctei_rm='0.60,0.23'
+   elif [ $cscnv = .true. -o $ras = .true. ] ; then
+    psautco=${psautco:-"6.0d-4,3.0d-4"}
+    prautco=${prautco:-"6.0d-4,3.0d-4"}
+    n_sponge=$((LEVS-NSP))
+  fi
+ elif [ $ncld -eq 5 -a $imp_physics -eq 11 ] ; then
+  FVER=_ncld${ncld}$FVER
+ elif [ $imp_physics -eq 6 ] ; then
+  FVER=_wsm6$FVER
+ elif [ $imp_physics -eq 8 ] ; then
+  FVER=_thompson$FVER
+ fi
+fi
+
+if [ $ncld -gt 1 ] ; then
+ zhao_mic=.false.
+fi
+shal_cnv=${shal_cnv:-.true.}
+if [ $shal_cnv = .false. ] ; then imfshalcnv=-1 ; fi
+if [ $ras = .true. -o $cscnv = .true. ] ; then imfdeepcnv=-1 ; fi
+
+#h2o_phys=.true.                # to use new h2o forcing for the stratosphere
+#cnvgwd=.false.
+
+zhao_mic=${zhao_mic:-.false}
+psautco=${psautco:-"6.0d-4,3.0d-4"}
+#prautco=${prautco:-"6.0d-4,3.0d-4"}
+prautco=${prautco:-"1.0d-4,1.0d-4"}
+wminco=${wminco:-"1.0d-5,1.0d-6"}
+evpco=${evpco:-2.0d-5}
+crtrh=${crtrh:-"0.90,0.90,0.90"}
+
+
+cnvgwd=${cnvgwd:-.true.}
+shal_cnv=${shal_cnv:-.true.}
+cal_pre=${cal_pre:-.false.}
+redrag=${redrag:-.true.}
+dspheat=${dspheat:-.true.}
+hybedmf=${hybedmf:-.false.}
+satmedmf=${satmedmf:-.true.}
+isatmedmf=${isatmedmf:-1}
+if [ $satmedmf = .false. ] ; then isatmedmf=0 ; fi
+random_clds=${random_clds:-.true.}
+trans_trac=${trans_trac:-.true.}
+cnvcld=${cnvcld:-.true.}
+imfshalcnv=${imfshalcnv:-2}
+imfdeepcnv=${imfdeepcnv:-2}
+#cdmbgwd=${cdmbgwd:-2.0, 0.25}
+cdmbgwd=${cdmbgwd:-1.00, 1.00}
+
+cs_parm=${cs_parm:-"8.0,4.0,1.0e3,3.5e3,20.0,1.0,0.0,1.0,0.6,0.0"}
+shoc_cld=${shoc_cld:-.false.}
+h2o_phys=${h2o_phys:-.false.}
+shcnvcw=${shcnvcw:-.false.}
+xkzm_h=${xkzm_h:-1.0}
+xkzm_m=${xkzm_m:-1.0}
+xkzm_s=${xkzm_s:-1.0}
+nstf_name=${nstf_name:-"0,0,1,0,5"}
+ccwf=${ccwf:-"1.0,1.0"}
+dlqf=${dlqf:-"0.10,0.02"}
+#dlqf=${dlqf:-"0.25,0.05"}
+psauras=${psauras:-"1.0d-3,1.0d-3"}
+prauras=${prauras:-"2.0d-3,2.0d-3"}
+wminras=${wminras:-"1.0d-5,1.0d-5"}
+mg_dcs=${mg_dcs:-200.0}
+mg_qcvar=${mg_qcvar:-1.0}
+mg_ts_auto_ice=${mg_ts_auto_ice:-"180.0,180.0"}
+fprcp=${fprcp:-0}
+mg_qcmin=${mg_qcmin:-"1.0e-8,1.0e-7"}
+mg_clf=${mg_alf:-1.0}
+pdfflag=${pdfflag:-4}
+mg_do_ice_gmao=${mg_do_ice_gmao:-.true.}
+mg_do_liq_liu=${mg_do_liq_liu:-.true.}
+effr_in=${effr_in:-.false.}
+lgfdlmprad=${lgfdlmprad:-.false.}
+ccnorm=${ccnorm:-.false.}
+FVER=${FVER:-""}
+#FVER_diag=${FVER_diag:-$FVER}
+#if [ $REMAP_GRID = gaussian ] ; then FVER_diag="_history$FVER" ; fi
+FVER_diag=${FVER_diag:-_history$FVER}
+if [ $fprcp -ne 0 ] ; then FVRS="rs" ; fi
+if [ $fprcp -eq 2 ] ; then
+ mg_do_graupel=${mg_do_graupel:-.false.}
+ mg_do_hail=${mg_do_hail:-.false.}
+ do_sb_physics=${do_sb_physics:-.true.}
+
+ if [ $mg_do_graupel = .true. -o $mg_do_hail = .true. ] ; then
+   FVRS="rsg"
+ fi
+fi
+iccn=${iccn:-.false.}
+aero_in=${aero_in:-.false.}
+O3FORC=${O3FORC:-global_o3prdlos.f77}
+H2OFORC=${H2OFORC:-global_h2o_pltc.f77}
+fhouri=${fhouri:-1.0}
+fac_n_spl=${fac_n_spl:-1.5}
+lheatstrg=${lheatstrg:-.true.}
+#if [ lheatstrg = .true. ] ; then
+# gfs_physics_nml="$gfs_physics_nml 'lheatstrg = .true.'"
+#fi
+#
+#   to output as netcdf files on six tiles
+#output_grid=cubed_sphere_grid
+#output_file=netcdf
+OUTPUT_GRID=${OUTPUT_GRID:-gaussian_grid}
+OUTPUT_FILE=${OUTPUT_FILE:-nemsio}
+
+#use unified gravity-wave drag and  turbulent orographic form drag (TOFD)
+ do_ugwp=.false.      # if this is false original orographic GWD along with non stationary GWD used
+                      # comment this line to use Valery's version of gWD and mountain blocking
+                      # if true, Valery's version used for orographic GWD used
+ do_tofd=.false.
+do_ugwp=${do_ugwp:-.true.}
+do_tofd=${do_tofd:-.true.}
+
+#if [ $LEVS -le 65 ] ; then launch_level=25 ; fi
+#launch_level=${launch_level:-50}
+launch_level=${launch_level:-$((LEVS*3/7))}
+n_sponge=10
+n_sponge=$((LEVS/6))
+n_sponge=$((LEVS/3))
+ n_sponge=24
+min_seaice=1.0e-11
+min_seaice=${min_seaice:-0.15}
+min_lakeice=${min_lakeice:-0.15}
+sfc_z0_type=${sfc_z0_type:-0}
+#fhswr=$DELTIM
+#fhlwr=$DELTIM
+fhswr=${fhswr:-3600}
+fhlwr=${fhlwr:-3600}
+ww3_coupling_interval_sec=${ww3_coupling_interval_sec:-$DELTIM}
+
+
+# Land surface model. (2--NoahMP, landice=F); (1--Noah, landice=T)
+#lsm=2         # noah MP land model
+ lsm=1
+ lsm=${lsm:-1} # noah land model
+if [ $lsm -eq 2 ] ; then
+ lheatstrg=".false."
+ landice=".false."
+else
+ lheatstrg=".false."
+ landice=".true."
+fi
+# Radiation options
+IAER=111    #spectral band mapping method for aerosol optical properties
+iovr_lw=1   #de-correlation length cloud overlap method (Barker, 2008)
+iovr_sw=1   #de-correlation length cloud overlap method (Barker, 2008)
+icliq_sw=1  #cloud optical coeffs from AER's newer version v3.9-v4.0 for hu and stamnes
+
+set +a
 echo "END: config.fcst"
