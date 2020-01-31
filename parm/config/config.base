@@ -47,6 +47,9 @@ export FIXmom=$HOMEgfs/fix/fix_mom6
 export FIXgrid=$HOMEgfs/fix/fix_fv3grid
 # For coupled ocnpost
 export OCNFIXDIR=$HOMEgfs/fix/fix_ocnice
+#
+#For WW3
+export FIX_WW3=${FIX_WW3:-/gpfs/dell2/emc/modeling/noscrub/Shrinivas.Moorthi/WW3_input_data}
 
 ########################################################################
 
@@ -155,7 +158,7 @@ g0nosc=/gpfs/dell2/emc/modeling/noscrub
 export FIX_LAKE_ORO=$g0nosc/$LOGNAME/oro_lake
 export use_lake_oro=YES
 
-export RUN_CCPP=YES
+ export RUN_CCPP=YES
  export cplflx=.true.
  export CPLD_APP=YES
 
@@ -165,11 +168,12 @@ export cplflx=${cplflx:-.false.}
 if [ $cplflx = .true. ] ; then
  app=ufs-s2s-model
  appdir=cfv3_git_jan08
+ appdir=cfv3_git_jan31
  export cpl=.true.
-#export cplwav=.true.
-#export cplwav2atm=.true.
+ export cplwav=.true.
+ export cplwav2atm=.true.
  export CPLDFV3_MOM6_CICE=YES
-#export CPLDWAV=YES
+ export CPLDWAV=YES
  export IC_FROM=bench1
  export NUMOM=YES
  export CPLD_APP=YES
@@ -178,6 +182,7 @@ export CPLD_APP=${CPLD_APP:-NO}
 if [ $CPLD_APP = YES ] ; then
  app=ufs-s2s-model
  appdir=cfv3_git_jan08
+ appdir=cfv3_git_jan31
 else
  app=ufs-weather-model
  appdir=fv3_git1230
@@ -299,6 +304,10 @@ if [ $CPLDFV3_MOM6_CICE = YES ] ; then
  mkdir -p $OCN_OUTDIR
  mkdir -p $ICE_OUTDIR
 fi
+if [ $CPLDWAV = YES ] ; then
+ export WW3_OUTDIR="$ROTDIR/gfs.$PDY/$cyc/WW3_HISTORY"
+ mkdir -p $WW3_OUTDIR
+fi
 if [ -d $ROTDIR/gfs. ] ; then rm -rf $ROTDIR/gfs. ; fi
 
 # For coupled
@@ -349,13 +358,13 @@ export gfs_cyc=@gfs_cyc@ # 0: no GFS cycle, 1: 00Z only, 2: 00Z and 12Z only, 4:
 # GFS output and frequency
 export FHMIN_GFS=0
 
- export warm_start=.true.   # for warm_start need to set FHMIN (i.e. starting time)
+#export warm_start=.true.   # for warm_start need to set FHMIN (i.e. starting time)
 #export FHMIN=1
 #export FHMIN=2
 #export FHMIN=3
 #export FHMIN=6
 #export FHMIN=12
- export FHMIN=24
+#export FHMIN=24
 #export FHMIN=48
 #export FHMIN=66
 #export FHMIN=72
@@ -382,9 +391,10 @@ export FHMIN_GFS=0
  export FHMAX=1080
  export FHMAX_GFS_00=48
 #export FHMAX_GFS_00=120
-#export FHMAX_GFS_00=72
+ export FHMAX_GFS_00=72
 #export FHMAX_GFS_00=96
-#export FHMAX_GFS_00=24
+#export FHMAX_GFS_00=36
+ export FHMAX_GFS_00=24
 #export FHMAX_GFS_00=15
 #export FHMAX_GFS_00=12
 #export FHMAX_GFS_00=9
@@ -497,6 +507,8 @@ if [ $CPLD_APP = YES ] ; then
   export FCSTEXEC="nems_fv3_mom6_cice5.ccpp"
   export FCSTEXEC="nems_fv3_mom6_cice5.ccppn"
 # export FCSTEXEC="nems_fv3_mom6_cice5.ccppo"
+  export FCSTEXECDIR=$g0nosc/$LOGNAME/$appdir/$app/NEMS/exe
+  export FCSTEXEC="NEMS.x"
 elif [ $RUN_CCPP = NO ] ; then
   g0nosc=/gpfs/dell2/emc/modeling/noscrub
 # export FCSTEXECDIR=$g0nosc/Shrinivas.Moorthi/fv3_git1104/ufs-weather-model3/tests

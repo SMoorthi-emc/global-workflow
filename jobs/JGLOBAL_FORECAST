@@ -74,6 +74,7 @@ export CDATE=${CDATE:-${PDY}${cyc}}
 export CDUMP=${CDUMP:-${RUN:-"gfs"}}
 if [ $RUN_ENVIR = "nco" ]; then
     export ROTDIR=${COMROOT:?}/$NET/$envir
+    export RSTDIR=${GESROOT:?}/$envir
 fi
 
 
@@ -108,14 +109,16 @@ $LOGSCRIPT
 export CPLDFV3_MOM6_CICE=${CPLDFV3_MOM6_CICE:-NO}
 if [ $CPLDFV3_MOM6_CICE = YES ] ; then
 
-  if [ ${warm_start:-.false.} = .false. ] ; then
+  if [ ${warm_start:-.false.} = .false. ] ; then # one hour cold start for coupled run
+                                                 #------------------------------------
     export FHMAX=$FHMAX_COLD
     export nsout=0
     . $CPLPREPSH cold
     status=$?
     [[ $status -ne 0 ]] && exit $status
 
-    ${FORECASTSH:-$SCRgfs/exglobal_fcst_nemsfv3gfs.sh.ecf}
+#   ${FORECASTSH:-$SCRgfs/exglobal_fcst_nemsfv3gfs.sh.ecf}
+    ${FORECASTSH:-$SCRgfs/exglobal_fcst_emcufs.sh}
     status=$?
 #   status=999
     [[ $status -ne 0 ]] && exit $status
@@ -125,7 +128,9 @@ if [ $CPLDFV3_MOM6_CICE = YES ] ; then
     . $CPLPREPSH warm
     status=$?
     [[ $status -ne 0 ]] && exit $status
-  else
+
+  else                                           # set up coupled warm start
+                                                 #--------------------------
     export FHMAX=$FHMAX_GFS
     export nsout=${NSOUT:-0}
     . $CPLPREPSH restart
@@ -136,12 +141,14 @@ else
   export nsout=${NSOUT:-0}
 fi
 
-${FORECASTSH:-$SCRgfs/exglobal_fcst_nemsfv3gfs.sh.ecf}
+#  run global forecast - coupled or uncoupled
+# -------------------------------------------
+
+#${FORECASTSH:-$SCRgfs/exglobal_fcst_nemsfv3gfs.sh.ecf}
+${FORECASTSH:-$SCRgfs/exglobal_fcst_emcufs.sh}
 status=$?
 [[ $status -ne 0 ]] && exit $status
 
-
-# Add saving of ocean and ice files here
 
 ##############################################
 # End JOB SPECIFIC work
@@ -150,8 +157,9 @@ status=$?
 ##############################################
 # Final processing
 ##############################################
-cat $pgmout
-
+if [ -e "$pgmout" ] ; then
+  cat $pgmout
+fi
 
 msg="ENDED NORMALLY."
 postmsg "$jlogfile" "$msg"

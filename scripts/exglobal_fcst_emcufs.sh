@@ -659,16 +659,18 @@ fi
 ######################  WW3? #########################################
 export cplwav=${cplwav:-${CPLWAV:-.false.}}
 if [ $cplwav = .true. ] ; then
- FIXWW3=${FIXWW3:-/gpfs/dell2/emc/modeling/noscrub/Shrinivas.Moorthi/WW3_input_data}
- $NCP $FIXWW3/mod* $DATA/
+ export ww3_res=${ww3_res:-'glo_30m'}
+ FIX_WW3=${FIX_WW3:-/gpfs/dell2/emc/modeling/noscrub/Shrinivas.Moorthi/WW3_input_data}
+ $NCP $FIX_WW3/mod* $DATA/
  ymd=$(echo $CDATE |cut -c 1-8)
  export ww3_coupling_interval_sec=${ww3_coupling_interval_sec:-$DELTIM}
-#$NCP $FIXWW3/ww3_multi.inp_$ymd $DATA/ww3_multi.inp
+#$NCP $FIX_WW3/ww3_multi.inp_$ymd $DATA/ww3_multi.inp
  secout=$((FHOUT*3600))
- $NCP $FIXWW3/ww3_multi.inp_template               $DATA/ww3_multi.inp1
- sed -e "s/1800/$secout/g"  $DATA/ww3_multi.inp1 > $DATA/ww3_multi.inp2
- sed -e "s/20000000/$ymd/g" $DATA/ww3_multi.inp2 > $DATA/ww3_multi.inp
- rm $DATA/ww3_multi.inp1 $DATA/ww3_multi.inp2
+ $NCP $FIX_WW3/ww3_multi.inp_template                 $DATA/ww3_multi.inp0
+ sed -e "s/glo_30m/$ww3_res/g" $DATA/ww3_multi.inp0 > $DATA/ww3_multi.inp1
+ sed -e "s/1800/$secout/g"     $DATA/ww3_multi.inp1 > $DATA/ww3_multi.inp2
+ sed -e "s/20000000/$ymd/g"    $DATA/ww3_multi.inp2 > $DATA/ww3_multi.inp
+ rm $DATA/ww3_multi.inp0       $DATA/ww3_multi.inp1   $DATA/ww3_multi.inp2
 fi
 
 JCAP_CASE=$((2*res-2))
@@ -1658,6 +1660,33 @@ else
     eval $NLN $memdir/atmos_static.tile${n}.nc  atmos_static.tile${n}.nc
     eval $NLN $memdir/atmos_4xdaily.tile${n}.nc atmos_4xdaily.tile${n}.nc
   done
+fi
+#
+if [ $cplwav = .true. ] ; then   # link wave history files
+ WW3_OUTDIR=${WW3_OUTDIR:-$DATA}
+ if [ $WW3_OUTDIR != $DATA ] ; then
+  export FHMIN=$((FHMIN+0))
+  fhr=$((10#$FHMIN))
+  if [[ $FHMIN -gt 0 ]] ; then
+   if [ $FHOUT_HF -ne $FHOUT -a $fhr -lt $FHMAX_HF ] ; then
+    fhr=$((10#$FHMIN+10#$FHOUT_HF))
+   else
+    fhr=$((10#$FHMIN+10#$FHOUT))
+   fi
+  fi
+  while [ $fhr -le $FHMAX ] ; do
+    RDATE=$($NDATE +$fhr $CDATE)
+    rPDY=$(echo $RDATE | cut -c1-8)
+    rcyc=$(echo $RDATE | cut -c9-10)
+    file=${rPDY}.${rcyc}0000.out_grd.${ww3_res}
+    eval $NLN $WW3_OUTDIR/$file $file
+    FHINC=$FHOUT
+    if [ $FHMAX_HF -gt 0 -a $FHOUT_HF -gt 0 -a $fhr -lt $FHMAX_HF ] ; then
+      FHINC=$FHOUT_HF
+    fi
+    fhr=$((fhr+FHINC))
+  done
+ fi
 fi
 #
 ##ldd $FCSTEXEC

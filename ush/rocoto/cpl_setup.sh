@@ -38,7 +38,7 @@ RES=$(echo $CASE|cut -c 2-)
 # ./setup_expt_fcstonly.py --pslot $PSLOT --configdir $CONFIGDIR --idate $IDATE --edate $EDATE --res $RES --gfs_cyc $GFS_CYC --comrot $COMROT --expdir $EXPDIR
 
 # $PSLOT is the name of your experiment
- expt=_phyda
+ expt=_phyad
 #expt=_phyad
 #expt=_phyg
 #expt=_phyf

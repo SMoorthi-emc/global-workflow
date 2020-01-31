@@ -288,6 +288,7 @@ fi
 
 npe_fv3=$npe_fcst # This is model resolution dependent, see note above
 
+
 npe_med=${npe_med:-$((npe_fv3-1))}
 npe_med_max=${npe_med_max:-1024}
 #npe_med_max=${npe_med_max:-599}
@@ -296,6 +297,9 @@ if [ $QUILTING = .true. ]; then
   npe_fv3=$((npe_fv3 + WRITE_GROUP*WRTTASK_PER_GROUP))
   npe_fcst=$npe_fv3
 fi
+
+#npe_med=$((npe_fcst+npe_ocn+npe_ice-1))
+
 npe_atm=$((npe_fcst-1))
 if [ $CPLDFV3_MOM6_CICE = YES ] ; then
  npe_med=${npe_med:-$npe_atm}

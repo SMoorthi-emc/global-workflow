@@ -33,8 +33,10 @@ mkdir -p $MED_RESTDIR
 mkdir -p $OCN_RESTDIR
 mkdir -p $ICE_RESTDIR
 
-if [ $inistep = restart ] ; then # using restart files for MOM6 and CICe here, FV3 will set in exglobal script
+if [ $inistep = restart ] ; then # using restart files for MOM6 and CICE here, FV3 will set in exglobal script
+                                 # ---------------------------------------------------------------------------
   export warm_start=.true.
+
 # for mediator
 # ------------
   SDATE=$($NDATE +$FHMIN $CDATE)
@@ -57,6 +59,7 @@ if [ $inistep = restart ] ; then # using restart files for MOM6 and CICe here, F
       $NCP $MED_RESTDIR/mediator* .
     fi
   fi
+
 # for Ocean (MOM6)
 # ----------------
   cd INPUT
@@ -73,6 +76,7 @@ if [ $inistep = restart ] ; then # using restart files for MOM6 and CICe here, F
     fi
     export input_filename="'r'"
   fi
+
 # for Ice (CICE5/6)
 # -----------------
   cd $DATA
@@ -89,7 +93,8 @@ if [ $inistep = restart ] ; then # using restart files for MOM6 and CICe here, F
     export restart_pond_lvl=.true.
     export use_restart_time=.true.
   fi
-# for Wave (WW3)
+
+# for Wave (WW3)    (to be done)
 # -----------------
 # cd $DATA
 # WW3_RESTDIR=${WW3_RESTDIR:-$ROTDIR/WW3_RESTDIR}

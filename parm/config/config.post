@@ -15,12 +15,21 @@ echo "BEGIN: config.post"
 export NPOSTGRP=10
 
 # Post driver job that calls gfs_nceppost.sh and downstream jobs
-export POSTJJOBSH="$HOMEpost/jobs/JGLOBAL_NCEPPOST"
+export POSTDIR=/gpfs/dell2/emc/modeling/noscrub/Shrinivas.Moorthi/balv/post_dir3/EMC_post
+export POSTJJOBSH=${POSTJJOBSH:-${POSTDIR:-$HOMEpost}/jobs/JGLOBAL_NCEPPOST}
+
+#export POSTJJOBSH="$HOMEpost/jobs/JGLOBAL_NCEPPOST"
 export GFSDOWNSH="$HOMEpost/ush/fv3gfs_downstream_nems.sh"
 export GFSDWNSH="$HOMEpost/ush/fv3gfs_dwn_nems.sh"
 
-export POSTGPSH="$HOMEpost/ush/gfs_nceppost.sh"
-export POSTGPEXEC="$HOMEpost/exec/gfs_ncep_post"
+#export POSTGPSH="$HOMEpost/ush/gfs_nceppost.sh"
+#export POSTGPEXEC="$HOMEpost/exec/gfs_ncep_post"
+
+export POSTGPSH=${POSTDIR:-$HOMEpost}/ush/global_nceppost.sh
+export POSTGPEXEC=${POSTGPEXEC:-${POSTDIR:-HOMEpost}/sorc/ncep_post.fd/ncep_post}
+export LINKCRTMSH=${LINKCRTMSH:-${POSTDIR:-HOMEpost}/ush/link_crtm_fix.sh}
+#export PostFlatFile=${POSTDIR:-HOMEpost}/parm/postcntrl_gfs_tke_mg3.txt
+
 export GOESF=NO                               # goes image
 export GTGF=NO                                # gtg icing product
 export FLXF=YES                               # grib2 flux file written by post
@@ -32,7 +41,8 @@ export FHOUT_PGBS=6
 #BL2018
 
 export npe_postgp=$npe_post
-export nth_postgp=1
+export nth_postgp=${nth_postgp:-2}
+REDO_PGB=${REDO_PGB:-NO}
 
 export GFS_DOWNSTREAM="YES"
 #export downset=1
@@ -42,6 +52,27 @@ export npe_dwn=24
 
 export GRIBVERSION='grib2'
 export SENDCOM="YES"
+
+KPO=${KPO:-57}
+if [ $KPO -eq 47 ] ; then
+ export POSTGPVARS=${POSTGPVARS:-"KPO=47,PO=1000.,975.,950.,925.,900.,875.,850.,825.,800.,775.,750.,725.,700.,675.,650.,625.,600.,575.,550.,525.,500.,475.,450.,425.,400.,375.,350.,325.,300.,275.,250.,225.,200.,175.,150.,125.,100.,70.,50.,30.,20.,10.,7.,5.,3.,2.,1.,"}
+#PostFlatFile=$POSTDIR/parm/postcntrl_gfs_tke_mg3.txt
+elif [ $KPO -eq 50 ] ; then
+ export POSTGPVARS=${POSTGPVARS:-"KPO=50,PO=1000.,975.,950.,925.,900.,875.,850.,825.,800.,775.,750.,725.,700.,675.,650.,625.,600.,575.,550.,525.,500.,475.,450.,425.,400.,375.,350.,325.,300.,275.,250.,225.,200.,175.,150.,125.,100.,70.,50.,40.,30.,20.,15.,10.,7.,5.,3.,2.,1.,0.4"}
+elif [ $KPO -eq 57 ] ; then
+ export POSTGPVARS=${POSTGPVARS:-"KPO=57,PO=1000.,975.,950.,925.,900.,875.,850.,825.,800.,775.,750.,725.,700.,675.,650.,625.,600.,575.,550.,525.,500.,475.,450.,425.,400.,375.,350.,325.,300.,275.,250.,225.,200.,175.,150.,125.,100.,70.,50.,40.,30.,20.,10.,7.,5.,4.,3.,2.,1.,0.7,0.5,0.4,0.3,0.2,0.1,0.07,0.05"}
+fi
+
+export PostFlatFile=${PostFlatFile:-$POSTDIR/parm/postcntrl_gfs_tke_mg3_${KPO}l.txt}
+
+export LEVS=${LEVS:-65}
+LEVR=${LEVR:-""}
+if [ $LEVS -gt 65 ] ; then
+ export SIGLEVEL=${SIGLEVEL:-$HOMEgfs/fix/fix_am/global_hyblev.l${LEVS}${LVER}.txt}
+else
+ export SIGLEVEL=${SIGLEVEL:-$HOMEgfs/fix/fix_am/global_hyblev.l$LEVS.txt}
+fi
+export IDRT=4
 
 #if [ $machine = "WCOSS_C" ] ; then
 #    export CRTM_FIX=/gpfs/hps/nco/ops/nwprod/lib/crtm/v2.0.6/src/fix
