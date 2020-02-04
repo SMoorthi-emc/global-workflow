@@ -50,6 +50,7 @@ export OCNFIXDIR=$HOMEgfs/fix/fix_ocnice
 #
 #For WW3
 export FIX_WW3=${FIX_WW3:-/gpfs/dell2/emc/modeling/noscrub/Shrinivas.Moorthi/WW3_input_data}
+export ww3_res=${ww3_res:-'glo_30m'}
 
 ########################################################################
 
@@ -358,13 +359,13 @@ export gfs_cyc=@gfs_cyc@ # 0: no GFS cycle, 1: 00Z only, 2: 00Z and 12Z only, 4:
 # GFS output and frequency
 export FHMIN_GFS=0
 
-#export warm_start=.true.   # for warm_start need to set FHMIN (i.e. starting time)
+ export warm_start=.true.   # for warm_start need to set FHMIN (i.e. starting time)
 #export FHMIN=1
 #export FHMIN=2
 #export FHMIN=3
 #export FHMIN=6
 #export FHMIN=12
-#export FHMIN=24
+ export FHMIN=24
 #export FHMIN=48
 #export FHMIN=66
 #export FHMIN=72
@@ -393,8 +394,8 @@ export FHMIN_GFS=0
 #export FHMAX_GFS_00=120
  export FHMAX_GFS_00=72
 #export FHMAX_GFS_00=96
-#export FHMAX_GFS_00=36
- export FHMAX_GFS_00=24
+ export FHMAX_GFS_00=36
+#export FHMAX_GFS_00=24
 #export FHMAX_GFS_00=15
 #export FHMAX_GFS_00=12
 #export FHMAX_GFS_00=9

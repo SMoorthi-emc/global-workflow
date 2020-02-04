@@ -66,7 +66,6 @@ export layout_y=${layout_y:-$((layout_x*2))}
 # Cycling and forecast hour specific parameters
 #----------------------------------------------
 export CDATE=${CDATE:-2019010100}      # current forecast date
-CDUMP=${CDUMP:-gdas}
 export FHMAX=${FHMAX:-240}             # max hours to forecast
 export FHOUT=${FHOUT:-6.0}             # output interval
 export FHZER=${FHZER:-$FHOUT}          # interval over which to reset accumulating arrays
@@ -83,7 +82,6 @@ if [ $FHMAX_HF -gt 0 -a $FHOUT_HF -gt 0 ] ; then
 else
  export fdiag=${fdiag:-$FHOUT}
 fi
-WRITE_DOPOST=${WRITE_DOPOST:-.false.}
 
 PDY=$(echo $CDATE | cut -c1-8)
 cyc=$(echo $CDATE | cut -c9-10)
@@ -103,7 +101,6 @@ export FIX_AER=${FIX_AER:-$FIX_DIR/fix_aer}
 export FIX_CCN=${FIX_CCN:-$FIX_DIR/fix_ccn}
 export CO2DIR=${CO2DIR:-$FIX_AM/fix_co2_proj}
 export PARM_DIR=${PARM_DIR:-$HOMEgfs/parm/parm_fv3diag}
-export PARM_POST=${PARM_POST:-$HOMEgfs/parm/post}
 
 export DATA=${DATA:-$STMP/$LOGNAME/pr${PSLOT}${CASE}_$CDATE}  #temporary running directory
 #export ROTDIR=${ROTDIR:-$PTMP/$LOGNAME/$PSLOT}              #rorating archive directory
@@ -328,8 +325,7 @@ if [ ! -s $DATA ]   ; then mkdir -p $DATA   ; fi
 cd $DATA || exit 8
 
 mkdir -p $DATA/INPUT
-restart_interval_atm=${restart_interval_atm:-0}
-restart_interval=$(echo $restart_interval_atm |cut -d " " -f 1)
+restart_interval=${restart_interval_atm:-0}
 if [ $CDUMP = gfs -a $restart_interval -gt 0 ] ; then
   ATM_RESTDIR=${ATM_RESTDIR:-$ROTDIR/${CDUMP}.$PDY/$cyc/ATM_RESTART}
   if [ ! -d $ATM_RESTDIR ] ; then mkdir -p $ATM_RESTDIR ; fi
@@ -377,19 +373,16 @@ fi
 rCDUMP=${rCDUMP:-$CDUMP}
 
 # Other options
-# -------------
 MEMBER=${MEMBER:--1}   # -1: control, 0: ensemble mean, >0: ensemble member $MEMBER
 ENS_NUM=${ENS_NUM:-1}  # Single executable runs multiple members (e.g. GEFS)
 
 # IAU options
-# -----------
 DOIAU=${DOIAU:-NO}
 IAUFHRS=${IAUFHRS:-0}
 IAU_DELTHRS=${IAU_DELTHRS:-0}
 IAU_OFFSET=${IAU_OFFSET:-0}
 
 # member directory
-# ----------------
 if [ $MEMBER -lt 0 ] ; then
   prefix=$CDUMP
   rprefix=$rCDUMP
@@ -414,14 +407,10 @@ if [[ $DOIAU = YES ]] ; then
   sCDATE=$($NDATE -3 $CDATE)
   sPDY=$(echo $sCDATE | cut -c1-8)
   scyc=$(echo $sCDATE | cut -c9-10)
-  tPDY=$gPDY
-  tcyc=$gcyc
 else
   sCDATE=$CDATE
   sPDY=$PDY
   scyc=$cyc
-  tPDY=$sPDY
-  tcyc=$cyc
 fi
 
 #-------------------
@@ -435,18 +424,17 @@ if [ -f $gmemdir/RESTART/${PDY}.${cyc}0000.coupler.res ] ; then
 fi
 
 # turn IAU off for cold start
-# ---------------------------
-DOIAU_coldstart=${DOIAU_coldstart:-NO}
-if [ $DOIAU = YES -a $warm_start = .false. ] || [ $DOIAU_coldstart = YES -a $warm_start = .true. ] ; then
+DOIAU_coldstart=NO
+if [ $DOIAU = YES -a $warm_start = .false. ] ; then
   export DOIAU=NO
   echo "turning off IAU since warm_start = $warm_start"
   DOIAU_coldstart=YES
-  IAU_OFFSET=0
   sCDATE=$CDATE
   sPDY=$PDY
   scyc=$cyc
-  tPDY=$sPDY
-  tcyc=$cyc
+  #echo "ERROR: DOIAU = $DOIAU and warm_start = $warm_start are incompatible."
+  #echo "Abort!"
+  #exit 99
 fi
 
 if [ $warm_start = .true. -o $RUNCONTINUE = YES ] ; then
@@ -460,8 +448,8 @@ if [ $warm_start = .true. -o $RUNCONTINUE = YES ] ; then
   export make_nh=.false.           # restarts already contains non-hydrostatic state
 
   if [ $RUNCONTINUE = NO ] ; then
-  # Link all (except sfc_data) restart files from $gmemdir
     if [ -f $gmemdir/RESTART/${PDY}.${cyc}0000.coupler.res ] ; then
+  # Link all (except sfc_data) restart files from $gmemdir
       for file in $gmemdir/RESTART/${PDY}.${cyc}0000.*.nc* ; do
         file2=$(echo $(basename $file))
         file2=$(echo $file2 | cut -d. -f3-) # remove the date from file
@@ -491,6 +479,11 @@ if [ $warm_start = .true. -o $RUNCONTINUE = YES ] ; then
     ${gPDY:0:4}  ${gPDY:4:2}  ${gPDY:6:2}  ${gcyc}     0     0        Model start time:   year, month, day, hour, minute, second
     ${sPDY:0:4}  ${sPDY:4:2}  ${sPDY:6:2}  ${scyc}     0     0        Current model time: year, month, day, hour, minute, second
 EOF
+
+      FHMAX=$((FHMAX+6))              # If doing IAU, change forecast hours
+      if [ $FHMAX_HF -gt 0 ] ; then
+        FHMAX_HF=$((FHMAX_HF+6))
+      fi
 
   # Link increments
       for i in $(echo $IAUFHRS | sed "s/,/ /g" | rev); do
@@ -604,9 +597,10 @@ else
 fi
 
 n=1
-for n in $(seq 1 $ntiles) ; do
+while [ $n -le $ntiles ] ; do
  $NCP $FIX_FV3/$CASE/${CASE}_grid.tile${n}.nc     $DATA/INPUT/${CASE}_grid.tile${n}.nc
  $NCP $ORO_DIR/$CASE/${CASE}_oro_data.tile${n}.nc $DATA/INPUT/oro_data.tile${n}.nc
+ n=$((n+1))
 done
 
 # Coupled model uses a different grid_spec that includes MOM6 and FV3
@@ -621,7 +615,6 @@ export ISOL=${ISOL:-2}
 export IAER=${IAER:-111}
 export ICO2=${ICO2:-2}
 
-O3FORC=${O3FORC:-ozprdlos_2015_new_sbuvO3_tclm15_nuchem.f77}
 $NCP $FIX_AM/global_solarconstant_noaa_an.txt  $DATA/solarconstant_noaa_an.txt
 $NCP $FIX_AM/${O3FORC:-global_o3prdlos.f77}    $DATA/global_o3prdlos.f77
 $NCP $FIX_AM/${H2OFORC:-global_h2o_pltc.f77}   $DATA/global_h2oprdlos.f77
@@ -658,22 +651,12 @@ if [ $IAER -gt 0 ] ; then
    $NCP $file $DATA/$(echo $(basename $file) |sed -e "s/global_//g")
  done
 fi
-
-# inline post fix files
-# ---------------------
-if [ $WRITE_DOPOST = ".true." ]; then
-  $NLN $PARM_POST/post_tag_gfs${LEVS}             $DATA/itag
-  $NLN $PARM_POST/postxconfig-NT-GFS-TWO.txt      $DATA/postxconfig-NT.txt
-  $NLN $PARM_POST/postxconfig-NT-GFS-F00-TWO.txt  $DATA/postxconfig-NT_FH00.txt
-  $NLN $PARM_POST/params_grib2_tbl_new            $DATA/params_grib2_tbl_new
-fi
-
-######################  CCPP ########################################
+######################  CCPP? ########################################
 CCPPDIR=${CCPPDIR:-none}
 if [ $CCPPDIR != none ] ; then
  $NCP $CCPPDIR/suites/suite_$CCPP_SUITE.xml $DATA/ccpp_suite.xml
 fi
-######################  WW3 #########################################
+######################  WW3? #########################################
 export cplwav=${cplwav:-${CPLWAV:-.false.}}
 if [ $cplwav = .true. ] ; then
  export ww3_res=${ww3_res:-'glo_30m'}
@@ -690,7 +673,6 @@ if [ $cplwav = .true. ] ; then
  rm $DATA/ww3_multi.inp0       $DATA/ww3_multi.inp1   $DATA/ww3_multi.inp2
 fi
 
-# -----------------------------------------------------------------------
 JCAP_CASE=$((2*res-2))
 LONB_CASE=$((4*res))
 LATB_CASE=$((2*res))
@@ -893,9 +875,6 @@ JCAP_STP=${JCAP_STP:-$JCAP_CASE}
 LONB_STP=${LONB_STP:-$LONB_CASE}
 LATB_STP=${LATB_STP:-$LATB_CASE}
 
-if [ $DO_SKEB = YES ] ; then do_skeb=.true. ; fi
-if [ $DO_SHUM = YES ] ; then do_shum=.true. ; fi
-if [ $DO_SPPT = YES ] ; then do_sppt=.true. ; fi
 
 # build the date for curr_date and diag_table from NAME
 #SYEAR=$(echo  $CDATE | cut -c1-4)
@@ -1024,10 +1003,10 @@ cat > model_configure << EOF
 print_esmf:                 ${print_esmf:-.false.}
 total_member:               $ENS_NUM
 PE_MEMBER01:                $tasks
-start_year:                 ${tPDY:0:4}
-start_month:                ${tPDY:4:2}
-start_day:                  ${tPDY:6:2}
-start_hour:                 $tcyc
+start_year:                 $SYEAR
+start_month:                $SMONTH
+start_day:                  $SDAY
+start_hour:                 $SHOUR
 start_minute:               0
 start_second:               0
 nhours_fcst:                $FHMAX
@@ -1040,13 +1019,13 @@ cpl:                        ${cpl:-${CPL:-.false.}}
 memuse_verbose:             ${memuse_verbose:-.false.}
 atmos_nthreads:             $nthreads
 use_hyper_thread:           ${hyperthread:-.false.}
-ncores_per_node:            ${cores_per_node:-28}
-restart_interval:           ${restart_interval_atm:-0}
+ncores_per_node:            ${cores_per_node:-24}
+restart_interval:           ${restart_interval:-0}
 atm_coupling_interval_sec:  ${CPL_FAST:-$DELTIM}
 
 quilting:                   ${QUILTING:-.true.}
 write_groups:               ${WRITE_GROUP:-1}
-write_tasks_per_group:      ${WRTTASK_PER_GROUP:-28}
+write_tasks_per_group:      ${WRTTASK_PER_GROUP:-24}
 num_files:                  ${NUM_FILES:-2}
 filename_base:              ${FILENAME_BASE:-'atm sfc'}
 output_grid:                ${OUTPUT_GRID:-cubed_sphere_grid}
@@ -1071,11 +1050,6 @@ output_1st_tstep_rst:       ${output_1st_tstep_rst:-.false.}
 EOF
 if [ $OUTPUT_FILE = netcdf ] ; then
 cat >> model_configure << EOF
- ichunk2d:                ${ichunk2d:-0}
- jchunk2d:                ${jchunk2d:-0}
- ichunk3d:                ${ichunk3d:-0}
- jchunk3d:                ${jchunk3d:-0}
- kchunk3d:                ${kchunk3d:-0}
  ideflate:                ${ideflate:-1}
  nbits:                   ${nbits:-14}
 EOF
@@ -1132,23 +1106,23 @@ cat > input.nml << EOF
 /
 
  &diag_manager_nml
-     max_output_fields = ${max_output_fields:-400}
-     prepend_date = ${prepend_date:-.true.}
-     $diag_manager_nml
+       max_output_fields = ${max_output_fields:-400}
+       prepend_date = ${prepend_date:-.true.}
+       $diag_manager_nml
 /
 
  &fms_io_nml
-     checksum_required = .false.
-     max_files_r = 100,
-     max_files_w = 100,
-     $fms_io_nml
+       checksum_required = .false.
+       max_files_r = 100,
+       max_files_w = 100,
+       $fms_io_nml
 /
 
  &fms_nml
-     clock_grain = 'ROUTINE',
-     domains_stack_size = ${domains_stack_size:-3072000},
-     print_memory_usage = ${print_memory_usage:-.false.}
-     $fms_nml
+       clock_grain = 'ROUTINE',
+       domains_stack_size = ${domains_stack_size:-3072000},
+       print_memory_usage = ${print_memory_usage:-.false.}
+       $fms_nml
 /
 
  &fv_core_nml
@@ -1363,10 +1337,6 @@ cat > input.nml << EOF
        min_lakeice    = ${min_lakeice:-0.15}
        sfc_z0_type    = ${sfc_z0_type:-0}
 
-       do_sppt        = ${do_sppt:-.false.}
-       do_shum        = ${do_shum:-.false.}
-       do_skeb        = ${do_skeb:-.false.}
-
 EOF
 if [ ${lsm:-${LSM:-1}} -eq 2 ] ; then
 
@@ -1452,7 +1422,6 @@ cat >> input.nml << EOF
        fix_negative   = ${fix_negative:-.true.}
        icloud_f       = ${icloud_f:-1}
        mp_time        = ${mp_time:-150.}
-       reiflag        = ${reiflag:-2}
        $gfdl_cloud_microphysics_nml
 /
 
@@ -1551,12 +1520,10 @@ EOF
   if [ ${DO_SKEB:-NO} = YES ] ; then
     cat >> input.nml << EOF
   skeb = $SKEB
-  iseed_skeb  = ${ISEED_SKEB:-$ISEED}
-  skeb_tau    = ${SKEB_TAU:-"-999."}
+  iseed_skeb = ${ISEED_SKEB:-$ISEED}
+  skeb_tau = ${SKEB_TAU:-"-999."}
   skeb_lscale = ${SKEB_LSCALE:-"-999."}
-  skebnorm    = ${SKEBNORM:-1}
-  skeb_npass  = ${SKEB_nPASS:-30}
-  skeb_vdof   = ${SKEB_VDOF:-5}
+  skebnorm = ${SKEBNORM:-"1"}
 EOF
   fi
 
@@ -1606,8 +1573,6 @@ fi
 
 # restart_output_dir = 'MOM6_RESTART/',
 
-# Update MOM6 namelist file
-# -------------------------
 if [ $cplflx = .true. ] ; then
 
   cat >> input.nml << EOF
@@ -1651,12 +1616,10 @@ fi
 
 fi
 
-#------------------------------------------------------------------
-# make symbolic links to write forecast files directly in memdir
-
+# run the executable
 cd $DATA
 
-if [ $QUILTING = .true. -a $OUTPUT_GRID = gaussian_grid ] ; then
+if [ $QUILTING = .true. ] ; then
   if [ $OUTPUT_FILE = nemsio ] ; then
    export output_file=nemsio
   elif [ $OUTPUT_FILE = netcdf ] ; then
@@ -1676,24 +1639,13 @@ if [ $QUILTING = .true. -a $OUTPUT_GRID = gaussian_grid ] ; then
   fi
   while [ $fhr -le $FHMAX ] ; do
     FH3=$(printf %03i $fhr)
-    atmo=atmf$FH3.$output_file
-    sfco=sfcf$FH3.$output_file
-    logo=logf$FH3.$output_file
-    prefix="$CDUMP.t${cyc}z."
+    atmo=$CDUMP.t${cyc}z.atmf$FH3.$output_file
+    sfco=$CDUMP.t${cyc}z.sfcf$FH3.$output_file
+    logo=$CDUMP.t${cyc}z.logf$FH3.$output_file
     rm $memdir/$atmo ; $memdir/$sfco ; $memdir/$logo
-    eval $NLN $memdir/${prefix}$atmo ${prefix}$atmo
-    eval $NLN $memdir/${prefix}$sfco ${prefix}$sfco
-    eval $NLN $memdir/${prefix}$logo ${prefix}$logo
-
-    if [ $WRITE_DOPOST = .true. ] ; then           # post grib files
-      FH2=$(printf %02i $fhr)
-      pgbi=GFSPRS.GrbF${FH2}
-      flxi=GFSFLX.GrbF${FH2}
-      pgbo=$memdir/${CDUMP}.t${cyc}z.master.grb2f${FH3}
-      flxo=$memdir/${CDUMP}.t${cyc}z.sfluxgrbf${FH3}.grib2
-      eval $NLN $pgbo $pgbi
-      eval $NLN $flxo $flxi
-    fi
+    eval $NLN $memdir/$atmo $atmo
+    eval $NLN $memdir/$sfco $sfco
+    eval $NLN $memdir/$logo logf$FH3
     FHINC=$FHOUT
     if [ $FHMAX_HF -gt 0 -a $FHOUT_HF -gt 0 -a $fhr -lt $FHMAX_HF ] ; then
       FHINC=$FHOUT_HF
@@ -1737,8 +1689,6 @@ if [ $cplwav = .true. ] ; then   # link wave history files
  fi
 fi
 #
-# run the executable
-
 ##ldd $FCSTEXEC
 #echo $APRUN
 #$APRUN $FCSTEXEC 1>& 1 2>& 2               
