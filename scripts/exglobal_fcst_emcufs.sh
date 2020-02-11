@@ -1361,6 +1361,7 @@ cat > input.nml << EOF
        isppt_deep     = ${isppt_deep:-.false.}
        min_seaice     = ${min_seaice:-1.0e-6}
        min_lakeice    = ${min_lakeice:-0.15}
+       ignore_lake    = ${ignore_lake:-.false.}
        sfc_z0_type    = ${sfc_z0_type:-0}
 
        do_sppt        = ${do_sppt:-.false.}

@@ -484,9 +484,9 @@ cat > ice_in <<eof
   , runid          = ${runid:-'unknown'}
   , ice_ic         = ${iceic:-'$iceic'}
   , restart        = ${restart:-.true.}
-  , restart_ext    = .false.
+  , restart_ext    = ${restart_ext:-.true.}
   , use_restart_time = ${use_restart_time:-.false.}
-  , restart_format = 'nc'
+  , restart_format = ${restart_format:-'nc'}
   , lcdf64         = .false.
   , restart_file   = ${restart_file:-'iced'}
   , restart_dir    = ${restart_dir:-'./restart/'}

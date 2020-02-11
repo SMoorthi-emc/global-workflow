@@ -42,8 +42,8 @@ elif [ $step = "fcst" ]; then
 #   export wtime_fcst_gfs="08:20:00"
     export wtime_fcst="15:50:00"
     export wtime_fcst_gfs="15:50:00"
-    export wtime_fcst="04:50:00"
-    export wtime_fcst_gfs="04:50:00"
+#   export wtime_fcst="04:50:00"
+#   export wtime_fcst_gfs="04:50:00"
 echo ' before queue' $QUEUE
     if [ $QUEUE = debug ] ; then
       export wtime_fcst="00:30:00"
