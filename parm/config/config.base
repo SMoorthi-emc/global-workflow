@@ -12,7 +12,7 @@ export machine="@MACHINE@"
 export RUN_ENVIR=emc
 
 # Account, queue, etc.
-if [ $machine = THEIA ]; then
+if [ $machine = HERA ]; then
 
 #   export ACCOUNT=marine-cpu
     export ACCOUNT=fv3-cpu
@@ -24,7 +24,7 @@ elif [ $machine = WCOSS_C -o $machine = WCOSS_DELL_P3 ] ; then
 #   export ACCOUNT=FV3GFS-T2O
     export ACCOUNT=GFS-DEV
     export QUEUE=dev
-#   export QUEUE=debug
+    export QUEUE=debug
     export QUEUE_ARCH=dev_transfer
 
 fi
@@ -55,11 +55,11 @@ export ww3_res=${ww3_res:-'glo_30m'}
 ########################################################################
 
 # GLOBAL static environment parameters
-if [ $machine = THEIA ]; then
+if [ $machine = HERA ]; then
 
-    export NWPROD="/scratch4/NCEPDEV/global/save/glopara/nwpara"
-    export DMPDIR="/scratch4/NCEPDEV/global/noscrub/dump"
-    export RTMFIX="/scratch4/NCEPDEV/da/save/Michael.Lueken/nwprod/lib/crtm/2.2.3/fix_update"
+    export NWPROD="/scratch1/NCEPDEV/global/save/glopara/nwpara"
+    export DMPDIR="/scratch1/NCEPDEV/global/noscrub/dump"
+    export RTMFIX="/scratch1/NCEPDEV/da/save/Michael.Lueken/nwprod/lib/crtm/2.2.3/fix_update"
 
 elif [ $machine = WCOSS_C ] ; then
 
@@ -88,17 +88,17 @@ fi
 
 
 # Machine specific paths used everywhere
-if [ $machine = THEIA ] ; then
+if [ $machine = HERA ] ; then
 
     # USER specific paths
-    export HOMEDIR="/scratch4/NCEPDEV/nems/save/$USER"
-    export STMP="/scratch3/NCEPDEV/stmp1/$USER"
-    export PTMP="/scratch4/NCEPDEV/stmp4/$USER"
-    export NOSCRUB="/scratch4/NCEPDEV/nems/noscrub/$USER"
+    export HOMEDIR="/scratch1/NCEPDEV/nems/save/$USER"
+    export STMP="/scratch1/NCEPDEV/stmp1/$USER"
+    export PTMP="/scratch1/NCEPDEV/stmp4/$USER"
+    export NOSCRUB="/scratch1/NCEPDEV/nems/noscrub/$USER"
 
     # Base directories for various builds
-    export BASE_GIT="/scratch4/NCEPDEV/global/save/glopara/git"
-    export BASE_SVN="/scratch4/NCEPDEV/global/save/glopara/svn"
+    export BASE_GIT="/scratch1/NCEPDEV/global/save/glopara/git"
+    export BASE_SVN="/scratch1/NCEPDEV/global/save/glopara/svn"
 
 elif [ $machine = WCOSS_C ] ; then
 
@@ -159,34 +159,41 @@ g0nosc=/gpfs/dell2/emc/modeling/noscrub
 export FIX_LAKE_ORO=$g0nosc/$LOGNAME/oro_lake
 export use_lake_oro=YES
 
- export RUN_CCPP=YES
+#export RUN_CCPP=YES
  export cplflx=.true.
  export CPLD_APP=YES
 
  RUN_CCPP=${RUN_CCPP:-NO}
 
 export cplflx=${cplflx:-.false.}
+export CPLD_APP=${CPLD_APP:-NO}
 if [ $cplflx = .true. ] ; then
  app=ufs-s2s-model
- appdir=cfv3_git_jan08
+#appdir=cfv3_git_jan08
+#export SCRDIR=$HOMEgfs/scripts
+#export FORECASTSH="$SCRDIR/exglobal_fcst_emcufs.sh_feb02"    # with    UGW
  appdir=cfv3_git_jan31
  export cpl=.true.
- export cplwav=.true.
- export cplwav2atm=.true.
+#export cplwav=.true.
+#export cplwav2atm=.true.
  export CPLDFV3_MOM6_CICE=YES
- export CPLDWAV=YES
+#export CPLDWAV=YES
  export IC_FROM=bench1
  export NUMOM=YES
  export CPLD_APP=YES
-fi
-export CPLD_APP=${CPLD_APP:-NO}
-if [ $CPLD_APP = YES ] ; then
+elif [ $CPLD_APP = YES ] ; then
  app=ufs-s2s-model
- appdir=cfv3_git_jan08
+#appdir=cfv3_git_jan08
+#export SCRDIR=$HOMEgfs/scripts
+#export FORECASTSH="$SCRDIR/exglobal_fcst_emcufs.sh_feb02"    # with    UGW
  appdir=cfv3_git_jan31
 else
  app=ufs-weather-model
  appdir=fv3_git1230
+ appdir=fv3_feb17
+#appdir=fv3_git_jan10
+#app=ufs-s2s-model
+#appdir=cfv3_git_jan31
 fi
 
 if [ ${RUN_CCPP:-YES} = YES ] ; then
@@ -217,6 +224,10 @@ if [ ${RUN_CCPP:-YES} = YES ] ; then
  export CCPP_SUITE=FV3_GFS_cpld_rasmgshoc
  export CCPP_SUITE=${CCPP_SUITE:-FV3_GFS_v15_rasmgshoc}
 if [ $CPLD_APP = NO ] ; then
+ export CCPP_SUITE=FV3_GFS_v15_rasmgshoc
+ export SCRDIR=$HOMEgfs/scripts
+#export FORECASTSH="$SCRDIR/exglobal_fcst_emcufs.sh_feb02"    # with    UGW
+ export FCSTEXECDIR=$g0nosc/$LOGNAME/$appdir/$app/tests
  export FCSTEXEC=fv3_ccpprms.exe             # RAS, MG3, SHOC
 fi
 #export FCSTEXEC=fv3_ccpprms0.exe             # RAS, MG3, SHOC
@@ -345,7 +356,12 @@ export CASE="@CASECTL@"
 export CASE_ENKF="@CASEENS@"
 
 # Surface cycle update frequency
-export FHCYC=24
+export FHCYC_GFS=24
+#export FHCYC_GFS=12
+ export FHCYC_GFS=6
+#export FHCYC=6
+#export FHCYC=3
+#export FHCYC_GFS=0
 #export FHCYC=0
 
 # Output frequency of the forecast model (for cycling)
@@ -359,11 +375,12 @@ export gfs_cyc=@gfs_cyc@ # 0: no GFS cycle, 1: 00Z only, 2: 00Z and 12Z only, 4:
 # GFS output and frequency
 export FHMIN_GFS=0
 
-#export warm_start=.true.   # for warm_start need to set FHMIN (i.e. starting time)
+ export USE_LAST_RESTART=YES
+ export warm_start=.true.   # for warm_start need to set FHMIN (i.e. starting time)
 #export FHMIN=1
 #export FHMIN=2
 #export FHMIN=3
-#export FHMIN=6
+ export FHMIN=6
 #export FHMIN=12
 #export FHMIN=24
 #export FHMIN=48
@@ -384,7 +401,7 @@ export FHMIN_GFS=0
  export restart_interval=864000
 #export restart_interval=43200
 #export restart_interval=21600
-#export restart_interval=10800
+ export restart_interval=10800
 #export restart_interval=7200
 #export restart_interval=3600
  export restart_interval_atm=$((restart_interval/3600))
@@ -398,7 +415,7 @@ export FHMIN_GFS=0
  export FHMAX_GFS_00=24
 #export FHMAX_GFS_00=15
 #export FHMAX_GFS_00=12
-#export FHMAX_GFS_00=9
+ export FHMAX_GFS_00=9
 #export FHMAX_GFS_00=6
 #export FHMAX_GFS_00=84
 #export FHMAX_GFS_00=93
@@ -416,7 +433,8 @@ export FHMIN_GFS=0
 #export FHMAX_GFS_00=300  # uncomment this line for 45 day run
 #export FHMAX_GFS_00=2160 # uncomment this line for 45 day run
 #export FHMAX_GFS_00=1806 # uncomment this line for 45 day run
- export FHMAX_GFS_00=1920 # uncomment this line for 45 day run
+#export FHMAX_GFS_00=1920 # uncomment this line for 45 day run
+#export FHMAX_GFS_00=2160 # uncomment this line for 45 day run
 #export FHMAX_GFS=1080
 #export FHMAX_GFS_00=1440
 
@@ -435,7 +453,7 @@ export FHOUT=$FHOUT_GFS
 #BL2018
 export FHMAX_HF_GFS=$FHMAX_GFS_00
 export FHOUT_HF_GFS=$FHOUT_GFS
-#export NSOUT=1
+ export NSOUT=1
  export NSOUT=${NSOUT:-0}
 #if [ $NSOUT -gt 0 ] ; then
 # export FHOUT_HF_GFS=0
@@ -491,7 +509,8 @@ if [ $DOHYBVAR = YES ] ; then
 fi
 export SCRDIR=$HOMEgfs/scripts
 #FORECASTSH="$SCRDIR/exglobal_fcst_nemsfv3_res.sh"   # with    UGW
- export FORECASTSH="$SCRDIR/exglobal_fcst_emcufs.sh"    # with    UGW
+ export FORECASTSH=${FORECASTSH:-"$SCRDIR/exglobal_fcst_emcufs.sh"}    # with    UGW
+#export FORECASTSH="$SCRDIR/exglobal_fcst_emcufs.sh_feb02"    # with    UGW
 #export FORECASTSH="$SCRDIR/exglobal_fcst_emcufs0.sh"    # with    UGW
 if [ $CPLD_APP = YES ] ; then
   export FCSTEXECDIR="$HOMEgfs/exec"

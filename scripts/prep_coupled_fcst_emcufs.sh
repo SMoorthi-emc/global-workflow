@@ -63,10 +63,11 @@ if [ $inistep = restart ] ; then # using restart files for MOM6 and CICE here, F
 # for Ocean (MOM6)
 # ----------------
   cd INPUT
+  USE_LAST_RESTART=${USE_LAST_RESTART:-NO}
   if [ -s $OCN_RESTDIR ] ; then
     ocnf=$OCN_RESTDIR/ocn.mom6.r.${yyyy}-${mm}-${dd}-${cycs}
     nfiles=$(ls -1 $ocnf*.nc | wc -l)
-    if [ $nfiles -gt 0 ] ; then
+    if [ $nfiles -gt 0 -a $USE_LAST_RESTART = NO ] ; then
       $NCP ${ocnf}-00-00.nc   MOM.res.nc
       $NCP ${ocnf}-00-00_1.nc MOM.res_1.nc
       $NCP ${ocnf}-00-00_2.nc MOM.res_2.nc
@@ -188,11 +189,20 @@ export CPL_FAST=${CPL_FAST:-$ICETIM}
 # Setup nems.configure
 DumpFields=${NEMSDumpFields:-false}
 
-if [[ $inistep = cold ]] ; then
+if [ $inistep = cold ] ; then
   coldstart=true     # this is the correct setting
+  ice_restart=.false.
+  restart_ext=.false.
+elif [ $inistep = warm ] ; then
+  restart_interval=${restart_interval:-1296000}    # Interval in seconds to write restarts
+  coldstart=false
+  ice_restart=.false.
+  restart_ext=.true.
 else
   restart_interval=${restart_interval:-1296000}    # Interval in seconds to write restarts
   coldstart=false
+  ice_restart=.true.
+  restart_ext=.true.
 fi
 restart_interval=${restart_interval:-86400}    # Interval in seconds to write restarts
 
@@ -313,6 +323,10 @@ cat >>nems.configure <<eof
 eof
 fi
 
+#------------------------------
+#     MED MedPhase_fast_after
+#     MED MedPhase_atm_ocn_flux # use this or above to compute fluxes in the mediator
+#------------------------------
 
 # Add the runsequence
 if [ $CPLDFV3_MOM6_CICE = YES ] ; then
@@ -332,7 +346,7 @@ runSeq::
       MED -> ICE :remapMethod=redist
       ICE
       ICE -> MED :remapMethod=redist
-      MED MedPhase_fast_after
+      MED MedPhase_accum_fast
     @
     MED MedPhase_prep_ocn
     MED -> OCN :remapMethod=redist
@@ -360,7 +374,7 @@ runSeq::
       ICE
       ATM -> MED :remapMethod=redist
       ICE -> MED :remapMethod=redist
-      MED MedPhase_fast_after
+      MED MedPhase_accum_fast
     @
     OCN -> MED :remapMethod=redist
     MED MedPhase_write_restart
@@ -387,7 +401,7 @@ runSeq::
       MED -> ICE :remapMethod=redist
       ICE
       ICE -> MED :remapMethod=redist
-      MED MedPhase_fast_after
+      MED MedPhase_accum_fast
     @
     MED MedPhase_prep_ocn
     MED -> OCN :remapMethod=redist
@@ -418,7 +432,7 @@ runSeq::
       ICE
       ATM -> MED :remapMethod=redist
       ICE -> MED :remapMethod=redist
-      MED MedPhase_fast_after
+      MED MedPhase_accum_fast
     @
     OCN -> MED :remapMethod=redist
     MED MedPhase_write_restart
@@ -483,8 +497,9 @@ cat > ice_in <<eof
   , runtype        = ${runtype:-'initial'}
   , runid          = ${runid:-'unknown'}
   , ice_ic         = ${iceic:-'$iceic'}
-  , restart        = ${restart:-.true.}
-  , restart_ext    = ${restart_ext:-.true.}
+  , pointer_file   = ${pointer_file:-'ice.restart_file'}
+  , restart        = ${ice_restart:-.false.}
+  , restart_ext    = ${restart_ext:-.false.}
   , use_restart_time = ${use_restart_time:-.false.}
   , restart_format = ${restart_format:-'nc'}
   , lcdf64         = .false.

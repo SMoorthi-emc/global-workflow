@@ -117,6 +117,7 @@ if [ $CPLDFV3_MOM6_CICE = YES ] ; then
     status=$?
     [[ $status -ne 0 ]] && exit $status
 
+    export FHCYC=0
 #   ${FORECASTSH:-$SCRgfs/exglobal_fcst_nemsfv3gfs.sh.ecf}
     ${FORECASTSH:-$SCRgfs/exglobal_fcst_emcufs.sh}
     status=$?
@@ -143,6 +144,8 @@ fi
 
 #  run global forecast - coupled or uncoupled
 # -------------------------------------------
+
+export FHCYC=${FHCYC_GFS:-24}
 
 #${FORECASTSH:-$SCRgfs/exglobal_fcst_nemsfv3gfs.sh.ecf}
 ${FORECASTSH:-$SCRgfs/exglobal_fcst_emcufs.sh}
