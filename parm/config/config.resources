@@ -55,8 +55,13 @@ echo ' before queue' $QUEUE
 #   export Verbosity=max
     export Verbosity=0
     if [ $machine == WCOSS_DELL_P3 ] ; then
-      export npe_node_fcst=${npe_node_fcst:-14}
-      export npe_node_max=${npe_node_max:-28}
+      if [ $QUEUE = dev -o $QUEUE = debug ] ; then
+        export npe_node_fcst=${npe_node_fcst:-14}
+        export npe_node_max=${npe_node_max:-28}
+      else
+        export npe_node_fcst=${npe_node_fcst:-20}
+        export npe_node_max=${npe_node_max:-40}
+      fi
     else
       export npe_node_fcst=${npe_node_fcst:-12}
       export npe_node_max=${npe_node_max:-24}
