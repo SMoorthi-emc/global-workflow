@@ -57,7 +57,6 @@ export cpl=${cpl:-${CPL:-.false.}}
 export PSLOT=${PSLOT:-fv3gfs}
 export CASE=${CASE:-C768}
 export LEVS=${LEVS:-127}
-export LEVR=${LEVR:-$LEVS}
 export res=$(echo $CASE |cut -c 2-5)
 export DELTIM=${DELTIM:-225}
 export layout_x=${layout_x:-8}
@@ -764,6 +763,7 @@ cd $DATA
  export npx=$resp
  export npy=$resp
  export npz=$((LEVS-1))
+ export LEVR=${LEVR:-$npz}
 
  export layout_x=${layout_x:-8}  
  export layout_y=${layout_y:-16}  
@@ -1251,6 +1251,7 @@ cat > input.nml << EOF
        crtrh          = ${crtrh:-"0.90,0.90,0.90"}
        ncld           = ${ncld:-1}
        imp_physics    = ${imp_physics:-99}
+       levr           = ${levr:-${LEVR:-$npz}}
        fhswr          = ${fhswr:-3600.}
        fhlwr          = ${fhlwr:-3600.}
        ialb           = ${IALB:-1}

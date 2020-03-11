@@ -66,7 +66,7 @@ fi
 export PostFlatFile=${PostFlatFile:-$POSTDIR/parm/postcntrl_gfs_tke_mg3_${KPO}l.txt}
 
 export LEVS=${LEVS:-65}
-LEVR=${LEVR:-""}
+LVER=${LVER:-""}
 if [ $LEVS -gt 65 ] ; then
  export SIGLEVEL=${SIGLEVEL:-$HOMEgfs/fix/fix_am/global_hyblev.l${LEVS}${LVER}.txt}
 else

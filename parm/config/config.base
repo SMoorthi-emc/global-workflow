@@ -12,28 +12,25 @@ export machine="@MACHINE@"
 export RUN_ENVIR=emc
 
 # Account, queue, etc.
-if [ $machine = HERA ]; then
-
-#   export ACCOUNT=marine-cpu
-    export ACCOUNT=fv3-cpu
-    export QUEUE=batch
-    export QUEUE_ARCH=service
+if [ $machine = HERA ] ; then
+  export ACCOUNT=fv3-cpu
+  export QUEUE=batch
+  export QUEUE_ARCH=service
 
 elif [ $machine = WCOSS_C ] ; then
-
-#   export ACCOUNT=FV3GFS-T2O
-    export ACCOUNT=GFS-DEV
-    export QUEUE=dev
-    export QUEUE=debug
-    export QUEUE_ARCH=dev_transfer
+  export ACCOUNT=GFS-DEV
+  export QUEUE=dev
+  export QUEUE=debug
+  export QUEUE_ARCH=dev_transfer
 elif [ $machine = WCOSS_DELL_P3 ] ; then  # set QSUFFIX=2 for Dell 3.5
-    export QSUFIX=${QSUFIX:-''}
+# QSUFIX=2
+  export QSUFIX=${QSUFIX:-''}
 
-#   export ACCOUNT=FV3GFS-T2O
-    export ACCOUNT=GFS-DEV
-    export QUEUE=dev$QSUFIX
-    export QUEUE=debug$QSUFIX
-    export QUEUE_ARCH=dev_transfer$QSUFIX
+  export ACCOUNT=GFS-DEV
+  export QUEUE=dev$QSUFIX
+  export QUEUE=debug$QSUFIX
+# export QUEUE_ARCH=dev_transfer
+  export QUEUE_ARCH=dev${QSUFIX}_transfer
 
 fi
 
@@ -65,94 +62,94 @@ export ww3_res=${ww3_res:-'glo_30m'}
 # GLOBAL static environment parameters
 if [ $machine = HERA ]; then
 
-    export NWPROD="/scratch1/NCEPDEV/global/save/glopara/nwpara"
-    export DMPDIR="/scratch1/NCEPDEV/global/noscrub/dump"
-    export RTMFIX="/scratch1/NCEPDEV/da/save/Michael.Lueken/nwprod/lib/crtm/2.2.3/fix_update"
+  export NWPROD="/scratch1/NCEPDEV/global/save/glopara/nwpara"
+  export DMPDIR="/scratch1/NCEPDEV/global/noscrub/dump"
+  export RTMFIX="/scratch1/NCEPDEV/da/save/Michael.Lueken/nwprod/lib/crtm/2.2.3/fix_update"
 
 elif [ $machine = WCOSS_C ] ; then
 
-    export NWPROD="/gpfs/hps/nco/ops/nwprod"
-    if [ -d /gpfs/tp1 ] ; then
-        export SITE=LUNA
-        export DMPDIR="/gpfs/tp1/emc/globaldump"
-    elif [ -d /gpfs/gp1 ] ; then
-        export SITE=SURGE
-        export DMPDIR="/gpfs/gp1/emc/globaldump"
-    fi
-    export RTMFIX=$CRTM_FIX
+  export NWPROD="/gpfs/hps/nco/ops/nwprod"
+  if [ -d /gpfs/tp1 ] ; then
+    export SITE=LUNA
+    export DMPDIR="/gpfs/tp1/emc/globaldump"
+  elif [ -d /gpfs/gp1 ] ; then
+    export SITE=SURGE
+    export DMPDIR="/gpfs/gp1/emc/globaldump"
+  fi
+  export RTMFIX=$CRTM_FIX
 
 elif [ $machine = WCOSS_DELL_P3 ] ; then
 
-    export NWPROD="/gpfs/dell1/nco/ops/nwprod"
-    if [ -d /gpfs/tp1 ] ; then
-        export SITE=MARS
-        export DMPDIR="/gpfs/tp1/emc/globaldump"
-    elif [ -d /gpfs/gp1 ] ; then
-        export SITE=VENUS
-        export DMPDIR="/gpfs/gp1/emc/globaldump"
-    fi
-    export RTMFIX=$CRTM_FIX
+  export NWPROD="/gpfs/dell1/nco/ops/nwprod"
+  if [ -d /gpfs/tp1 ] ; then
+    export SITE=MARS
+    export DMPDIR="/gpfs/tp1/emc/globaldump"
+  elif [ -d /gpfs/gp1 ] ; then
+    export SITE=VENUS
+    export DMPDIR="/gpfs/gp1/emc/globaldump"
+  fi
+  export RTMFIX=$CRTM_FIX
 fi
 
 
 # Machine specific paths used everywhere
 if [ $machine = HERA ] ; then
 
-    # USER specific paths
-    export HOMEDIR="/scratch1/NCEPDEV/nems/save/$USER"
-    export STMP="/scratch1/NCEPDEV/stmp1/$USER"
-    export PTMP="/scratch1/NCEPDEV/stmp4/$USER"
-    export NOSCRUB="/scratch1/NCEPDEV/nems/noscrub/$USER"
+  # USER specific paths
+  export HOMEDIR="/scratch1/NCEPDEV/nems/save/$USER"
+  export STMP="/scratch1/NCEPDEV/stmp1/$USER"
+  export PTMP="/scratch1/NCEPDEV/stmp4/$USER"
+  export NOSCRUB="/scratch1/NCEPDEV/nems/noscrub/$USER"
 
-    # Base directories for various builds
-    export BASE_GIT="/scratch1/NCEPDEV/global/save/glopara/git"
-    export BASE_SVN="/scratch1/NCEPDEV/global/save/glopara/svn"
+  # Base directories for various builds
+  export BASE_GIT="/scratch1/NCEPDEV/global/save/glopara/git"
+  export BASE_SVN="/scratch1/NCEPDEV/global/save/glopara/svn"
 
 elif [ $machine = WCOSS_C ] ; then
 
-    # USER specific paths
-    export HOMEDIR="/gpfs/hps3/emc/global/noscrub/$USER"
-    export STMP="/gpfs/hps2/stmp/$USER"
-    export PTMP="/gpfs/hps2/ptmp/$USER"
-    export NOSCRUB="/gpfs/hps3/emc/global/noscrub/$USER"
+  # USER specific paths
+  export HOMEDIR="/gpfs/hps3/emc/global/noscrub/$USER"
+  export STMP="/gpfs/hps2/stmp/$USER"
+  export PTMP="/gpfs/hps2/ptmp/$USER"
+  export NOSCRUB="/gpfs/hps3/emc/global/noscrub/$USER"
 
-    # Base directories for various builds
-    export BASE_GIT="/gpfs/hps3/emc/global/noscrub/emc.glopara/git"
-    export BASE_SVN="/gpfs/hps3/emc/global/noscrub/emc.glopara/svn"
+  # Base directories for various builds
+  export BASE_GIT="/gpfs/hps3/emc/global/noscrub/emc.glopara/git"
+  export BASE_SVN="/gpfs/hps3/emc/global/noscrub/emc.glopara/svn"
 
 elif [ $machine = WCOSS_DELL_P3 ] ; then
 
-    # USER specific paths
-    export HOMEDIR="/gpfs/dell2/emc/modeling/noscrub/$USER"
-    export STMP="/gpfs/dell2/stmp/$USER"
-    export PTMP="/gpfs/dell2/ptmp/$USER"
-    export NOSCRUB="/gpfs/dell2/emc/modeling/noscrub/$USER"
+  # USER specific paths
+  export HOMEDIR="/gpfs/dell2/emc/modeling/noscrub/$USER"
+  export STMP="/gpfs/dell2/stmp/$USER"
+  export PTMP="/gpfs/dell2/ptmp/$USER"
+  export NOSCRUB="/gpfs/dell2/emc/modeling/noscrub/$USER"
 
-    # Base directories for various builds
-    export BASE_GIT="/gpfs/dell2/emc/modeling/noscrub/emc.glopara/git"
-    export BASE_SVN="/gpfs/dell2/emc/modeling/noscrub/emc.glopara/git"
+  # Base directories for various builds
+  export BASE_GIT="/gpfs/dell2/emc/modeling/noscrub/emc.glopara/git"
+  export BASE_SVN="/gpfs/dell2/emc/modeling/noscrub/emc.glopara/git"
 
 fi
 
 # Utilities needed in the scripts (mostly post)
-if [ $machine = THEIA ] ; then
+if [ $machine = HERA ] ; then
 
-    export NDATE="$NWPROD/util/exec/ndate"
-    export NHOUR="$NWPROD/util/exec/nhour"
-    export WGRIB="$NWPROD/util/exec/wgrib"
-    export WGRIB2="/scratch3/NCEPDEV/nwprod/utils/wgrib2.v2.0.6c/wgrib2/wgrib2"
-    export COPYGB="$NWPROD/util/exec/copygb"
-    export COPYGB2="$NWPROD/util/exec/copygb2"
-    export GRBINDEX="$NWPROD/util/exec/grbindex"
-    export GRB2INDEX="$NWPROD/util/exec/grb2index"
-    export GRBINDEX2="$NWPROD/util/exec/grb2index"
-    export CNVGRIB="/apps/cnvgrib/1.4.0/bin/cnvgrib"
-    export POSTGRB2TBL="/scratch3/NCEPDEV/nwprod/lib/g2tmpl/v1.5.0/sorc/params_grib2_tbl_new"
+  export NDATE="$NWPROD/util/exec/ndate"
+  export NHOUR="$NWPROD/util/exec/nhour"
+  export WGRIB="$NWPROD/util/exec/wgrib"
+  export WGRIB2="/scratch3/NCEPDEV/nwprod/utils/wgrib2.v2.0.6c/wgrib2/wgrib2"
+  export COPYGB="$NWPROD/util/exec/copygb"
+  export COPYGB2="$NWPROD/util/exec/copygb2"
+  export GRBINDEX="$NWPROD/util/exec/grbindex"
+  export GRB2INDEX="$NWPROD/util/exec/grb2index"
+  export GRBINDEX2="$NWPROD/util/exec/grb2index"
+  export CNVGRIB="/apps/cnvgrib/1.4.0/bin/cnvgrib"
+  export POSTGRB2TBL="/scratch1/NCEPDEV/nwprod/lib/g2tmpl/v1.5.0/sorc/params_grib2_tbl_new"
 
 fi
 
- export print_esmf=.false.
  export print_esmf=.true.
+ export print_esmf=${print_esmf=:-.false.}
  export ESMF_RUNTIME_PROFILE=ON
  export ESMF_RUNTIME_PROFILE_OUTPUT=SUMMARY
 # Toggle to turn on/off GFS downstream processing.
@@ -171,13 +168,20 @@ export use_lake_oro=YES
  export cplflx=.true.
  export CPLD_APP=YES
 
+#export DumpFields_MED=true
+#export DumpFields_ATM=true
+#export DumpFields_OCN=true
+#export DumpFields_ICE=true
+
  RUN_CCPP=${RUN_CCPP:-NO}
 
 export cplflx=${cplflx:-.false.}
 export CPLD_APP=${CPLD_APP:-NO}
+
 if [ $cplflx = .true. ] ; then
  app=ufs-s2s-model
  app=ufs-s2s-model_feb25
+#app=ufs-s2s-model_feb25_sav
 #appdir=cfv3_git_jan08
 #export SCRDIR=$HOMEgfs/scripts
 #export FORECASTSH="$SCRDIR/exglobal_fcst_emcufs.sh_feb02"    # with    UGW
@@ -192,6 +196,7 @@ if [ $cplflx = .true. ] ; then
  export CPLD_APP=YES
 elif [ $CPLD_APP = YES ] ; then
  app=ufs-s2s-model
+ app=ufs-s2s-model_feb25
 #appdir=cfv3_git_jan08
 #export SCRDIR=$HOMEgfs/scripts
 #export FORECASTSH="$SCRDIR/exglobal_fcst_emcufs.sh_feb02"    # with    UGW
@@ -236,14 +241,14 @@ if [ ${RUN_CCPP:-YES} = YES ] ; then
 
  export CCPP_SUITE=FV3_GFS_cpld_rasmgshoc
  export CCPP_SUITE=${CCPP_SUITE:-FV3_GFS_v15_rasmgshoc}
-if [ $CPLD_APP = NO ] ; then
- export CCPP_SUITE=FV3_GFS_v15_rasmgshoc
- export SCRDIR=$HOMEgfs/scripts
-#export FORECASTSH="$SCRDIR/exglobal_fcst_emcufs.sh_feb02"    # with    UGW
- export FCSTEXECDIR=$g0nosc/$LOGNAME/$appdir/$app/tests
- export FCSTEXEC=fv3_ccpprms.exe             # RAS, MG3, SHOC
-fi
-#export FCSTEXEC=fv3_ccpprms0.exe             # RAS, MG3, SHOC
+ if [ $CPLD_APP = NO ] ; then
+  export CCPP_SUITE=FV3_GFS_v15_rasmgshoc
+  export SCRDIR=$HOMEgfs/scripts
+# export FORECASTSH="$SCRDIR/exglobal_fcst_emcufs.sh_feb02"    # with    UGW
+  export FCSTEXECDIR=$g0nosc/$LOGNAME/$appdir/$app/tests
+  export FCSTEXEC=fv3_ccpprms.exe            # RAS, MG3, SHOC
+ fi
+#export FCSTEXEC=fv3_ccpprms0.exe            # RAS, MG3, SHOC
 #export FCSTEXEC=fv3_ccpprmsd.exe            # RAS, MG3, SHOC
 #export CCPP_SUITE=${CCPP_SUITE:-FV3_GFS_v15plusras}
 #export FCSTEXEC=fv3_ccpprplus.exe           # RAS, MG3, SHOC
@@ -275,8 +280,7 @@ if [ $CPC_ICE = YES ] ; then export runid=cpcice ; fi
 ####################################################
 # DO NOT ADD MACHINE DEPENDENT STUFF BELOW THIS LINE
 # IF YOU HAVE TO MAKE MACHINE SPECIFIC CHANGES BELOW
-# FEEL FREE TO MOVE THEM ABOVE THIS LINE TO KEEP IT
-# CLEAR
+# FEEL FREE TO MOVE THEM ABOVE THIS LINE TO KEEP IT CLEAR
 ####################################################
 # Build paths relative to $HOMEgfs
 export HOMEgsi="$HOMEgfs"
@@ -336,9 +340,9 @@ fi
 if [ -d $ROTDIR/gfs. ] ; then rm -rf $ROTDIR/gfs. ; fi
 
 # For coupled
-if [ $machine = THEIA ] ; then
- export UGCSICSDIR="/scratch4/NCEPDEV/stmp4/Bin.Li/EMC_ugcs_hycom/ugcsics_cfsv2op"
- export UGCSsrc="/scratch4/NCEPDEV/stmp3/Bin.Li/EMC_ugcs"
+if [ $machine = HERA ] ; then
+ export UGCSICSDIR="/scratch2/stmp/Bin.Li/EMC_ugcs_hycom/ugcsics_cfsv2op"
+ export UGCSsrc="/scratch2/stmp/Bin.Li/EMC_ugcs"
 elif [ $machine = WCOSS_DELL_P3 ] ; then
  export UGCSICSDIR="$NOSCRUB/UGCS/ugcsics_cfsv2op"
  export UGCSsrc="$NOSCRUB/EMC_ugcs"
@@ -364,7 +368,8 @@ export SENDSDM=NO
 # Resolution specific parameters
  export LEVS=65
 #export LEVS=128
-if [ $LEVS -eq 128 ] ; then  export LEVR=C ; fi
+#export LEVR=63
+if [ $LEVS -eq 128 ] ; then  export LVER=C ; fi
 export CASE="@CASECTL@"
 export CASE_ENKF="@CASEENS@"
 
@@ -388,7 +393,7 @@ export gfs_cyc=@gfs_cyc@ # 0: no GFS cycle, 1: 00Z only, 2: 00Z and 12Z only, 4:
 # GFS output and frequency
 export FHMIN_GFS=0
 
- export USE_LAST_RESTART=YES
+#export USE_LAST_RESTART=YES
 #export warm_start=.true.   # for warm_start need to set FHMIN (i.e. starting time)
 #export FHMIN=1
 #export FHMIN=2
@@ -437,17 +442,18 @@ export FHMIN_GFS=0
 #export FHMAX_GFS_00=03
 #export FHMAX_GFS_00=02
 #export FHMAX_GFS_00=01
-#export FHMAX_GFS_00=240
 #export FHMAX_GFS_00=132
 #export FHMAX_GFS_00=138
+#export FHMAX_GFS_00=240
+#export FHMAX_GFS_00=300  # uncomment this line for 45 day run
 #export FHMAX_GFS_00=360
 #export FHMAX_GFS_00=840
 #export FHMAX_GFS_00=1080 # uncomment this line for 45 day run
-#export FHMAX_GFS_00=300  # uncomment this line for 45 day run
-#export FHMAX_GFS_00=2160 # uncomment this line for 45 day run
+#export FHMAX_GFS_00=1440
 #export FHMAX_GFS_00=1806 # uncomment this line for 45 day run
 #export FHMAX_GFS_00=1920 # uncomment this line for 45 day run
 #export FHMAX_GFS_00=2160 # uncomment this line for 45 day run
+#export FHMAX_GFS_00=2880 # uncomment this line for 45 day run
 #export FHMAX_GFS=1080
 #export FHMAX_GFS_00=1440
 
@@ -461,7 +467,7 @@ export FHMAX_GFS=$(eval echo \${FHMAX_GFS_$cyc})
  export FHOUT_GFS=3
 #export FHOUT_GFS=6
 #export FHOUT_GFS=1
-export FHOUT=$FHOUT_GFS
+ export FHOUT=$FHOUT_GFS
 
 #BL2018
 export FHMAX_HF_GFS=$FHMAX_GFS_00

@@ -187,7 +187,13 @@ export CPL_SLOW=${CPL_SLOW:-$DT_THERM}
 export CPL_FAST=${CPL_FAST:-$ICETIM}
 
 # Setup nems.configure
-DumpFields=${NEMSDumpFields:-false}
+DumpFields_MED=${DumpFields_MED:-false}
+DumpFields_ATM=${DumpFields_ATM:-false}
+DumpFields_OCN=${DumpFields_OCN:-false}
+DumpFields_ICE=${DumpFields_ICE:-false}
+OverwriteSlice_MED=${OverwriteSlice_MED:-$DumpFields_MED}
+OverwriteSlice_OCN=${OverwriteSlice_OCN:-$DumpFields_OCN}
+OverwriteSlice_ICE=${OverwriteSlice_ICE:-$DumpFields_ICE}
 
 if [ $inistep = cold ] ; then
   coldstart=true     # this is the correct setting
@@ -264,8 +270,9 @@ MED_model:                      $MED_model
 MED_petlist_bounds:             $MED_petlist_bounds
 MED_attributes::
   Verbosity = ${Verbosity:-0}
-  DumpFields = $DumpFields
-  DumpRHs = $DumpFields
+  DumpFields_MED = $DumpFields_OCN
+  OverwriteSlice_MED = $OverwriteSlice_MED
+  DumpRHs = $DumpFields_MED
   coldstart = $coldstart
   restart_interval = $restart_interval
 ::
@@ -279,7 +286,7 @@ ATM_model:                      $ATM_model
 ATM_petlist_bounds:             $ATM_petlist_bounds
 ATM_attributes::
   Verbosity = ${Verbosity:-0}
-  DumpFields = $DumpFields
+  DumpFields_ATM = $DumpFields_ATM
 ::
 
 eof
@@ -291,7 +298,8 @@ OCN_model:                      $OCN_model
 OCN_petlist_bounds:             $OCN_petlist_bounds
 OCN_attributes::
   Verbosity = ${Verbosity:-0}
-  DumpFields = $DumpFields
+  DumpFields_OCN = $DumpFields_OCN
+  OverwriteSlice_OCN = $OverwriteSlice_OCN
   restart_interval = $restart_interval
   restart_option = 'nseconds'
   restart_n = $restart_interval
@@ -307,7 +315,8 @@ ICE_model:                      $ICE_model
 ICE_petlist_bounds:             $ICE_petlist_bounds
 ICE_attributes::
   Verbosity = ${Verbosity:-0}
-  DumpFields = $DumpFields
+  DumpFields_ICE = $DumpFields_ICE
+  OverwriteSliceICE = $OverwriteSlice_ICE
 ::
 eof
 fi
@@ -362,6 +371,7 @@ cat >> nems.configure <<eof
 # Forecast Run Sequence #
 runSeq::
   @$CPL_SLOW
+    MED MedPhase_write_restart
     MED MedPhase_prep_ocn
     MED -> OCN :remapMethod=redist
     OCN
@@ -377,7 +387,6 @@ runSeq::
       MED MedPhase_accum_fast
     @
     OCN -> MED :remapMethod=redist
-    MED MedPhase_write_restart
   @
 ::
 eof
