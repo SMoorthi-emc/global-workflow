@@ -1,12 +1,5 @@
 #!/usr/bin/env python
 
-###############################################################
-# < next few lines under version control, D O  N O T  E D I T >
-# $Date$
-# $Revision$
-# $Author$
-# $Id$
-###############################################################
 '''
     PROGRAM:
         Create the ROCOTO workflow for a forecast only experiment given the configuration of the GFS parallel
@@ -27,6 +20,7 @@
 
 import os
 import sys
+import re
 import numpy as np
 from datetime import datetime
 from argparse import ArgumentParser, ArgumentDefaultsHelpFormatter
@@ -34,7 +28,7 @@ import rocoto
 import workflow_utils as wfu
 
 
-taskplan = ['getic', 'fv3ic', 'fcst', 'post', 'ocnpost', 'vrfy', 'arch']
+taskplan = ['getic', 'fv3ic', 'fcst', 'post', 'vrfy', 'arch']
 
 def main():
     parser = ArgumentParser(description='Setup XML workflow and CRONTAB for a forecast only experiment.', formatter_class=ArgumentDefaultsHelpFormatter)
@@ -96,6 +90,9 @@ def get_definitions(base):
         Create entities related to the experiment
     '''
 
+    machine = base.get('machine', wfu.detectMachine())
+    scheduler = wfu.get_scheduler(machine)
+
     strings = []
 
     strings.append('\n')
@@ -118,7 +115,6 @@ def get_definitions(base):
     strings.append('\t<!-- Experiment related directories -->\n')
     strings.append('\t<!ENTITY EXPDIR "%s">\n' % base['EXPDIR'])
     strings.append('\t<!ENTITY ROTDIR "%s">\n' % base['ROTDIR'])
-    strings.append('\t<!ENTITY RUNDIR "%s">\n' % base['RUNDIR'])
     strings.append('\t<!ENTITY ICSDIR "%s">\n' % base['ICSDIR'])
     strings.append('\n')
     strings.append('\t<!-- Directories for driving the workflow -->\n')
@@ -129,14 +125,16 @@ def get_definitions(base):
     strings.append('\t<!ENTITY ACCOUNT    "%s">\n' % base['ACCOUNT'])
     strings.append('\t<!ENTITY QUEUE      "%s">\n' % base['QUEUE'])
     strings.append('\t<!ENTITY QUEUE_ARCH "%s">\n' % base['QUEUE_ARCH'])
-    strings.append('\t<!ENTITY SCHEDULER  "%s">\n' % wfu.get_scheduler(base['machine']))
+    if scheduler in ['slurm']:
+       strings.append('\t<!ENTITY PARTITION_ARCH "%s">\n' % base['QUEUE_ARCH'])
+    strings.append('\t<!ENTITY SCHEDULER  "%s">\n' % scheduler)
     strings.append('\n')
     strings.append('\t<!-- Toggle HPSS archiving -->\n')
     strings.append('\t<!ENTITY ARCHIVE_TO_HPSS "YES">\n')
     strings.append('\n')
     strings.append('\t<!-- ROCOTO parameters that control workflow -->\n')
     strings.append('\t<!ENTITY CYCLETHROTTLE "2">\n')
-    strings.append('\t<!ENTITY TASKTHROTTLE  "20">\n')
+    strings.append('\t<!ENTITY TASKTHROTTLE  "25">\n')
     strings.append('\t<!ENTITY MAXTRIES      "2">\n')
     strings.append('\n')
 
@@ -153,7 +151,9 @@ def get_resources(dict_configs, cdump='gdas'):
     strings.append('\t<!-- BEGIN: Resource requirements for the workflow -->\n')
     strings.append('\n')
 
-    machine = dict_configs['base']['machine']
+    base = dict_configs['base']
+    machine = base.get('machine', wfu.detectMachine())
+    scheduler = wfu.get_scheduler(machine)
 
     for task in taskplan:
 
@@ -164,9 +164,12 @@ def get_resources(dict_configs, cdump='gdas'):
         taskstr = '%s_%s' % (task.upper(), cdump.upper())
 
         strings.append('\t<!ENTITY QUEUE_%s     "%s">\n' % (taskstr, queuestr))
+        if scheduler in ['slurm'] and task in ['getic', 'arch']:
+            strings.append('\t<!ENTITY PARTITION_%s "&PARTITION_ARCH;">\n' % taskstr )
         strings.append('\t<!ENTITY WALLTIME_%s  "%s">\n' % (taskstr, wtimestr))
         strings.append('\t<!ENTITY RESOURCES_%s "%s">\n' % (taskstr, resstr))
-        strings.append('\t<!ENTITY MEMORY_%s    "%s">\n' % (taskstr, memstr))
+        if len(memstr) != 0:
+            strings.append('\t<!ENTITY MEMORY_%s    "%s">\n' % (taskstr, memstr))
         strings.append('\t<!ENTITY NATIVE_%s    "%s">\n' % (taskstr, natstr))
 
         strings.append('\n')
@@ -186,10 +189,7 @@ def get_postgroups(post, cdump='gdas'):
     if cdump in ['gdas']:
         fhrs = range(fhmin, fhmax+fhout, fhout)
     elif cdump in ['gfs']:
-#        fhmax = np.max([post['120'],post['120'],post['120'],post['120']])
-#BL2018
-#        fhmax = 24
-        fhmax = post['FHMAX_GFS_00']
+        fhmax = np.max([post['FHMAX_GFS_00'],post['FHMAX_GFS_06'],post['FHMAX_GFS_12'],post['FHMAX_GFS_18']])
         fhout = post['FHOUT_GFS']
         fhmax_hf = post['FHMAX_HF_GFS']
         fhout_hf = post['FHOUT_HF_GFS']
@@ -303,30 +303,6 @@ def get_workflow(dict_configs, cdump='gdas'):
     tasks.append(task)
     tasks.append('\n')
 
-
-    # ice/ocn post
-    deps = []
-    #data = '&ROTDIR;/%s.@Y@m@d/@H/%s.t@Hz.log#dep#.nemsio' % (cdump, cdump)
-    #data = '&RUNDIR;/@Y@m@d@H/gfs/fcst/restart/iced.2016-02-05-00000.nc'
-    data = '&RUNDIR;/@Y@m@d@H/gfs/fcst/history/run_is_done'
-    #gfs.t00z.logf000.nemsio
-    #ocn_2016_10_03_01.nc
-    #iceh_06h.2016-10-03-21600.nc
-    dep_dict = {'type': 'data', 'data': data}
-    deps.append(rocoto.add_dependency(dep_dict))
-    dependencies = rocoto.create_dependency(dep=deps)
-    fhrgrp = rocoto.create_envar(name='FHRGRP', value='#grp#')
-    fhrlst = rocoto.create_envar(name='FHRLST', value='#lst#')
-    ocnpostenvars = envars + [fhrgrp] + [fhrlst]
-    varname1, varname2, varname3 = 'grp', 'dep', 'lst'
-    varval1, varval2, varval3 = get_postgroups(dict_configs['ocnpost'], cdump=cdump)
-    vardict = {varname2: varval2, varname3: varval3}
-    task = wfu.create_wf_task('ocnpost', cdump=cdump, envar=ocnpostenvars, dependency=dependencies,
-                              metatask='ocnpost', varname=varname1, varval=varval1, vardict=vardict)
-    tasks.append(task)
-    tasks.append('\n')
-
-
     # vrfy
     deps = []
     dep_dict = {'type':'metatask', 'name':'%spost' % cdump}
@@ -338,6 +314,8 @@ def get_workflow(dict_configs, cdump='gdas'):
 
     # arch
     deps = []
+    dep_dict = {'type':'metatask', 'name':'%spost' % cdump}
+    deps.append(rocoto.add_dependency(dep_dict))
     dep_dict = {'type':'task', 'name':'%svrfy' % cdump}
     deps.append(rocoto.add_dependency(dep_dict))
     dep_dict = {'type':'streq', 'left':'&ARCHIVE_TO_HPSS;', 'right':'YES'}
@@ -388,6 +366,20 @@ def create_xml(dict_configs):
     definitions = get_definitions(base)
     resources = get_resources(dict_configs, cdump=base['CDUMP'])
     workflow = get_workflow_body(dict_configs, cdump=base['CDUMP'])
+
+    # Removes <memory>&MEMORY_JOB_DUMP</memory> post mortem from gdas tasks
+    temp_workflow = ''
+    memory_dict = []
+    for each_resource_string in re.split(r'(\s+)', resources):
+        if 'MEMORY' in each_resource_string:
+            memory_dict.append(each_resource_string)
+    for each_line in re.split(r'(\s+)', workflow):
+        if 'MEMORY' not in each_line:
+            temp_workflow += each_line
+        else:
+            if any( substring in each_line for substring in memory_dict):
+                temp_workflow += each_line
+    workflow = temp_workflow
 
     # Start writing the XML file
     fh = open('%s/%s.xml' % (base['EXPDIR'], base['PSLOT']), 'w')

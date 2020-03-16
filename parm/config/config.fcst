@@ -24,6 +24,8 @@ elif [ $machine = THEIA ] ; then
  launcher=${launcher:-mpirun}
 elif [ $machine = GAEA ] ; then
  launcher=${launcher:-/opt/cray/alps/5.2.1-2.0502.9649.23.1.gem/bin/aprun}
+elif [ $machine = HERA ] ; then
+ launcher=${launcher:-srun}
 else
  echo ' machine not supported'
 fi

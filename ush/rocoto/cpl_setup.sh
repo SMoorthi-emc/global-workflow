@@ -5,17 +5,18 @@ echo "Load modules first"
 #source /usr/Modules/3.2.10/init/sh
 . $MODULESHOME/init/sh 2>/dev/null
 #module load rocoto
-module load rocoto/20180420-master
+#module load rocoto/20180420-master
+module load rocoto/1.3.0
 module load hpss
 
-CWD=`pwd`
+CWD=$(pwd)
 # $IDATE is the initial start date of your run (first cycle CDATE, YYYYMMDDCC)
 #IDATE=$1
 IDATE=2016010100
 IDATE=2018010100
 #IDATE=2018090100
  IDATE=2018090100
-#IDATE=2011100100
+ IDATE=2011100100
 #IDATE=2018011500
 #IDATE=2018031500
  CASE=C384
@@ -26,16 +27,9 @@ IDATE=2018010100
 EDATE=$IDATE
 YMD=$(echo $IDATE | cut -c1-8)
 HH=$(echo $IDATE | cut -c9-10)
-#FROM_HPSS=/scratch4/NCEPDEV/nems/noscrub/Bin.Li/FROM_HPSS
-#FROM_HPSS=/global/noscrub/Jiande.Wang/WF3/FROM_HPSS
-FROM_HPSS=/gpfs/dell2/emc/modeling/noscrub/Shrinivas.Moorthi/FROM_HPSS
-
-FV3DATA=$FROM_HPSS/$IDATE/gfs/$CASE/INPUT
 
 # $RES is the resolution of the forecast (i.e. 768 for C768)
 RES=$(echo $CASE|cut -c 2-)
-
-# ./setup_expt_fcstonly.py --pslot $PSLOT --configdir $CONFIGDIR --idate $IDATE --edate $EDATE --res $RES --gfs_cyc $GFS_CYC --comrot $COMROT --expdir $EXPDIR
 
 # $PSLOT is the name of your experiment
  expt=_phyaa
@@ -45,12 +39,40 @@ RES=$(echo $CASE|cut -c 2-)
 expt=${expt:-''}
 PSLOT=c${RES}$expt
 
+#FROM_HPSS=/scratch4/NCEPDEV/nems/noscrub/Bin.Li/FROM_HPSS
+#FROM_HPSS=/global/noscrub/Jiande.Wang/WF3/FROM_HPSS
+#FROM_HPSS=/gpfs/dell2/emc/modeling/noscrub/Shrinivas.Moorthi/FROM_HPSS
+
+if [ $(echo $CWD | cut -c1-8) = "/scratch" ] ; then
+ NOSCRUB=/scratch1/NCEPDEV/global
+ FROM_HPSS=$NOSCRUB/$LOGNAME/noscrub/FROM_HPSS
+ COMROT=/scratch1/NCEPDEV/stmp4/$LOGNAME/CFV3/$IDATE
+ EXPDIR=$NOSCRUB/$LOGNAME/CFV3/$IDATE/EXPFV3
+elif [ $(echo $CWD | cut -c1-11) = "/gpfs/dell2" ] ; then
+ NOSCRUB=/gpfs/dell2/emc/modeling/noscrub
+ COMROT=/gpfs/dell2/ptmp/$LOGNAME/CFV3/$IDATE
+ FROM_HPSS=$NOSCRUB/$LOGNAME/FROM_HPSS
+ EXPDIR=$NOSCRUB/$LOGNAME/CFV3/$IDATE/EXPFV3
+elif [ $(echo $CWD | cut -c1-9) = "/gpfs/hps" ] ; then
+ NOSCRUB=/gpfs/hps3/emc/modeling/noscrub
+ FROM_HPSS=/gpfs/dell2/emc/modeling/noscrub/$LOGNAME/FROM_HPSS
+ COMROT=/gpfs/dell2/ptmp/$LOGNAME/CFV3/$IDATE
+ EXPDIR=$NOSCRUB/$LOGNAME/CFV3/$IDATE/EXPFV3
+fi
+
+mkdir -p $COMROT
+mkdir -p $EXPDIR
+
+FV3DATA=$FROM_HPSS/$IDATE/gfs/$CASE/INPUT
+
+# ./setup_expt_fcstonly.py --pslot $PSLOT --configdir $CONFIGDIR --idate $IDATE --edate $EDATE --res $RES --gfs_cyc $GFS_CYC --comrot $COMROT --expdir $EXPDIR
+
 # $COMROT is the path to your experiment output directory. DO NOT include PSLOT folder at end of path, it’ll be built for you.
 #COMROT=/scratch4/NCEPDEV/nems/noscrub/Patrick.Tripp/COMFV3
 #COMROT=/scratch4/NCEPDEV/nems/noscrub/Bin.Li/benchmark/COMFV3
 #COMROT=/scratch4/NCEPDEV/nems/noscrub/${USER}/benchmark/${YMD}/COMFV3
-COMROT=/gpfs/dell2/ptmp/$LOGNAME/CFV3/$IDATE
-mkdir -p $COMROT
+#COMROT=/gpfs/dell2/ptmp/$LOGNAME/CFV3/$IDATE
+#mkdir -p $COMROT
 
 # $CONFIGDIR is the path to the /config folder under the copy of the system you're using (i.e. ../parm/config/)
 #CONFIGDIR=/scratch4/NCEPDEV/nems/noscrub/Patrick.Tripp/new.fv3gfs/parm/config
@@ -69,7 +91,7 @@ CONFIGDIR=${CONFIGDIR:-../../parm/config}
 #OCN_DIR=$FROM_HPSS/2016040100/mom6_cfsv2
 
 # Link the existing FV3ICS folder to here, I prefer this directory to be in main directory, but changing in script can cause issues
-mkdir -p $COMROT
+#mkdir -p $COMROT
 cd $COMROT
 mkdir -p ../FV3ICS
 ln -s ../FV3ICS .
@@ -84,8 +106,8 @@ GFS_CYC=1
 
 #EXPDIR=/scratch4/NCEPDEV/nems/noscrub/Patrick.Tripp/EXPFV3
 #EXPDIR=/scratch4/NCEPDEV/nems/noscrub/${USER}/benchmark/${YMD}/EXPFV3
-EXPDIR=/gpfs/dell2/emc/modeling/noscrub/$LOGNAME/CFV3/$IDATE/EXPFV3
-mkdir -p $EXPDIR
+#EXPDIR=/gpfs/dell2/emc/modeling/noscrub/$LOGNAME/CFV3/$IDATE/EXPFV3
+#mkdir -p $EXPDIR
 
 ./setup_expt_fcstonly.py --pslot $PSLOT --configdir $CONFIGDIR --idate $IDATE --edate $EDATE --res $RES --gfs_cyc $GFS_CYC --comrot $COMROT --expdir $EXPDIR
 
@@ -125,4 +147,4 @@ cd $CWD
 #exit
  cd $EXPDIR/$PSLOT
 #module load rocoto/1.2.4
- rocotorun -d $PSLOT.db -w $PSLOT.xml
+ rocotorun -v 10 -d $PSLOT.db -w $PSLOT.xml

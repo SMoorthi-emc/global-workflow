@@ -94,15 +94,16 @@ export PTMP=${PTMP:-/gpfs/hps$hpsn/ptmp}
 export STMP=${STMP:-/gpfs/hps$hpsn/stmp}
 
 pwd=$(pwd)
-export HOMEgfs=${HOMEgfs:-$NWPROD}
-export FIX_DIR=${FIX_DIR:-$HOMEgfs/fix}
-export FIX_FV3=${FIX_FV3:-${FIXfv3:-$FIX_DIR/fix_fv3_gmted2010}}
-export FIX_AM=${FIX_AM:-$FIX_DIR/fix_am}
-export FIX_AER=${FIX_AER:-$FIX_DIR/fix_aer}
-export FIX_CCN=${FIX_CCN:-$FIX_DIR/fix_ccn}
-export CO2DIR=${CO2DIR:-$FIX_AM/fix_co2_proj}
-export PARM_DIR=${PARM_DIR:-$HOMEgfs/parm/parm_fv3diag}
-export PARM_POST=${PARM_POST:-$HOMEgfs/parm/post}
+
+#export HOMEgfs=${HOMEgfs:-$NWPROD}
+#export FIX_DIR=${FIX_DIR:-$HOMEgfs/fix}
+#export FIX_FV3=${FIX_FV3:-${FIXfv3:-$FIX_DIR/fix_fv3_gmted2010}}
+#export FIX_AM=${FIX_AM:-$FIX_DIR/fix_am}
+#export FIX_AER=${FIX_AER:-$FIX_DIR/fix_aer}
+#export FIX_CCN=${FIX_CCN:-$FIX_DIR/fix_ccn}
+#export CO2DIR=${CO2DIR:-$FIX_AM/fix_co2_proj}
+#export PARM_DIR=${PARM_DIR:-$HOMEgfs/parm/parm_fv3diag}
+#export PARM_POST=${PARM_POST:-$HOMEgfs/parm/post}
 
 export DATA=${DATA:-$STMP/$LOGNAME/pr${PSLOT}${CASE}_$CDATE}  #temporary running directory
 #export ROTDIR=${ROTDIR:-$PTMP/$LOGNAME/$PSLOT}              #rorating archive directory
@@ -117,12 +118,17 @@ if [ $machine = HERA ] ; then
   export MPI_BUFS_PER_PROC=${MPI_BUFS_PER_PROC:-2048}
   export MPI_BUFS_PER_HOST=${MPI_BUFS_PER_HOST:-2048}
   export MKL_NUM_THREADS=${MKL_NUM_THREADS:-1}
-  if [[ "${LOADICS:-YES}" == YES ]] ; then
-      . /apps/lmod/5.8/init/ksh
-      module load intel/14.0.2
-      module load impi/4.1.3.048
-  fi
-  NS_GLOPARA=${NS_GLOPARA:-/gpfs/hps/emc/global/noscrub/emc.glopara}
+
+  . $MODULESHOME/init/sh 2>/dev/null
+  module list
+
+# if [[ "${LOADICS:-YES}" == YES ]] ; then
+#     . /apps/lmod/5.8/init/ksh
+#     module load intel/14.0.2
+#     module load impi/4.1.3.048
+# fi
+  NS_GLOPARA=${NS_GLOPARA:-/scratch1/NCEPDEV/global/glopara}
+  export FIX_DIR=${FIX_DIR:-$NS_GLOPARA/fix}
 elif [ $machine = GAEA ] ; then
   export gaea_c=${gaea_c:-c3}
 # . $MODULESHOME/init/sh 2>/dev/null
@@ -145,7 +151,7 @@ elif [ $machine = GAEA ] ; then
   export MPICH_GNI_COLL_OPT_OFF=${MPICH_GNI_COLL_OPT_OFF:-MPI_Alltoallv}
 
   NS_GLOPARA=${NS_GLOPARA:-/gpfs/hps/emc/global/noscrub/emc.glopara}
-  export FIX_FV3=${FIX_FV3:-${FIXfv3:-$NS_GLOPARA/svn/fv3gfs/fix}}
+  export FIX_DIR=${FIX_DIR:-$NS_GLOPARA/fix}}
   export MPICH_FAST_MEMCPY=${MPICH_FAST_MEMCPY:-ENABLE}
   export MPICH_MAX_SHORT_MSG_SIZE=${MPICH_MAX_SHORT_MSG_SIZE:-4096}
   export MPICH_UNEX_BUFFER_SIZE=${MPICH_UNEX_BUFFER_SIZE:-1024000000}
@@ -205,7 +211,7 @@ elif [ $machine = WCOSS ] ; then
 # export MP_S_ENABLE_ERR_PRINT=yes
   NS_GLOPARA=${NS_GLOPARA:-/global/noscrub/emc.glopara}
 # export FIX_FV3=${FIX_FV3:-$NS_GLOPARA/svn/fv3gfs/fix_fv3}
-  export FIX_FV3=${FIX_FV3:-${FIXfv3:-/global/noscrub/Shrinivas.Moorthi/NextG2/global_shared.v15.0.0/fix}}
+  export FIX_DIR=${FIX_DIR:-/global/noscrub/Shrinivas.Moorthi/NextG2/global_shared.v15.0.0/fix}
 elif [ $machine = WCOSS_C -a  ${LOADIOBUF:-YES} = YES ] ; then
   . $MODULESHOME/init/sh 2>/dev/null
   export PRGENV=${PRGENV:-intel}
@@ -230,7 +236,7 @@ elif [ $machine = WCOSS_C -a  ${LOADIOBUF:-YES} = YES ] ; then
   export MPICH_GNI_COLL_OPT_OFF=${MPICH_GNI_COLL_OPT_OFF:-MPI_Alltoallv}
 
   NS_GLOPARA=${NS_GLOPARA:-/gpfs/hps3/emc/global/noscrub/emc.glopara}
-  export FIX_FV3=${FIX_FV3:-${FIXfv3:-$NS_GLOPARA/svn/fv3gfs/fix}}
+  export FIX_DIR=${FIX_DIR:-$NS_GLOPARA/svn/fv3gfs/fix}
 
   export MKL_CBWR=${MKL_CBWR:-AVX}          # Needed for bit reproducibility with mkl
   export MKL_NUM_THREADS=${MKL_NUM_THREADS:-1}
@@ -259,6 +265,16 @@ elif [ $machine = WCOSS_DELL_P3 ] ; then
 
   module list
 fi
+
+export HOMEgfs=${HOMEgfs:-$NWPROD}
+export FIX_DIR=${FIX_DIR:-$HOMEgfs/fix}
+export FIX_FV3=${FIX_FV3:-${FIXfv3:-$FIX_DIR/fix_fv3_gmted2010}}
+export FIX_AM=${FIX_AM:-$FIX_DIR/fix_am}
+export FIX_AER=${FIX_AER:-$FIX_DIR/fix_aer}
+export FIX_CCN=${FIX_CCN:-$FIX_DIR/fix_ccn}
+export CO2DIR=${CO2DIR:-$FIX_AM/fix_co2_proj}
+export PARM_DIR=${PARM_DIR:-$HOMEgfs/parm/parm_fv3diag}
+export PARM_POST=${PARM_POST:-$HOMEgfs/parm/post}
 
 # Utilities
 #NCP=${NCP:-"/bin/cp -p"}
@@ -1627,6 +1643,7 @@ EOF
 #cat >> INPUT/MOM_override << EOF
 cat >> INPUT/MOM_override << EOF
  RESTART_CHECKSUMS_REQUIRED=${RESTART_CHECKSUMS_REQUIRED:-False}
+ VERBOSITY=${VERBOSITY:-2}
 
 EOF
 

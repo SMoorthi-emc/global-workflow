@@ -40,21 +40,26 @@ elif [ $step = "fcst" ]; then
 
 #   export wtime_fcst="08:20:00"
 #   export wtime_fcst_gfs="08:20:00"
-    export wtime_fcst="15:50:00"
-    export wtime_fcst_gfs="15:50:00"
+#   export wtime_fcst="15:50:00"
+#   export wtime_fcst_gfs="15:50:00"
 #   export wtime_fcst="04:50:00"
 #   export wtime_fcst_gfs="04:50:00"
-echo ' before queue' $QUEUE
-    if [ $QUEUE = debug ] ; then
-      export wtime_fcst="00:30:00"
-      export wtime_fcst_gfs="00:30:00"
-    fi
+    echo ' before queue' $QUEUE
+#   if [ $QUEUE = debug ] ; then
+#     export wtime_fcst="00:30:00"
+#     export wtime_fcst_gfs="00:30:00"
+#   fi
 
     export npe_fcst=$((layout_x*layout_y*6))
 
 #   export Verbosity=max
-    export Verbosity=0
+    export Verbosity=${Verbosity:-0}
     if [ $machine == WCOSS_DELL_P3 ] ; then
+#     export wtime_fcst_gfs="08:20:00"
+      export wtime_fcst="15:50:00"
+      export wtime_fcst_gfs="15:50:00"
+#     export wtime_fcst="04:50:00"
+#     export wtime_fcst_gfs="04:50:00"
       if [ $QUEUE = dev -o $QUEUE = debug ] ; then
         export npe_node_fcst=${npe_node_fcst:-14}
         export npe_node_max=${npe_node_max:-28}
@@ -62,10 +67,26 @@ echo ' before queue' $QUEUE
         export npe_node_fcst=${npe_node_fcst:-20}
         export npe_node_max=${npe_node_max:-40}
       fi
-    else
+    else              # hera
+#     export wtime_fcst_gfs="08:20:00"
+#     export wtime_fcst="15:50:00"
+#     export wtime_fcst_gfs="15:50:00"
+#     export wtime_fcst="01:50:00"
+#     export wtime_fcst_gfs="01:50:00"
+      export wtime_fcst="00:30:00"
+      export wtime_fcst_gfs="00:30:00"
+
       export npe_node_fcst=${npe_node_fcst:-12}
       export npe_node_max=${npe_node_max:-24}
     fi
+
+    if [ $QUEUE = debug ] ; then
+      export wtime_fcst="00:30:00"
+      export wtime_fcst_gfs="00:30:00"
+    fi
+
+    export wtime_fcst=${wtime_fcst:-"15:50:00"}
+    export wtime_fcst_gfs=${wtime_fcst_gfs:-"15:50:00"}
     export nth_fcst=$((npe_node_max/npe_node_fcst))
     if [[ $machine == WCOSS_C ]] ; then
       export memory_fcst="1024M"
@@ -82,6 +103,10 @@ echo ' before queue' $QUEUE
 #     export npe_ice=18
 #     export npe_ice=36
 #     export npe_ice=28
+      if [ $machine == HERA ] ; then
+#       export npe_ocn=200
+        export npe_ice=48
+      fi
     fi
     if [ $CPLDWAV = YES ] ; then
 #     npe_ww3=${npe_ww3:-$((npe_node_fcst*3))}
