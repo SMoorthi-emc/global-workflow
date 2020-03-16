@@ -15,7 +15,7 @@ IDATE=2016010100
 IDATE=2018010100
 #IDATE=2018090100
  IDATE=2018090100
-#IDATE=2011100100
+ IDATE=2011100100
 #IDATE=2018011500
 #IDATE=2018031500
  CASE=C384
@@ -38,7 +38,7 @@ RES=$(echo $CASE|cut -c 2-)
 # ./setup_expt_fcstonly.py --pslot $PSLOT --configdir $CONFIGDIR --idate $IDATE --edate $EDATE --res $RES --gfs_cyc $GFS_CYC --comrot $COMROT --expdir $EXPDIR
 
 # $PSLOT is the name of your experiment
- expt=_phyab
+ expt=_phyaa
 #expt=_phyad
 #expt=_phyg
 #expt=_phyf
