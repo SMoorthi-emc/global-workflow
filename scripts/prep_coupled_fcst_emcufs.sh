@@ -203,7 +203,8 @@ elif [ $inistep = warm ] ; then
   restart_interval=${restart_interval:-1296000}    # Interval in seconds to write restarts
   coldstart=false
   ice_restart=.false.
-  restart_ext=.true.
+  restart_ext=.false.
+# restart_ext=.true.
 else
   restart_interval=${restart_interval:-1296000}    # Interval in seconds to write restarts
   coldstart=false

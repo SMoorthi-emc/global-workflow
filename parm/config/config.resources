@@ -71,10 +71,10 @@ elif [ $step = "fcst" ]; then
 #     export wtime_fcst_gfs="08:20:00"
 #     export wtime_fcst="15:50:00"
 #     export wtime_fcst_gfs="15:50:00"
-#     export wtime_fcst="01:50:00"
-#     export wtime_fcst_gfs="01:50:00"
-      export wtime_fcst="00:30:00"
-      export wtime_fcst_gfs="00:30:00"
+      export wtime_fcst="01:50:00"
+      export wtime_fcst_gfs="01:50:00"
+#     export wtime_fcst="00:30:00"
+#     export wtime_fcst_gfs="00:30:00"
 
       export npe_node_fcst=${npe_node_fcst:-12}
       export npe_node_max=${npe_node_max:-24}
@@ -95,7 +95,7 @@ elif [ $step = "fcst" ]; then
     if [ $CPLDFV3_MOM6_CICE = YES ] ; then
       export npe_ocn=120
 #     export npe_ice=24
-      export npe_ocn=140
+#     export npe_ocn=140
 #     export npe_ocn=70
 #     export npe_ocn=105
 #     export npe_ocn=80
@@ -109,6 +109,9 @@ elif [ $step = "fcst" ]; then
       fi
     fi
     if [ $CPLDWAV = YES ] ; then
+      if [ $machine == HERA ] ; then
+        export npe_ww3=40
+      fi
 #     npe_ww3=${npe_ww3:-$((npe_node_fcst*3))}
       npe_ww3=${npe_ww3:-$((npe_node_fcst*3*nth_fcst))}
     fi

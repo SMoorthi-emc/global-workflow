@@ -48,6 +48,7 @@ export APRUNW=${APRUNW:-NONE}
 export print_esmf=${print_esmf:-.false.} # print each PET output to file
 export ESMF_RUNTIME_PROFILE=${ESMF_RUNTIME_PROFILE:-ON}
 export ESMF_RUNTIME_PROFILE_OUTPUT=${ESMF_RUNTIME_PROFILE_OUTPUT:-SUMMARY}
+export ESMF_RUNTIME_COMPLIANCECHECK=${ESMF_RUNTIME_COMPLIANCECHECK:-'OFF:depth=4'}
 
 export cplflx=${cplflx:-${CPLFLX:-.false.}}
 export cpl=${cpl:-${CPL:-.false.}}
@@ -114,10 +115,10 @@ ICSDIR=${ICSDIR:-$pwd}         # cold start initial conditions
 DMPDIR=${DMPDIR:-$pwd}         # global dumps for seaice, snow and sst analysis
 
 if [ $machine = HERA ] ; then
-  export MPICH_FAST_MEMCPY=${MPICH_FAST_MEMCPY:-ENABLE}
-  export MPI_BUFS_PER_PROC=${MPI_BUFS_PER_PROC:-2048}
-  export MPI_BUFS_PER_HOST=${MPI_BUFS_PER_HOST:-2048}
-  export MKL_NUM_THREADS=${MKL_NUM_THREADS:-1}
+# export MPICH_FAST_MEMCPY=${MPICH_FAST_MEMCPY:-ENABLE}
+# export MPI_BUFS_PER_PROC=${MPI_BUFS_PER_PROC:-2048}
+# export MPI_BUFS_PER_HOST=${MPI_BUFS_PER_HOST:-2048}
+  export MKL_NUM_THREADS=${MKL_NUM_THREADS:-0}
 
   . $MODULESHOME/init/sh 2>/dev/null
   module list

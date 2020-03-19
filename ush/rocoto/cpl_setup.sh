@@ -16,7 +16,7 @@ IDATE=2016010100
 IDATE=2018010100
 #IDATE=2018090100
  IDATE=2018090100
- IDATE=2011100100
+#IDATE=2011100100
 #IDATE=2018011500
 #IDATE=2018031500
  CASE=C384
@@ -32,7 +32,7 @@ HH=$(echo $IDATE | cut -c9-10)
 RES=$(echo $CASE|cut -c 2-)
 
 # $PSLOT is the name of your experiment
- expt=_phyaa
+ expt=_phyag
 #expt=_phyad
 #expt=_phyg
 #expt=_phyf
