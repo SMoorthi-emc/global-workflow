@@ -152,7 +152,7 @@ cd INPUT
 
 # Copy MOM6 fixed files
 # ---------------------
-$NCP -p $FIXmom/INPUT/* .
+$NCP $FIXmom/INPUT/* .
 
 #JW use updated MOM_input (WIND_STAGGER=A, no more MIN_Z_DIAG_INTERVAL and Z_OUTPUT_GRID_FILE)
 #cp -p $FIXmom/INPUT/MOM_input_update MOM_input
@@ -203,7 +203,8 @@ elif [ $inistep = warm ] ; then
   restart_interval=${restart_interval:-1296000}    # Interval in seconds to write restarts
   coldstart=false
   ice_restart=.false.
-  restart_ext=.true.
+  restart_ext=.false.
+# restart_ext=.true.
 else
   restart_interval=${restart_interval:-1296000}    # Interval in seconds to write restarts
   coldstart=false

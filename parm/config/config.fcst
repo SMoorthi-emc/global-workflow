@@ -17,13 +17,12 @@ elif [ $machine = WCOSS_C ] ; then
 #launcher=${launcher:-/opt/cray/alps/5.2.4-2.0502.9822.32.1.ari/bin/stuff/aprun}
 elif [ $machine = WCOSS_DELL_P3 ] ; then
  launcher=${launcher:-"mpirun -n"}
-#launcher=${launcher:-/usrx/local/prod/intel/2018UP01/compilers_and_libraries/linux/mpi/bin64/mpirun}
-#launcher=${launcher:-/apps/mpt/2.06/bin/mpiexec_mpt}
-#launcher=${launcher:-/opt/sgi/mpt/mpt-2.05/bin/mpiexec_mpt}
 elif [ $machine = THEIA ] ; then
  launcher=${launcher:-mpirun}
 elif [ $machine = GAEA ] ; then
- launcher=${launcher:-/opt/cray/alps/5.2.1-2.0502.9649.23.1.gem/bin/aprun}
+ launcher=${launcher:-srun}
+elif [ $machine = HERA ] ; then
+ launcher=${launcher:-srun}
 else
  echo ' machine not supported'
 fi

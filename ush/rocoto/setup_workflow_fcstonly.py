@@ -27,6 +27,7 @@
 
 import os
 import sys
+import re
 import numpy as np
 from datetime import datetime
 from argparse import ArgumentParser, ArgumentDefaultsHelpFormatter
@@ -96,6 +97,10 @@ def get_definitions(base):
         Create entities related to the experiment
     '''
 
+
+    machine = base.get('machine', wfu.detectMachine())
+    scheduler = wfu.get_scheduler(machine)
+
     strings = []
 
     strings.append('\n')
@@ -129,14 +134,16 @@ def get_definitions(base):
     strings.append('\t<!ENTITY ACCOUNT    "%s">\n' % base['ACCOUNT'])
     strings.append('\t<!ENTITY QUEUE      "%s">\n' % base['QUEUE'])
     strings.append('\t<!ENTITY QUEUE_ARCH "%s">\n' % base['QUEUE_ARCH'])
-    strings.append('\t<!ENTITY SCHEDULER  "%s">\n' % wfu.get_scheduler(base['machine']))
+    if scheduler in ['slurm']:
+       strings.append('\t<!ENTITY PARTITION_ARCH "%s">\n' % base['QUEUE_ARCH'])
+    strings.append('\t<!ENTITY SCHEDULER  "%s">\n' % scheduler)
     strings.append('\n')
     strings.append('\t<!-- Toggle HPSS archiving -->\n')
     strings.append('\t<!ENTITY ARCHIVE_TO_HPSS "YES">\n')
     strings.append('\n')
     strings.append('\t<!-- ROCOTO parameters that control workflow -->\n')
     strings.append('\t<!ENTITY CYCLETHROTTLE "2">\n')
-    strings.append('\t<!ENTITY TASKTHROTTLE  "20">\n')
+    strings.append('\t<!ENTITY TASKTHROTTLE  "25">\n')
     strings.append('\t<!ENTITY MAXTRIES      "2">\n')
     strings.append('\n')
 
@@ -154,6 +161,7 @@ def get_resources(dict_configs, cdump='gdas'):
     strings.append('\n')
 
     machine = dict_configs['base']['machine']
+    scheduler = wfu.get_scheduler(machine)
 
     for task in taskplan:
 
@@ -164,9 +172,12 @@ def get_resources(dict_configs, cdump='gdas'):
         taskstr = '%s_%s' % (task.upper(), cdump.upper())
 
         strings.append('\t<!ENTITY QUEUE_%s     "%s">\n' % (taskstr, queuestr))
+        if scheduler in ['slurm'] and task in ['getic', 'arch']:
+            strings.append('\t<!ENTITY PARTITION_%s "&PARTITION_ARCH;">\n' % taskstr )
         strings.append('\t<!ENTITY WALLTIME_%s  "%s">\n' % (taskstr, wtimestr))
         strings.append('\t<!ENTITY RESOURCES_%s "%s">\n' % (taskstr, resstr))
-        strings.append('\t<!ENTITY MEMORY_%s    "%s">\n' % (taskstr, memstr))
+        if len(memstr) != 0:
+            strings.append('\t<!ENTITY MEMORY_%s    "%s">\n' % (taskstr, memstr))
         strings.append('\t<!ENTITY NATIVE_%s    "%s">\n' % (taskstr, natstr))
 
         strings.append('\n')
@@ -388,6 +399,20 @@ def create_xml(dict_configs):
     definitions = get_definitions(base)
     resources = get_resources(dict_configs, cdump=base['CDUMP'])
     workflow = get_workflow_body(dict_configs, cdump=base['CDUMP'])
+
+    # Removes <memory>&MEMORY_JOB_DUMP</memory> post mortem from gdas tasks
+    temp_workflow = ''
+    memory_dict = []
+    for each_resource_string in re.split(r'(\s+)', resources):
+        if 'MEMORY' in each_resource_string:
+            memory_dict.append(each_resource_string)
+    for each_line in re.split(r'(\s+)', workflow):
+        if 'MEMORY' not in each_line:
+            temp_workflow += each_line
+        else:
+            if any( substring in each_line for substring in memory_dict):
+                temp_workflow += each_line
+    workflow = temp_workflow
 
     # Start writing the XML file
     fh = open('%s/%s.xml' % (base['EXPDIR'], base['PSLOT']), 'w')
