@@ -71,8 +71,8 @@ elif [ $step = "fcst" ]; then
 #     export wtime_fcst_gfs="08:20:00"
 #     export wtime_fcst="15:50:00"
 #     export wtime_fcst_gfs="15:50:00"
-      export wtime_fcst="01:50:00"
-      export wtime_fcst_gfs="01:50:00"
+      export wtime_fcst="07:50:00"
+      export wtime_fcst_gfs="07:50:00"
 #     export wtime_fcst="00:30:00"
 #     export wtime_fcst_gfs="00:30:00"
 
