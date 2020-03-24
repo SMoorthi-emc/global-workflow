@@ -15,7 +15,11 @@ echo "BEGIN: config.post"
 export NPOSTGRP=10
 
 # Post driver job that calls gfs_nceppost.sh and downstream jobs
-export POSTDIR=/gpfs/dell2/emc/modeling/noscrub/Shrinivas.Moorthi/balv/post_dir3/EMC_post
+  elif [ $machine = "WCOSS_DELL_P3" ] ; then
+export POSTDIR=${POSTDIR:-/gpfs/dell2/emc/modeling/noscrub/Shrinivas.Moorthi/balv/post_dir3/EMC_post}
+elif [ $machine = HERA ] ; then
+  export POSTDIR=${POSTDIR:-/scratch1/NCEPDEV/global/Shrinivas.Moorthi/save/postdir/EMC_post}
+fi
 export POSTJJOBSH=${POSTJJOBSH:-${POSTDIR:-$HOMEpost}/jobs/JGLOBAL_NCEPPOST}
 
 #export POSTJJOBSH="$HOMEpost/jobs/JGLOBAL_NCEPPOST"
@@ -87,9 +91,9 @@ export IDRT=4
 if [ $machine = "WCOSS_C" ] ; then
     export CRTM_FIX=/gpfs/hps/nco/ops/nwprod/lib/crtm/v2.2.5/fix
 elif [ $machine = "WCOSS_DELL_P3" ] ; then
-    export CRTM_FIX=/gpfs/dell1/nco/ops/nwprod/lib/crtm/v2.2.5/fix
-elif [ $machine = "THEIA" ] ; then
-    export CRTM_FIX=/scratch3/NCEPDEV/nceplibs/dev/crtm/v2.2.3/fix
+    export CRTM_FIX=${CRTM_FIX:-/gpfs/dell1/nco/ops/nwprod/lib/crtm/v2.2.6/fix}
+elif [ $machine = "HERA" ] ; then
+    export CRTM_FIX=${CRTM_FIX:- /scratch2/NCEPDEV/nwprod/NCEPLIBS/fix/crtm_v2.2.6}
 else
     echo "UPP using CRTM_FIX = $CRTM_FIX"
 fi

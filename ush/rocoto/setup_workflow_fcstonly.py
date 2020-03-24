@@ -197,10 +197,7 @@ def get_postgroups(post, cdump='gdas'):
     if cdump in ['gdas']:
         fhrs = range(fhmin, fhmax+fhout, fhout)
     elif cdump in ['gfs']:
-#        fhmax = np.max([post['120'],post['120'],post['120'],post['120']])
-#BL2018
-#        fhmax = 24
-        fhmax = post['FHMAX_GFS_00']
+        fhmax = np.max([post['FHMAX_GFS_00'],post['FHMAX_GFS_06'],post['FHMAX_GFS_12'],post['FHMAX_GFS_18']])
         fhout = post['FHOUT_GFS']
         fhmax_hf = post['FHMAX_HF_GFS']
         fhout_hf = post['FHOUT_HF_GFS']

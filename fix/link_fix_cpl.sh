@@ -30,5 +30,6 @@ ln -sf $CPL_FIX/fix_ocnice        fix_ocnice
 ln -sf $CPL_FIX/fix_cice5         fix_cice5
 ln -sf $CPL_FIX/fix_mom6          fix_mom6
 ln -sf $CPL_FIX/fix_fv3grid       fix_fv3grid
+ln -sf $CPL_FIX/ocean_ice_post    ocean_ice_post
 
 

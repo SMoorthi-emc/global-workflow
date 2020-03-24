@@ -154,6 +154,7 @@ export FIXmom=$HOMEgfs/fix/fix_mom6
 export FIXgrid=$HOMEgfs/fix/fix_fv3grid
 # For coupled ocnpost
 export OCNFIXDIR=$HOMEgfs/fix/fix_ocnice
+export OCNPOSTsrc=$HOMEgfs/fix/ocean_ice_post
 #
 #For WW3
 export FIX_WW3=${FIX_WW3:-$NOSCRUB/WW3_input_data}
@@ -426,7 +427,7 @@ export FHMIN_GFS=0
 #export restart_interval=86400
 #export restart_interval=43200
 #export restart_interval=21600
-#export restart_interval=10800
+ export restart_interval=10800
 #export restart_interval=7200
 #export restart_interval=3600
  export restart_interval_atm=$((restart_interval/3600))
@@ -441,7 +442,7 @@ export FHMIN_GFS=0
 #export FHMAX_GFS_00=15
 #export FHMAX_GFS_00=12
 #export FHMAX_GFS_00=9
-#export FHMAX_GFS_00=6
+ export FHMAX_GFS_00=6
 #export FHMAX_GFS_00=84
 #export FHMAX_GFS_00=93
 #export FHMAX_GFS_00=99
@@ -449,13 +450,11 @@ export FHMIN_GFS=0
 #export FHMAX_GFS_00=03
 #export FHMAX_GFS_00=02
 #export FHMAX_GFS_00=01
-#export FHMAX_GFS_00=132
-#export FHMAX_GFS_00=138
 #export FHMAX_GFS_00=240
 #export FHMAX_GFS_00=300  # uncomment this line for 45 day run
 #export FHMAX_GFS_00=360
 #export FHMAX_GFS_00=840
- export FHMAX_GFS_00=1080 # uncomment this line for 45 day run
+#export FHMAX_GFS_00=1080 # uncomment this line for 45 day run
 #export FHMAX_GFS_00=1440
 #export FHMAX_GFS_00=1806 # uncomment this line for 45 day run
 #export FHMAX_GFS_00=1920 # uncomment this line for 45 day run
@@ -463,15 +462,12 @@ export FHMIN_GFS=0
 #export FHMAX_GFS_00=2880 # uncomment this line for 45 day run
 #export FHMAX_GFS=1080
 #export FHMAX_GFS_00=1440
+
  export FHMAX_GFS_12=0
+ export FHMAX_GFS_06=0
+ export FHMAX_GFS_18=0
+ export FHMAX_GFS=$(eval echo \${FHMAX_GFS_$cyc})
 
-#export FHMAX_GFS=840
-export FHMAX_GFS_06=840
-export FHMAX_GFS_840=840
-export FHMAX_GFS_18=840
-export FHMAX_GFS=$(eval echo \${FHMAX_GFS_$cyc})
-
-#BL2018
  export FHOUT_GFS=3
 #export FHOUT_GFS=6
 #export FHOUT_GFS=1

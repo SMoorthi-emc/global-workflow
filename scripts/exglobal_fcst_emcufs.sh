@@ -1700,10 +1700,11 @@ if [ $QUILTING = .true. -a $OUTPUT_GRID = gaussian_grid ] ; then
     sfco=sfcf$FH3.$output_file
     logo=logf$FH3.$output_file
     prefix="$CDUMP.t${cyc}z."
-    rm $memdir/$atmo ; $memdir/$sfco ; $memdir/$logo
+    rm $memdir/${prefix}$atmo ; $memdir/${prefix}$sfco ; $memdir/${prefix}$logo
     eval $NLN $memdir/${prefix}$atmo ${prefix}$atmo
     eval $NLN $memdir/${prefix}$sfco ${prefix}$sfco
-    eval $NLN $memdir/${prefix}$logo ${prefix}$logo
+    eval $NLN $memdir/${prefix}$logo logf$FH3
+#   eval $NLN $memdir/${prefix}$logo ${prefix}$logo
 
     if [ $WRITE_DOPOST = .true. ] ; then           # post grib files
       FH2=$(printf %02i $fhr)

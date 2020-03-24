@@ -40,12 +40,9 @@ export pid=${pid:-$$}
 export outid=${outid:-"LL$job"}
 export jobid=${jobid:-"${outid}.o${pid}"}
 
-if [ $RUN_ENVIR = "nco" ]; then
-    export DATA="$DATAROOT/${job}.${pid}"
-else
-    export DATAROOT="$RUNDIR/$CDATE/$CDUMP"
-    export DATA="$DATAROOT/DATAocnpost$FHRGRP"
-fi
+export DATA="$DATAROOT/${job}.${pid}"
+# DATA dir not used for now.
+
 [[ -d $DATA ]] && rm -rf $DATA
 mkdir -p $DATA
 cd $DATA
@@ -94,7 +91,7 @@ fi
 if [ $FHRGRP -eq 0 ]; then
     fhrlst="anl"
 else
-    fhrlst=$(echo $FHRLST | sed -e 's/_/ /g; s/f/ /g; s/,/ /g')
+    fhrlst=$(echo $OCN_FHRLST | sed -e 's/_/ /g; s/\[/ /g; s/\]/ /g; s/f/ /g; s/,/ /g')
 fi
 
 export OMP_NUM_THREADS=1
@@ -102,96 +99,38 @@ export ENSMEM=${ENSMEM:-01}
 
 export IDATE=$CDATE
 
-#---------------------------------------------------------------
-echo "PT DEBUG fhrlst is $fhrlst"
-
-FHOUT=$FHOUT_GFS
-
 for fhr in $fhrlst; do
   export fhr=$fhr
-  #  --------------------------------------
-  #  cp cice data to COMOUT directory
-  #  --------------------------------------
-
-  cd $RUNDIR/$IDATE/$CDUMP/fcst
-  echo "PT DEBUG : Where am I?"
-  pwd
-
-  YYYY0=`echo $IDATE | cut -c1-4`
-  MM0=`echo $IDATE | cut -c5-6`
-  DD0=`echo $IDATE | cut -c7-8`
-  HH0=`echo $IDATE | cut -c9-10`
-  SS0=$((10#$HH0*3600))
-
   VDATE=$($NDATE $fhr $IDATE)
-  YYYY=`echo $VDATE | cut -c1-4`
-  MM=`echo $VDATE | cut -c5-6`
-  DD=`echo $VDATE | cut -c7-8`
-  HH=`echo $VDATE | cut -c9-10`
-  SS=$((10#$HH*3600))
+  # Regrid the MOM6 and CICE5 output from tripolar to regular grid via NCL
+  # This can take .25 degree input and convert to .5 degree - other opts avail
+  # The regrid scripts use CDATE for the current day, restore it to IDATE afterwards
+  export CDATE=$VDATE
+  cd $DATA
+if [ $fhr -gt 0 ]; then
+  export MOM6REGRID=$OCNPOSTsrc/mom6_regrid_025
+  $MOM6REGRID/run_regrid.sh
+  status=$?
+  [[ $status -ne 0 ]] && exit $status
 
-#  DDATE=$($NDATE -$FHOUT $VDATE)
-
-  if [[ 10#$fhr -eq 0 ]]; then
-    $NCP -p history/iceh_ic.${YYYY0}-${MM0}-${DD0}-`printf "%5.5d" ${SS0}`.nc $COMOUT/iceic$VDATE.$ENSMEM.$IDATE.nc
-    status=$?
-    [[ $status -ne 0 ]] && exit $status
-    echo "fhr is 0, only copying ice initial conditions... exiting"
-  else
-    $NCP -p history/iceh_`printf "%0.2d" $FHOUT`h.${YYYY}-${MM}-${DD}-`printf "%5.5d" ${SS}`.nc $COMOUT/ice$VDATE.$ENSMEM.$IDATE.nc
-    status=$?
-    [[ $status -ne 0 ]] && exit $status
-  fi
+  # Convert the netcdf files to grib2
+  export executable=$MOM6REGRID/exec/reg2grb2.x
+  $MOM6REGRID/run_reg2grb2.sh
+  status=$?
+  [[ $status -ne 0 ]] && exit $status
+fi
 
 done
-# copy ocn files
-for fhr in $fhrlst; do
-  export fhr=$fhr
-  if [[ 10#$fhr -ge 6 ]]; then
-  hh_inc_m=$((10#$FHOUT/2))
-#hh_inc_m=3
-#hh_in_o=6
-  hh_inc_o=$((10#$FHOUT  ))
+# Restore CDATE to what is expected
+  export CDATE=$IDATE
+  echo $pwd
+  $NMV ocn_ice*.grb2 $COMOUT
+  status=$?
+  [[ $status -ne 0 ]] && exit $status
 
-  # ------------------------------------------------------
-  #  adjust the dates on the mom filenames and save
-  # ------------------------------------------------------
-  VDATE=$($NDATE $fhr $IDATE)
-  YYYY=`echo $VDATE | cut -c1-4`
-  MM=`echo $VDATE | cut -c5-6`
-  DD=`echo $VDATE | cut -c7-8`
-  HH=`echo $VDATE | cut -c9-10`
-  SS=$((10#$HH*3600))
-
-#  m_date=$($NDATE $hh_inc_m $DDATE)
-#  p_date=$($NDATE $hh_inc_o $DDATE)
-
-  m_date=$($NDATE -$hh_inc_m $VDATE)
-  p_date=$VDATE
-
-  # This loop probably isn't needed
-    year=`echo $m_date | cut -c1-4`
-    month=`echo $m_date | cut -c5-6`
-    day=`echo $m_date | cut -c7-8`
-    hh=`echo $m_date | cut -c9-10`
-
-# ocn_2016_01_01_03.nc
-# ocn_2016_01_01_09.nc
-# ocn_2016_01_01_15.nc
-# ocn_2016_01_01_21.nc
-
-    export ocnfile=ocn_${year}_${month}_${day}_${hh}.nc
-
-    echo "cp -p $ocnfile $COMOUT/ocn$p_date.$ENSMEM.$IDATE.nc"
-    $NCP -p $ocnfile $COMOUT/ocn$p_date.$ENSMEM.$IDATE.nc
-    status=$?
-    [[ $status -ne 0 ]] && exit $status
-  fi
-done
-    $NCP -p SST*nc $COMOUT/
-    $NCP -p input.nml $COMOUT/
-    $NCP -p ice_in $COMOUT/
-    $NCP -p INPUT/MOM_input $COMOUT/
-    
+# clean up working folder
 #rm -Rf $DATA
+#BL2019
+###############################################################
+# Exit out cleanly
 exit 0

@@ -17,8 +17,8 @@ edate="2017080112"
 # USER NEED NOT MODIFY BELOW THIS LINE
 ######################################
 
-if [ -d /scratch4/NCEPDEV ]; then
-    machine="theia"
+if [ -d /scratch1/NCEPDEV ]; then
+    machine="hera"
     icsdir="/scratch4/NCEPDEV/global/noscrub/glopara/ICS/FV3GFS"
 elif [ -d /gpfs/hps3 ]; then
     machine="cray"

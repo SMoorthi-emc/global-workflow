@@ -20,7 +20,7 @@ global machines
 global expdir, configdir, comrot, pslot, resdet, resens, nens, cdump, idate, edate, gfs_cyc
 
 
-machines = ['THEIA', 'WCOSS_C', 'WCOSS_DELL_P3']
+machines = ['HERA', 'WCOSS_C', 'WCOSS_DELL_P3']
 
 
 def makedirs_if_missing(d):
@@ -137,8 +137,8 @@ link initial condition files from $ICSDIR to $COMROT'''
 
     args = parser.parse_args()
 
-    if os.path.exists('/scratch3'):
-        machine = 'THEIA'
+    if os.path.exists('/scratch1'):
+        machine = 'HERA'
     elif os.path.exists('/gpfs') and os.path.exists('/etc/SuSE-release'):
         machine = 'WCOSS_C'
     elif os.path.exists('/gpfs/dell2'):

@@ -16,7 +16,6 @@ import rocoto
 
 DATE_ENV_VARS=['CDATE','SDATE','EDATE']
 SCHEDULER_MAP={'HERA':'slurm',
-               'THEIA':'slurm',
                'WCOSS':'lsf',
                'WCOSS_DELL_P3':'lsf',
                'WCOSS_C':'lsfcray'}
@@ -171,12 +170,10 @@ def check_slurm(print_message = False):
 
 def detectMachine():
 
-    machines = ['THEIA', 'HERA', 'WCOSS_C', 'WCOSS_DELL_P3']
+    machines = ['HERA', 'WCOSS_C', 'WCOSS_DELL_P3']
 
     if os.path.exists('/scratch1/NCEPDEV'):
         return 'HERA'
-    elif os.path.exists('/scratch3/NCEPDEV'):
-        return 'THEIA'
     elif os.path.exists('/gpfs') and os.path.exists('/etc/SuSE-release'):
         return 'WCOSS_C'
     elif os.path.exists('/gpfs/dell2'):
@@ -328,7 +325,7 @@ def get_resources(machine, cfg, task, cdump='gdas'):
     if scheduler in ['slurm']:
         natstr = '--export=NONE'
 
-    if machine in ['THEIA', 'HERA', 'WCOSS_C', 'WCOSS_DELL_P3']:
+    if machine in ['HERA', 'WCOSS_C', 'WCOSS_DELL_P3']:
 
         if machine in ['HERA']:
             resstr = '<nodes>%d:ppn=%d:tpp=%d</nodes>' % (nodes, ppn, threads)

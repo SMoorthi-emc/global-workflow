@@ -174,8 +174,11 @@ def get_definitions(base):
     strings.append('\n')
     strings.append('\t<!-- Machine related entities -->\n')
     strings.append('\t<!ENTITY ACCOUNT    "%s">\n' % base['ACCOUNT'])
+
     strings.append('\t<!ENTITY QUEUE      "%s">\n' % base['QUEUE'])
     strings.append('\t<!ENTITY QUEUE_ARCH "%s">\n' % base['QUEUE_ARCH'])
+    if scheduler in ['slurm']:
+        strings.append('\t<!ENTITY PARTITION_ARCH "%s">\n' % base['QUEUE_ARCH'])
     strings.append('\t<!ENTITY SCHEDULER  "%s">\n' % wfu.get_scheduler(base['machine']))
     strings.append('\n')
     strings.append('\t<!-- Toggle HPSS archiving -->\n')
@@ -183,7 +186,7 @@ def get_definitions(base):
     strings.append('\n')
     strings.append('\t<!-- ROCOTO parameters that control workflow -->\n')
     strings.append('\t<!ENTITY CYCLETHROTTLE "3">\n')
-    strings.append('\t<!ENTITY TASKTHROTTLE  "20">\n')
+    strings.append('\t<!ENTITY TASKTHROTTLE  "25">\n')
     strings.append('\t<!ENTITY MAXTRIES      "2">\n')
     strings.append('\n')
 
