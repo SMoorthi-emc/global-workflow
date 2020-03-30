@@ -58,8 +58,8 @@ elif [ $step = "fcst" ]; then
 #     export wtime_fcst_gfs="08:20:00"
       export wtime_fcst="15:50:00"
       export wtime_fcst_gfs="15:50:00"
-#     export wtime_fcst="04:50:00"
-#     export wtime_fcst_gfs="04:50:00"
+      export wtime_fcst="01:50:00"
+      export wtime_fcst_gfs="01:50:00"
       if [ $QUEUE = dev -o $QUEUE = debug ] ; then
         export npe_node_fcst=${npe_node_fcst:-14}
         export npe_node_max=${npe_node_max:-28}
@@ -100,12 +100,15 @@ elif [ $step = "fcst" ]; then
 #     export npe_ocn=105
 #     export npe_ocn=80
       export npe_ice=24
+      export npe_ice=48
 #     export npe_ice=18
 #     export npe_ice=36
 #     export npe_ice=28
+#     export WRTTASK_MIN=7
       if [ $machine == HERA ] ; then
 #       export npe_ocn=200
         export npe_ice=48
+        export WRTTASK_MIN=10
       fi
     fi
     if [ $CPLDWAV = YES ] ; then

@@ -32,7 +32,7 @@ HH=$(echo $IDATE | cut -c9-10)
 RES=$(echo $CASE|cut -c 2-)
 
 # $PSLOT is the name of your experiment
- expt=_phybd
+ expt=_phyda
 #expt=_phyad
 #expt=_phyg
 #expt=_phyf
@@ -147,5 +147,5 @@ cd $CWD
 #exit
  cd $EXPDIR/$PSLOT
 #module load rocoto/1.2.4
-#rocotorun -d $PSLOT.db -w $PSLOT.xml
- rocotorun -v 10 -d $PSLOT.db -w $PSLOT.xml
+ rocotorun -d $PSLOT.db -w $PSLOT.xml
+#rocotorun -v 10 -d $PSLOT.db -w $PSLOT.xml

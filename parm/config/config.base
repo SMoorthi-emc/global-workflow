@@ -135,7 +135,7 @@ fi
 
 #fi
 
-#export print_esmf=.true.
+ export print_esmf=.true.
  export print_esmf=${print_esmf=:-.false.}
  export ESMF_RUNTIME_PROFILE=ON
  export ESMF_RUNTIME_PROFILE_OUTPUT=SUMMARY
@@ -165,7 +165,7 @@ export ww3_res=${ww3_res:-'glo_30m'}
 export FIX_LAKE_ORO=$NOSCRUB/oro_lake
 export use_lake_oro=YES
 
- export RUN_CCPP=YES
+#export RUN_CCPP=YES
  export cplflx=.true.
  export CPLD_APP=YES
 
@@ -187,11 +187,12 @@ if [ $cplflx = .true. ] ; then
 #export SCRDIR=$HOMEgfs/scripts
 #export FORECASTSH="$SCRDIR/exglobal_fcst_emcufs.sh_feb02"    # with    UGW
  appdir=cfv3_git_jan31
+#appdir=cfv3_git_jan31_mars/cfv3_git_jan31
  export cpl=.true.
  export CPLDFV3_MOM6_CICE=YES
- export cplwav=.true.
- export cplwav2atm=.true.
- export CPLDWAV=YES
+#export cplwav=.true.
+#export cplwav2atm=.true.
+#export CPLDWAV=YES
  export IC_FROM=bench1
  export NUMOM=YES
  export CPLD_APP=YES
@@ -441,7 +442,7 @@ export FHMIN_GFS=0
  export FHMAX_GFS_00=24
 #export FHMAX_GFS_00=15
 #export FHMAX_GFS_00=12
-#export FHMAX_GFS_00=9
+ export FHMAX_GFS_00=9
  export FHMAX_GFS_00=6
 #export FHMAX_GFS_00=84
 #export FHMAX_GFS_00=93
@@ -476,7 +477,7 @@ export FHMIN_GFS=0
 #BL2018
 export FHMAX_HF_GFS=$FHMAX_GFS_00
 export FHOUT_HF_GFS=$FHOUT_GFS
-#export NSOUT=1
+ export NSOUT=1
  export NSOUT=${NSOUT:-0}
 #if [ $NSOUT -gt 0 ] ; then
 # export FHOUT_HF_GFS=0
