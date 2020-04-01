@@ -135,7 +135,7 @@ fi
 
 #fi
 
-#export print_esmf=.true.
+ export print_esmf=.true.
  export print_esmf=${print_esmf=:-.false.}
  export ESMF_RUNTIME_PROFILE=ON
  export ESMF_RUNTIME_PROFILE_OUTPUT=SUMMARY
@@ -165,8 +165,8 @@ export ww3_res=${ww3_res:-'glo_30m'}
 export FIX_LAKE_ORO=$NOSCRUB/oro_lake
 export use_lake_oro=YES
 
- export RUN_CCPP=YES
- export cplflx=.true.
+#export RUN_CCPP=YES
+#export cplflx=.true.
  export CPLD_APP=YES
 
 #export DumpFields_MED=true
@@ -189,9 +189,9 @@ if [ $cplflx = .true. ] ; then
  appdir=cfv3_git_jan31
  export cpl=.true.
  export CPLDFV3_MOM6_CICE=YES
- export cplwav=.true.
+#export cplwav=.true.
  export cplwav2atm=.true.
- export CPLDWAV=YES
+#export CPLDWAV=YES
  export IC_FROM=bench1
  export NUMOM=YES
  export CPLD_APP=YES
@@ -429,7 +429,7 @@ export FHMIN_GFS=0
 #export restart_interval=21600
  export restart_interval=10800
 #export restart_interval=7200
-#export restart_interval=3600
+ export restart_interval=3600
  export restart_interval_atm=$((restart_interval/3600))
 
  export FHMAX=1080
@@ -448,7 +448,7 @@ export FHMIN_GFS=0
 #export FHMAX_GFS_00=99
 #export FHMAX_GFS_00=04
 #export FHMAX_GFS_00=03
-#export FHMAX_GFS_00=02
+ export FHMAX_GFS_00=02
 #export FHMAX_GFS_00=01
 #export FHMAX_GFS_00=240
 #export FHMAX_GFS_00=300  # uncomment this line for 45 day run
@@ -476,7 +476,7 @@ export FHMIN_GFS=0
 #BL2018
 export FHMAX_HF_GFS=$FHMAX_GFS_00
 export FHOUT_HF_GFS=$FHOUT_GFS
-#export NSOUT=1
+ export NSOUT=1
  export NSOUT=${NSOUT:-0}
 #if [ $NSOUT -gt 0 ] ; then
 # export FHOUT_HF_GFS=0

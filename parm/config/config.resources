@@ -143,8 +143,8 @@ elif [ $step = "fcst" ]; then
 
 elif [ $step = "post" ]; then
 
-    export wtime_post="08:00:00"
-    export wtime_post_gfs="08:00:00"
+    export wtime_post=${wtime_post:-"08:00:00"}
+    export wtime_post_gfs=${wtime_post_gfs:-"08:00:00"}
 #   export npe_node_dwn=24
     if [ $machine == WCOSS_C ] ; then
       export memory_post="3072M"

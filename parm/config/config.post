@@ -13,13 +13,16 @@ echo "BEGIN: config.post"
 
 # No. of concurrent post jobs [0 implies sequential]
 export NPOSTGRP=10
+export NPOSTGRP=1
 
 # Post driver job that calls gfs_nceppost.sh and downstream jobs
-  elif [ $machine = "WCOSS_DELL_P3" ] ; then
-export POSTDIR=${POSTDIR:-/gpfs/dell2/emc/modeling/noscrub/Shrinivas.Moorthi/balv/post_dir3/EMC_post}
+if [ $machine = "WCOSS_DELL_P3" ] ; then
+  export POSTDIR=${POSTDIR:-/gpfs/dell2/emc/modeling/noscrub/Shrinivas.Moorthi/balv/post_dir3/EMC_post}
 elif [ $machine = HERA ] ; then
   export POSTDIR=${POSTDIR:-/scratch1/NCEPDEV/global/Shrinivas.Moorthi/save/postdir/EMC_post}
+  export SIGHDR=/scratch1/NCEPDEV/global/Shrinivas.Moorthi/save/bin/nemsio_util/nemsio_get
 fi
+export POSTGRB2TBL=$POSTDIR/parm/params_grib2_tbl_new
 export POSTJJOBSH=${POSTJJOBSH:-${POSTDIR:-$HOMEpost}/jobs/JGLOBAL_NCEPPOST}
 
 #export POSTJJOBSH="$HOMEpost/jobs/JGLOBAL_NCEPPOST"
