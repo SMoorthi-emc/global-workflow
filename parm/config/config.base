@@ -182,6 +182,7 @@ export CPLD_APP=${CPLD_APP:-NO}
 if [ $cplflx = .true. ] ; then
  app=ufs-s2s-model
  app=ufs-s2s-model_feb25
+ app=ufs-s2s-model_mar30
 #app=ufs-s2s-model_feb25_sav
 #appdir=cfv3_git_jan08
 #export SCRDIR=$HOMEgfs/scripts
@@ -199,6 +200,7 @@ if [ $cplflx = .true. ] ; then
 elif [ $CPLD_APP = YES ] ; then
  app=ufs-s2s-model
  app=ufs-s2s-model_feb25
+ app=ufs-s2s-model_mar30
 #appdir=cfv3_git_jan08
 #export SCRDIR=$HOMEgfs/scripts
 #export FORECASTSH="$SCRDIR/exglobal_fcst_emcufs.sh_feb02"    # with    UGW
@@ -471,7 +473,7 @@ export FHMIN_GFS=0
 
  export FHOUT_GFS=3
 #export FHOUT_GFS=6
-#export FHOUT_GFS=1
+ export FHOUT_GFS=1
  export FHOUT=$FHOUT_GFS
 
 #BL2018

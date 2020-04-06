@@ -15,8 +15,8 @@ echo "BEGIN: config.post"
 export NPOSTGRP=10
 
 # Post driver job that calls gfs_nceppost.sh and downstream jobs
-  elif [ $machine = "WCOSS_DELL_P3" ] ; then
-export POSTDIR=${POSTDIR:-/gpfs/dell2/emc/modeling/noscrub/Shrinivas.Moorthi/balv/post_dir3/EMC_post}
+if [ $machine = "WCOSS_DELL_P3" ] ; then
+  export POSTDIR=${POSTDIR:-/gpfs/dell2/emc/modeling/noscrub/Shrinivas.Moorthi/balv/post_dir3/EMC_post}
 elif [ $machine = HERA ] ; then
   export POSTDIR=${POSTDIR:-/scratch1/NCEPDEV/global/Shrinivas.Moorthi/save/postdir/EMC_post}
 fi
