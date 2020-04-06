@@ -209,7 +209,7 @@ else
   restart_interval=${restart_interval:-1296000}    # Interval in seconds to write restarts
   coldstart=false
   ice_restart=.true.
-  restart_ext=.true.
+# restart_ext=.true.
   restart_ext=.false.
 fi
 restart_interval=${restart_interval:-86400}    # Interval in seconds to write restarts
