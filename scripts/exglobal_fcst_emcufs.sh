@@ -83,7 +83,7 @@ if [ $FHMAX_HF -gt 0 -a $FHOUT_HF -gt 0 ] ; then
 else
  export fdiag=${fdiag:-$FHOUT}
 fi
-WRITE_DOPOST=${WRITE_DOPOST:-.false.}
+WRITE_DOPOST=${WRITE_DOPOST_CPLD:-${WRITE_DOPOST:-.false.}}
 
 PDY=$(echo $CDATE | cut -c1-8)
 cyc=$(echo $CDATE | cut -c9-10)
@@ -275,7 +275,7 @@ export FIX_AER=${FIX_AER:-$FIX_DIR/fix_aer}
 export FIX_CCN=${FIX_CCN:-$FIX_DIR/fix_ccn}
 export CO2DIR=${CO2DIR:-$FIX_AM/fix_co2_proj}
 export PARM_DIR=${PARM_DIR:-$HOMEgfs/parm/parm_fv3diag}
-export PARM_POST=${PARM_POST:-$HOMEgfs/parm/post}
+export PARM_POST=${PARM_POST:-$POSTDIR/parm}
 
 # Utilities
 #NCP=${NCP:-"/bin/cp -p"}
@@ -677,11 +677,24 @@ fi
 
 # inline post fix files
 # ---------------------
-if [ $WRITE_DOPOST = ".true." ]; then
-  $NLN $PARM_POST/post_tag_gfs${LEVS}             $DATA/itag
-  $NLN $PARM_POST/postxconfig-NT-GFS-TWO.txt      $DATA/postxconfig-NT.txt
-  $NLN $PARM_POST/postxconfig-NT-GFS-F00-TWO.txt  $DATA/postxconfig-NT_FH00.txt
+if [ $WRITE_DOPOST = .true. ] ; then
+cat > $DATA/itag << EOF
+ &NAMPGB
+ $POSTGPVARS
+/
+EOF
+cat itag
+  export PostFlatFile00=${PostFlatFile00:-postxconfig-NT-GFS-F00-TWO.txt}
+  export PostFlatFile=${PostFlatFile:-postxconfig-NT-GFS-TWO.txt}
+# $NLN $PARM_POST/post_tag_gfs${LEVS}             $DATA/itag
+# $NLN $PARM_POST/postxconfig-NT-GFS-TWO.txt      $DATA/postxconfig-NT.txt
+# $NLN $PARM_POST/postxconfig-NT-GFS-F00-TWO.txt  $DATA/postxconfig-NT_FH00.txt
+
+  $NLN $PARM_POST/$PostFlatFile00                 $DATA/postxconfig-NT_FH00.txt
+  $NLN $PARM_POST/$PostFlatFile                   $DATA/postxconfig-NT.txt
   $NLN $PARM_POST/params_grib2_tbl_new            $DATA/params_grib2_tbl_new
+# $NLN $LONSPERLAT                                $DATA/lonsperlat.dat
+  $NLN $SIGLEVEL                                  $DATA/hyblev_file
 fi
 
 ######################  CCPP ########################################
@@ -1064,6 +1077,8 @@ atm_coupling_interval_sec:  ${CPL_FAST:-$DELTIM}
 quilting:                   ${QUILTING:-.true.}
 write_groups:               ${WRITE_GROUP:-1}
 write_tasks_per_group:      ${WRTTASK_PER_GROUP:-28}
+output_history:             ${OUTPUT_HISTORY:-.true.}
+write_dopost:               ${WRITE_DOPOST:-.false.}
 num_files:                  ${NUM_FILES:-2}
 filename_base:              ${FILENAME_BASE:-'atm sfc'}
 output_grid:                ${OUTPUT_GRID:-cubed_sphere_grid}

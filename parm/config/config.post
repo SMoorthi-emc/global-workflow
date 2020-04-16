@@ -17,7 +17,10 @@ export NPOSTGRP=1
 
 # Post driver job that calls gfs_nceppost.sh and downstream jobs
 if [ $machine = "WCOSS_DELL_P3" ] ; then
-  export POSTDIR=${POSTDIR:-/gpfs/dell2/emc/modeling/noscrub/Shrinivas.Moorthi/balv/post_dir3/EMC_post}
+# export POSTDIR=${POSTDIR:-/gpfs/dell2/emc/modeling/noscrub/Shrinivas.Moorthi/balv/post_dir3/EMC_post}
+  export POSTDIR=${POSTDIR:-/gpfs/dell2/emc/modeling/noscrub/Shrinivas.Moorthi/postdir_mar24/EMC_post}
+# export POST_INC=${POST_INC:-$POSTDIR/
+# export POST_LIB=${POST_LIB:-$POSTDIR/
 elif [ $machine = HERA ] ; then
   export POSTDIR=${POSTDIR:-/scratch1/NCEPDEV/global/Shrinivas.Moorthi/save/postdir/EMC_post}
   export SIGHDR=/scratch1/NCEPDEV/global/Shrinivas.Moorthi/save/bin/nemsio_util/nemsio_get

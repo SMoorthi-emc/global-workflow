@@ -165,6 +165,9 @@ export ww3_res=${ww3_res:-'glo_30m'}
 export FIX_LAKE_ORO=$NOSCRUB/oro_lake
 export use_lake_oro=YES
 
+ export NSOUT=1
+ export NSOUT=${NSOUT:-0}
+
 #export RUN_CCPP=YES
  export cplflx=.true.
  export CPLD_APP=YES
@@ -191,6 +194,7 @@ if [ $cplflx = .true. ] ; then
 #appdir=cfv3_git_jan31_mars/cfv3_git_jan31
  export cpl=.true.
  export CPLDFV3_MOM6_CICE=YES
+ export Restart_Prefix='MOM.res'
 #export cplwav=.true.
 #export cplwav2atm=.true.
 #export CPLDWAV=YES
@@ -284,7 +288,35 @@ fi
  export CPC_ICE=${CPC_ICE:-NO}
 if [ $CPC_ICE = YES ] ; then export runid=cpcice ; fi
 
-####################################################
+##############################   To turn on inline post  #################################
+if [ $NSOUT -eq 0 ] ; then
+ export WRITE_DOPOST=.true.
+fi
+export WRITE_DOPOST=${WRITE_DOPOST:-.false.}
+if [ $WRITE_DOPOST = .true. ] ; then
+  export POSTDIR=/gpfs/dell2/emc/modeling/noscrub/Shrinivas.Moorthi/postdir_mar24/EMC_post
+  KPO=${KPO:-57}
+  if [ $KPO -eq 47 ] ; then
+   export POSTGPVARS=${POSTGPVARS:-"KPO=47,PO=1000.,975.,950.,925.,900.,875.,850.,825.,800.,775.,750.,725.,700.,675.,650.,625.,600.,575.,550.,525.,500.,475.,450.,425.,400.,375.,350.,325.,300.,275.,250.,225.,200.,175.,150.,125.,100.,70.,50.,30.,20.,10.,7.,5.,3.,2.,1.,"}
+  elif [ $KPO -eq 50 ] ; then
+   export POSTGPVARS=${POSTGPVARS:-"KPO=50,PO=1000.,975.,950.,925.,900.,875.,850.,825.,800.,775.,750.,725.,700.,675.,650.,625.,600.,575.,550.,525.,500.,475.,450.,425.,400.,375.,350.,325.,300.,275.,250.,225.,200.,175.,150.,125.,100.,70.,50.,40.,30.,20.,15.,10.,7.,5.,3.,2.,1.,0.4"}
+  elif [ $KPO -eq 57 ] ; then
+   export POSTGPVARS=${POSTGPVARS:-"KPO=57,PO=1000.,975.,950.,925.,900.,875.,850.,825.,800.,775.,750.,725.,700.,675.,650.,625.,600.,575.,550.,525.,500.,475.,450.,425.,400.,375.,350.,325.,300.,275.,250.,225.,200.,175.,150.,125.,100.,70.,50.,40.,30.,20.,10.,7.,5.,4.,3.,2.,1.,0.7,0.5,0.4,0.3,0.2,0.1,0.07,0.05"}
+  fi
+
+  export PostFlatFile00=${PostFlatFile00:-postcntrl_gfs_tke_mg3_${KPO}l_00_two.txt}
+  export PostFlatFile=${PostFlatFile:-postcntrl_gfs_tke_mg3_${KPO}l_two.txt}
+
+  export LEVS=${LEVS:-65}
+ LVER=${LVER:-""}
+ if [ $LEVS -gt 65 ] ; then
+   export SIGLEVEL=${SIGLEVEL:-$HOMEgfs/fix/fix_am/global_hyblev.l${LEVS}${LVER}.txt}
+ else
+   export SIGLEVEL=${SIGLEVEL:-$HOMEgfs/fix/fix_am/global_hyblev.l$LEVS.txt}
+ fi
+fi
+
+###############################################################################################
 # DO NOT ADD MACHINE DEPENDENT STUFF BELOW THIS LINE
 # IF YOU HAVE TO MAKE MACHINE SPECIFIC CHANGES BELOW
 # FEEL FREE TO MOVE THEM ABOVE THIS LINE TO KEEP IT CLEAR
@@ -293,7 +325,7 @@ if [ $CPC_ICE = YES ] ; then export runid=cpcice ; fi
 export HOMEgsi="$HOMEgfs"
 export FIXgsi="$HOMEgfs/fix/fix_gsi"
 export HOMEfv3gfs="$HOMEgfs/sorc/fv3gfs.fd"
-export HOMEpost="$HOMEgfs"
+export HOMEpost=${POSTDIR:-$HOMEgfs}
 export HOMEobsproc_prep="$BASE_GIT/obsproc/obsproc_prep.iss-46886.fv3gfs"
 export HOMEobsproc_network="$BASE_GIT/obsproc/obsproc_global.iss-46886.fv3gfs"
 export BASE_VERIF="$BASE_SVN/verif/global/tags/vsdb"
@@ -404,11 +436,11 @@ export FHMIN_GFS=0
 
 #export USE_LAST_RESTART=YES
 #export restart_ext=.false.
-#export warm_start=.true.   # for warm_start need to set FHMIN (i.e. starting time)
+ export warm_start=.true.   # for warm_start need to set FHMIN (i.e. starting time)
 #export FHMIN=1
 #export FHMIN=2
 #export FHMIN=3
-#export FHMIN=6
+ export FHMIN=6
 #export FHMIN=12
 #export FHMIN=24
 #export FHMIN=48
@@ -432,7 +464,7 @@ export FHMIN_GFS=0
 #export restart_interval=21600
  export restart_interval=10800
 #export restart_interval=7200
- export restart_interval=3600
+#export restart_interval=3600
  export restart_interval_atm=$((restart_interval/3600))
 
  export FHMAX=1080
@@ -443,15 +475,15 @@ export FHMIN_GFS=0
 #export FHMAX_GFS_00=36
  export FHMAX_GFS_00=24
 #export FHMAX_GFS_00=15
-#export FHMAX_GFS_00=12
+ export FHMAX_GFS_00=12
  export FHMAX_GFS_00=9
- export FHMAX_GFS_00=6
+#export FHMAX_GFS_00=6
 #export FHMAX_GFS_00=84
 #export FHMAX_GFS_00=93
 #export FHMAX_GFS_00=99
 #export FHMAX_GFS_00=04
 #export FHMAX_GFS_00=03
- export FHMAX_GFS_00=02
+#export FHMAX_GFS_00=02
 #export FHMAX_GFS_00=01
 #export FHMAX_GFS_00=240
 #export FHMAX_GFS_00=300  # uncomment this line for 45 day run
@@ -473,14 +505,14 @@ export FHMIN_GFS=0
 
  export FHOUT_GFS=3
 #export FHOUT_GFS=6
- export FHOUT_GFS=1
+#export FHOUT_GFS=1
+#export FHOUT_GFS=0.125
  export FHOUT=$FHOUT_GFS
 
 #BL2018
 export FHMAX_HF_GFS=$FHMAX_GFS_00
 export FHOUT_HF_GFS=$FHOUT_GFS
- export NSOUT=1
- export NSOUT=${NSOUT:-0}
+
 #if [ $NSOUT -gt 0 ] ; then
 # export FHOUT_HF_GFS=0
 # export FHOUT_HF_GFS=-1
@@ -508,7 +540,7 @@ export OUTPUT_FILE=nemsio
 
 #export RAS=NO
 #export SHOC=NO
- export CSAW=NO
+#export CSAW=NO
 #export do_ugwp=.false.
 
 # CPL

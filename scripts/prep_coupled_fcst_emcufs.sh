@@ -65,7 +65,8 @@ if [ $inistep = restart ] ; then # using restart files for MOM6 and CICE here, F
   cd INPUT
   USE_LAST_RESTART=${USE_LAST_RESTART:-NO}
   if [ -s $OCN_RESTDIR ] ; then
-    ocnf=$OCN_RESTDIR/ocn.mom6.r.${yyyy}-${mm}-${dd}-${cycs}
+#   ocnf=$OCN_RESTDIR/ocn.mom6.r.${yyyy}-${mm}-${dd}-${cycs}
+    ocnf=$OCN_RESTDIR/${Restart_Prefix}.${yyyy}-${mm}-${dd}-${cycs}
     nfiles=$(ls -1 $ocnf*.nc | wc -l)
     if [ $nfiles -gt 0 -a $USE_LAST_RESTART = NO ] ; then
       $NCP ${ocnf}-00-00.nc   MOM.res.nc
@@ -194,23 +195,27 @@ DumpFields_ICE=${DumpFields_ICE:-false}
 OverwriteSlice_MED=${OverwriteSlice_MED:-$DumpFields_MED}
 OverwriteSlice_OCN=${OverwriteSlice_OCN:-$DumpFields_OCN}
 OverwriteSlice_ICE=${OverwriteSlice_ICE:-$DumpFields_ICE}
+Restart_Prefix=${Restart_Prefix:-'ocn.mom6.r'}
 
 if [ $inistep = cold ] ; then
   coldstart=true     # this is the correct setting
   ice_restart=.false.
   restart_ext=.false.
+  export WRITE_DOPOST_CPLD=.false.
 elif [ $inistep = warm ] ; then
   restart_interval=${restart_interval:-1296000}    # Interval in seconds to write restarts
   coldstart=false
   ice_restart=.false.
   restart_ext=.false.
 # restart_ext=.true.
+  export WRITE_DOPOST_CPLD=$WRITE_DOPOST
 else
   restart_interval=${restart_interval:-1296000}    # Interval in seconds to write restarts
   coldstart=false
   ice_restart=.true.
 # restart_ext=.true.
   restart_ext=.false.
+  export WRITE_DOPOST_CPLD=$WRITE_DOPOST
 fi
 restart_interval=${restart_interval:-86400}    # Interval in seconds to write restarts
 
@@ -305,6 +310,7 @@ OCN_attributes::
   restart_interval = $restart_interval
   restart_option = 'nseconds'
   restart_n = $restart_interval
+  Restart_Prefix = $Restart_Prefix
 ::
 
 eof
