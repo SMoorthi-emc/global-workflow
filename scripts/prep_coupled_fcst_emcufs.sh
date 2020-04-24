@@ -923,6 +923,7 @@ if [ ${LINK_MED_RST_FILES:-NO} = YES ] ; then
     eval $NLN $MED_RESTDIR/${pres}mediator_FBIce_i_restart.nc           ${pres}mediator_FBIce_i_restart.nc
     eval $NLN $MED_RESTDIR/${pres}mediator_FBLnd_l_restart.nc           ${pres}mediator_FBLnd_l_restart.nc
     eval $NLN $MED_RESTDIR/${pres}mediator_FBOcn_o_restart.nc           ${pres}mediator_FBOcn_o_restart.nc
+    eval $NLN $MED_RESTDIR/${pres}mediator_FBaccumAtmOcn_restart.nc     ${pres}mediator_FBaccumAtmOcn_restart.nc
     eval $NLN $MED_RESTDIR/${pres}mediator_scalars_restart.txt          ${pres}mediator_scalars_restart.txt
     fhr=$((fhr+restart_hr))
   done

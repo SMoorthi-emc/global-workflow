@@ -32,4 +32,9 @@ ln -sf $CPL_FIX/fix_mom6          fix_mom6
 ln -sf $CPL_FIX/fix_fv3grid       fix_fv3grid
 ln -sf $CPL_FIX/ocean_ice_post    ocean_ice_post
 
+ln -sf $CPL_FIX/MERRA2            fix_aer
+ln -sf $CPL_FIX/mg2_IN_CCN        fix_ccn
+ln -sf $CPL_FIX/aer_data          fix_lut
+
+
 

@@ -273,6 +273,7 @@ export FIX_FV3=${FIX_FV3:-${FIXfv3:-$FIX_DIR/fix_fv3_gmted2010}}
 export FIX_AM=${FIX_AM:-$FIX_DIR/fix_am}
 export FIX_AER=${FIX_AER:-$FIX_DIR/fix_aer}
 export FIX_CCN=${FIX_CCN:-$FIX_DIR/fix_ccn}
+export FIX_LUT=${FIX_LUT:-$FIX_DIR/fix_lut}
 export CO2DIR=${CO2DIR:-$FIX_AM/fix_co2_proj}
 export PARM_DIR=${PARM_DIR:-$HOMEgfs/parm/parm_fv3diag}
 export PARM_POST=${PARM_POST:-$POSTDIR/parm}
@@ -643,10 +644,12 @@ $NCP $FIX_AM/${O3FORC:-global_o3prdlos.f77}    $DATA/global_o3prdlos.f77
 $NCP $FIX_AM/${H2OFORC:-global_h2o_pltc.f77}   $DATA/global_h2oprdlos.f77
 $NCP $FIX_AM/global_sfc_emissivity_idx.txt     $DATA/sfc_emissivity_idx.txt
 
+export iccn=${iccn:-0}
+
 ## merra2 aerosol climo
 #----------------------
 export aero_in=${aero_in:-.false.}
-if [ $aero_in = .true. ] ; then
+if [ $iccn -eq 1 ] ; then
  for n in 01 02 03 04 05 06 07 08 09 10 11 12; do
    $NLN $FIX_AER/merra2C.aerclim.2003-2014.m${n}.nc  $DATA/merra2C.aerclim.2003-2014.m${n}.nc
  done
@@ -654,10 +657,16 @@ fi
 
 ## ccn/in climo
 #--------------
-export iccn=${iccn:-.true.}
-if [ $iccn = .true. ] ; then
+if [ $iccn -eq 2 ] ; then
  $NLN $FIX_CCN/cam5_4_143_NAAI_monclimo2.nc  $DATA/cam5_4_143_NAAI_monclimo2.nc
  $NLN $FIX_CCN/cam5_4_143_NPCCN_monclimo2.nc $DATA/cam5_4_143_NPCCN_monclimo2.nc
+#fi
+
+ $NLN $FIX_LUT/optics_BC.v1_3.dat  $DATA/optics_BC.dat
+ $NLN $FIX_LUT/optics_OC.v1_3.dat  $DATA/optics_OC.dat
+ $NLN $FIX_LUT/optics_DU.v15_3.dat $DATA/optics_DU.dat
+ $NLN $FIX_LUT/optics_SS.v3_3.dat  $DATA/optics_SS.dat
+ $NLN $FIX_LUT/optics_SU.v1_3.dat  $DATA/optics_SU.dat
 fi
 
 $NCP $FIX_AM/global_co2historicaldata_glob.txt $DATA/co2historicaldata_glob.txt
@@ -1351,8 +1360,7 @@ cat > input.nml << EOF
        mg_alf         = ${mg_alf:-1.0}
        fprcp          = ${fprcp:-0}
        pdfflag        = ${pdfflag:-4}
-       iccn           = ${iccn:-.true.}
-       aero_in        = ${aero_in:-.false.}
+       iccn           = ${iccn:-0}
        mg_do_graupel  = ${mg_do_graupel:-.false.}
        mg_do_hail     = ${mg_do_hail:-.false.}
        do_sb_physics  = ${do_sb_physics:-.true.}

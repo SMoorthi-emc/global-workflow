@@ -168,7 +168,7 @@ export use_lake_oro=YES
  export NSOUT=1
  export NSOUT=${NSOUT:-0}
 
-#export RUN_CCPP=YES
+ export RUN_CCPP=YES
  export cplflx=.true.
  export CPLD_APP=YES
 
@@ -199,6 +199,7 @@ if [ $cplflx = .true. ] ; then
 #export cplwav2atm=.true.
 #export CPLDWAV=YES
  export IC_FROM=bench1
+ if [ $IC_FROM = bench1 ] ; then export USE_IDEAL_AGE_TRACER=True ; fi
  export NUMOM=YES
  export CPLD_APP=YES
 elif [ $CPLD_APP = YES ] ; then
@@ -421,7 +422,7 @@ export FHCYC_GFS=24
 #export FHCYC=6
 #export FHCYC=3
 #export FHCYC_GFS=0
-#export FHCYC=0
+ export FHCYC=0
 
 # Output frequency of the forecast model (for cycling)
 export FHMIN=0
@@ -439,8 +440,8 @@ export FHMIN_GFS=0
  export warm_start=.true.   # for warm_start need to set FHMIN (i.e. starting time)
 #export FHMIN=1
 #export FHMIN=2
-#export FHMIN=3
- export FHMIN=6
+ export FHMIN=3
+#export FHMIN=6
 #export FHMIN=12
 #export FHMIN=24
 #export FHMIN=48
@@ -477,7 +478,7 @@ export FHMIN_GFS=0
 #export FHMAX_GFS_00=15
  export FHMAX_GFS_00=12
  export FHMAX_GFS_00=9
-#export FHMAX_GFS_00=6
+ export FHMAX_GFS_00=6
 #export FHMAX_GFS_00=84
 #export FHMAX_GFS_00=93
 #export FHMAX_GFS_00=99

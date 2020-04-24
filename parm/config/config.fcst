@@ -426,7 +426,7 @@ elif [ $imp_physics -eq 10 ] ; then # Morrison-Gettleman (1/2/3)
 #   do_sb_physics=.false.
    fi
 
-   iccn=.false.
+   iccn=0
    aero_in=.false.
    effr_in=.true.
    ccnorm=.true.
