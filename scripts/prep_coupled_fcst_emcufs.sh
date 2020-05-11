@@ -200,23 +200,22 @@ Restart_Prefix=${Restart_Prefix:-'ocn.mom6.r'}
 if [ $inistep = cold ] ; then
   coldstart=true     # this is the correct setting
   ice_restart=.false.
-  restart_ext=.false.
   export WRITE_DOPOST_CPLD=.false.
+  if [ $DONST = YES ] ; then export nstf_name=2,1,1,0,5 ; fi
 elif [ $inistep = warm ] ; then
   restart_interval=${restart_interval:-1296000}    # Interval in seconds to write restarts
   coldstart=false
   ice_restart=.false.
-  restart_ext=.false.
-# restart_ext=.true.
   export WRITE_DOPOST_CPLD=$WRITE_DOPOST
+  if [ $DONST = YES ] ; then export nstf_name=2,1,1,0,5 ; fi
 else
   restart_interval=${restart_interval:-1296000}    # Interval in seconds to write restarts
   coldstart=false
   ice_restart=.true.
-# restart_ext=.true.
-  restart_ext=.false.
   export WRITE_DOPOST_CPLD=$WRITE_DOPOST
+  if [ $DONST = YES ] ; then export nstf_name=2,0,1,0,5 ; fi
 fi
+restart_ext=.true.
 restart_interval=${restart_interval:-86400}    # Interval in seconds to write restarts
 
 # Clean up un-needed files after cold start
@@ -434,6 +433,7 @@ cat >> nems.configure <<eof
 # Forecast Run Sequence #
 runSeq::
   @$CPL_SLOW
+    MED MedPhase_write_restart
     MED MedPhase_prep_ocn
     MED -> OCN :remapMethod=redist
     OCN
@@ -452,7 +452,6 @@ runSeq::
       MED MedPhase_accum_fast
     @
     OCN -> MED :remapMethod=redist
-    MED MedPhase_write_restart
   @
 ::
 eof
@@ -516,7 +515,7 @@ cat > ice_in <<eof
   , ice_ic         = ${iceic:-'$iceic'}
   , pointer_file   = ${pointer_file:-'ice.restart_file'}
   , restart        = ${ice_restart:-.false.}
-  , restart_ext    = ${restart_ext:-.false.}
+  , restart_ext    = ${restart_ext:-.true.}
   , use_restart_time = ${use_restart_time:-.false.}
   , restart_format = ${restart_format:-'nc'}
   , lcdf64         = .false.

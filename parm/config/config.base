@@ -165,12 +165,13 @@ export ww3_res=${ww3_res:-'glo_30m'}
 export FIX_LAKE_ORO=$NOSCRUB/oro_lake
 export use_lake_oro=YES
 
- export NSOUT=1
+#export NSOUT=1
  export NSOUT=${NSOUT:-0}
 
  export RUN_CCPP=YES
  export cplflx=.true.
  export CPLD_APP=YES
+#export INLINE_POST=YES
 
 #export DumpFields_MED=true
 #export DumpFields_ATM=true
@@ -181,16 +182,18 @@ export use_lake_oro=YES
 
 export cplflx=${cplflx:-.false.}
 export CPLD_APP=${CPLD_APP:-NO}
+export INLINE_POST=${INLINE_POST:-NO}
 
 if [ $cplflx = .true. ] ; then
  app=ufs-s2s-model
- app=ufs-s2s-model_feb25
- app=ufs-s2s-model_mar30
+#app=ufs-s2s-model_feb25
+#app=ufs-s2s-model_mar30
 #app=ufs-s2s-model_feb25_sav
 #appdir=cfv3_git_jan08
 #export SCRDIR=$HOMEgfs/scripts
 #export FORECASTSH="$SCRDIR/exglobal_fcst_emcufs.sh_feb02"    # with    UGW
- appdir=cfv3_git_jan31
+#appdir=cfv3_git_jan31
+ appdir=cfv3_git_may02
 #appdir=cfv3_git_jan31_mars/cfv3_git_jan31
  export cpl=.true.
  export CPLDFV3_MOM6_CICE=YES
@@ -204,12 +207,13 @@ if [ $cplflx = .true. ] ; then
  export CPLD_APP=YES
 elif [ $CPLD_APP = YES ] ; then
  app=ufs-s2s-model
- app=ufs-s2s-model_feb25
- app=ufs-s2s-model_mar30
+#app=ufs-s2s-model_feb25
+#app=ufs-s2s-model_mar30
 #appdir=cfv3_git_jan08
 #export SCRDIR=$HOMEgfs/scripts
 #export FORECASTSH="$SCRDIR/exglobal_fcst_emcufs.sh_feb02"    # with    UGW
- appdir=cfv3_git_jan31
+#appdir=cfv3_git_jan31
+ appdir=cfv3_git_may02
 #export cplwav=.true.   # to turn on fv3 and WW3 using coupled exec
 #export CPLDWAV=YES
 #export cplwav2atm=.true.
@@ -225,6 +229,10 @@ else
 #app=ufs-s2s-model
 #appdir=cfv3_git_jan31
 fi
+
+  export DONST=NO
+  export DONST=YES
+  export DONST=${DONST:-NO}
 
 if [ ${RUN_CCPP:-YES} = YES ] ; then
  export nn=${nn:-""}
@@ -251,7 +259,11 @@ if [ ${RUN_CCPP:-YES} = YES ] ; then
 #export CCPP_SUITE=${CCPP_SUITE:-FV3_GFS_rasmgshoc}
 #export FCSTEXEC=fv3_ccpprms0.exe             # RAS, MG3, SHOC
 
+if [ $DONST = NO ] ; then
  export CCPP_SUITE=FV3_GFS_cpld_rasmgshoc
+else
+ export CCPP_SUITE=FV3_GFS_cpld_rasmgshocnsst
+fi
  export CCPP_SUITE=${CCPP_SUITE:-FV3_GFS_v15_rasmgshoc}
  if [ $CPLD_APP = NO ] ; then
   export CCPP_SUITE=FV3_GFS_v15_rasmgshoc
@@ -290,7 +302,7 @@ fi
 if [ $CPC_ICE = YES ] ; then export runid=cpcice ; fi
 
 ##############################   To turn on inline post  #################################
-if [ $NSOUT -eq 0 ] ; then
+if [ $NSOUT -eq 0 -a $INLINE_POST = YES ] ; then
  export WRITE_DOPOST=.true.
 fi
 export WRITE_DOPOST=${WRITE_DOPOST:-.false.}
@@ -422,7 +434,7 @@ export FHCYC_GFS=24
 #export FHCYC=6
 #export FHCYC=3
 #export FHCYC_GFS=0
- export FHCYC=0
+#export FHCYC=0
 
 # Output frequency of the forecast model (for cycling)
 export FHMIN=0
@@ -440,9 +452,9 @@ export FHMIN_GFS=0
  export warm_start=.true.   # for warm_start need to set FHMIN (i.e. starting time)
 #export FHMIN=1
 #export FHMIN=2
- export FHMIN=3
+#export FHMIN=3
 #export FHMIN=6
-#export FHMIN=12
+ export FHMIN=12
 #export FHMIN=24
 #export FHMIN=48
 #export FHMIN=66
@@ -462,23 +474,26 @@ export FHMIN_GFS=0
 #export restart_interval=864000
 #export restart_interval=86400
 #export restart_interval=43200
-#export restart_interval=21600
- export restart_interval=10800
+ export restart_interval=21600
+#export restart_interval=10800
 #export restart_interval=7200
 #export restart_interval=3600
  export restart_interval_atm=$((restart_interval/3600))
 
  export FHMAX=1080
  export FHMAX_GFS_00=48
+ export FHMAX_GFS_00=72
 #export FHMAX_GFS_00=120
 #export FHMAX_GFS_00=72
 #export FHMAX_GFS_00=96
-#export FHMAX_GFS_00=36
- export FHMAX_GFS_00=24
+ export FHMAX_GFS_00=36
+#export FHMAX_GFS_00=27
+#export FHMAX_GFS_00=24
 #export FHMAX_GFS_00=15
- export FHMAX_GFS_00=12
- export FHMAX_GFS_00=9
- export FHMAX_GFS_00=6
+#export FHMAX_GFS_00=12
+#export FHMAX_GFS_00=9
+#export FHMAX_GFS_00=6
+#export FHMAX_GFS_00=3
 #export FHMAX_GFS_00=84
 #export FHMAX_GFS_00=93
 #export FHMAX_GFS_00=99
@@ -609,7 +624,8 @@ if [ $CPLDFV3_MOM6_CICE = YES ] ; then
 # export CPLPREPSH=$HOMEgfs/scripts/prep_coupled_fcst_res.sh
 # export CPLPREPSH=$HOMEgfs/scripts/prep_coupled_fcst.sh
 # If YES, NSST is turned on in anal and/or fcst steps
-  export DONST=NO
+# export DONST=NO
+# export DONST=YES
 
 # The switch to apply SST elevation correction or not
   export nst_anl=.false.
