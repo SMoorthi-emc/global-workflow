@@ -171,7 +171,7 @@ export use_lake_oro=YES
  export RUN_CCPP=YES
  export cplflx=.true.
  export CPLD_APP=YES
-#export INLINE_POST=YES
+ export INLINE_POST=YES
 
 #export DumpFields_MED=true
 #export DumpFields_ATM=true
@@ -228,6 +228,10 @@ else
 #appdir=fv3_git_jan10
 #app=ufs-s2s-model
 #appdir=cfv3_git_jan31
+fi
+if [ $machine = HERA ]; then
+#appdir=cfv3_git_May12
+ appdir=cfv3_git_may13
 fi
 
   export DONST=NO
@@ -307,7 +311,11 @@ if [ $NSOUT -eq 0 -a $INLINE_POST = YES ] ; then
 fi
 export WRITE_DOPOST=${WRITE_DOPOST:-.false.}
 if [ $WRITE_DOPOST = .true. ] ; then
+ if [ $machine = WCOSS_DELL_P3 ] ; then
   export POSTDIR=/gpfs/dell2/emc/modeling/noscrub/Shrinivas.Moorthi/postdir_mar24/EMC_post
+ elif [ $machine = HERA ] ; then
+  export POSTDIR=/scratch1/NCEPDEV/global/Shrinivas.Moorthi/save/postdir/EMC_post
+ fi
   KPO=${KPO:-57}
   if [ $KPO -eq 47 ] ; then
    export POSTGPVARS=${POSTGPVARS:-"KPO=47,PO=1000.,975.,950.,925.,900.,875.,850.,825.,800.,775.,750.,725.,700.,675.,650.,625.,600.,575.,550.,525.,500.,475.,450.,425.,400.,375.,350.,325.,300.,275.,250.,225.,200.,175.,150.,125.,100.,70.,50.,30.,20.,10.,7.,5.,3.,2.,1.,"}
@@ -449,12 +457,12 @@ export FHMIN_GFS=0
 
 #export USE_LAST_RESTART=YES
 #export restart_ext=.false.
- export warm_start=.true.   # for warm_start need to set FHMIN (i.e. starting time)
+#export warm_start=.true.   # for warm_start need to set FHMIN (i.e. starting time)
 #export FHMIN=1
 #export FHMIN=2
 #export FHMIN=3
 #export FHMIN=6
- export FHMIN=12
+#export FHMIN=12
 #export FHMIN=24
 #export FHMIN=48
 #export FHMIN=66
@@ -472,9 +480,9 @@ export FHMIN_GFS=0
 
  export restart_interval=432000
 #export restart_interval=864000
-#export restart_interval=86400
+ export restart_interval=86400
 #export restart_interval=43200
- export restart_interval=21600
+#export restart_interval=21600
 #export restart_interval=10800
 #export restart_interval=7200
 #export restart_interval=3600
@@ -483,10 +491,11 @@ export FHMIN_GFS=0
  export FHMAX=1080
  export FHMAX_GFS_00=48
  export FHMAX_GFS_00=72
+ export FHMAX_GFS_00=240
 #export FHMAX_GFS_00=120
 #export FHMAX_GFS_00=72
 #export FHMAX_GFS_00=96
- export FHMAX_GFS_00=36
+#export FHMAX_GFS_00=36
 #export FHMAX_GFS_00=27
 #export FHMAX_GFS_00=24
 #export FHMAX_GFS_00=15
