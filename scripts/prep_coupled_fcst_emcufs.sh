@@ -459,7 +459,7 @@ eof
  fi
 fi
 
-export histfreq_n=$FHOUT
+#export histfreq_n=$FHOUT
 
 # Create ice_in file
 
@@ -872,7 +872,7 @@ eof
 
 # Enables linking files for the warm and restart steps
 # ----------------------------------------------------
-if [ $inistep = warm .or. $inistep = restart ] ; then
+if [ $inistep = warm -o $inistep = restart ] ; then
  export LINK_OCN_FILES=${LINK_OCN_FILES:-YES}
  export LINK_MED_RST_FILES=${LINK_MED_RST_FILES:-YES}
 fi
@@ -891,7 +891,7 @@ if [ ${LINK_OCN_FILES:-NO} = YES ] ; then
       dd=$(echo $XDATE | cut -c7-8)
     cycx=$(echo $XDATE | cut -c9-10)
     ocn_file=ocn_${yyyy}_${mm}_${dd}_${cycx}.nc
-    eval $NLN $OCN_OUTDIR/$ocn_file MOM6_OUTPUT/$ocn_file
+    eval $NLN $OCN_OUTDIR/$ocn_file $ocn_file
     fhr=$((fhr+FHOUT_O))
   done
 fi

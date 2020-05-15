@@ -168,6 +168,8 @@ export use_lake_oro=YES
 #export NSOUT=1
  export NSOUT=${NSOUT:-0}
 
+#export LINK_OCN_FILES=NO
+
  export RUN_CCPP=YES
  export cplflx=.true.
  export CPLD_APP=YES
@@ -235,7 +237,7 @@ if [ $machine = HERA ]; then
 fi
 
   export DONST=NO
-# export DONST=YES
+  export DONST=YES
   export DONST=${DONST:-NO}
 
 if [ ${RUN_CCPP:-YES} = YES ] ; then
@@ -467,7 +469,7 @@ export FHMIN_GFS=0
 #export FHMIN=24
 #export FHMIN=48
 #export FHMIN=66
- export FHMIN=72
+#export FHMIN=72
 #export FHMIN=120
 #export FHMIN=132
 #export FHMIN=168
@@ -498,7 +500,7 @@ export FHMIN_GFS=0
 #export FHMAX_GFS_00=96
 #export FHMAX_GFS_00=36
 #export FHMAX_GFS_00=27
- export FHMAX_GFS_00=24
+#export FHMAX_GFS_00=24
 #export FHMAX_GFS_00=15
 #export FHMAX_GFS_00=12
 #export FHMAX_GFS_00=9
@@ -534,6 +536,7 @@ export FHMIN_GFS=0
 #export FHOUT_GFS=1
 #export FHOUT_GFS=0.125
  export FHOUT=$FHOUT_GFS
+ export FHOUT_O=6            # ocan history output frequency
 
 #BL2018
 export FHMAX_HF_GFS=$FHMAX_GFS_00
