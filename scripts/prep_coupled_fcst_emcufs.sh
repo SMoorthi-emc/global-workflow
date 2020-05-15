@@ -890,7 +890,8 @@ if [ ${LINK_OCN_FILES:-NO} = YES ] ; then
       mm=$(echo $XDATE | cut -c5-6)
       dd=$(echo $XDATE | cut -c7-8)
     cycx=$(echo $XDATE | cut -c9-10)
-    eval $NLN $OCN_OUTDIR/ocn_${yyyy}_${mm}_${dd}_${cycx}.nc ocn_${yyyy}_${mm}_${dd}_${cycx}.nc
+    ocn_file=ocn_${yyyy}_${mm}_${dd}_${cycx}.nc
+    eval $NLN $OCN_OUTDIR/$ocn_file MOM6_OUTPUT/$ocn_file
     fhr=$((fhr+FHOUT_O))
   done
 fi

@@ -235,7 +235,7 @@ if [ $machine = HERA ]; then
 fi
 
   export DONST=NO
-  export DONST=YES
+# export DONST=YES
   export DONST=${DONST:-NO}
 
 if [ ${RUN_CCPP:-YES} = YES ] ; then
@@ -497,7 +497,7 @@ export FHMIN_GFS=0
 #export FHMAX_GFS_00=96
 #export FHMAX_GFS_00=36
 #export FHMAX_GFS_00=27
-#export FHMAX_GFS_00=24
+ export FHMAX_GFS_00=24
 #export FHMAX_GFS_00=15
 #export FHMAX_GFS_00=12
 #export FHMAX_GFS_00=9
