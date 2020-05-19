@@ -963,7 +963,8 @@ $SYEAR $SMONTH $SDAY $SHOUR 0 0
 EOF
 
 if [ $cpl = .true. ] ; then
- cat $PARM_DIR/diag_table_cpl                       >> diag_table
+ diag_table_cpld=${diag_table_cpld:-diag_table_cpl}
+ cat $PARM_DIR/$diag_table_cpld                      >> diag_table
 fi
 cat $PARM_DIR/diag_table${FVER_diag:-""}${FVRS:-""} >> diag_table
 if [ $REMAP_GRID = gaussian ] ; then

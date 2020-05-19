@@ -201,19 +201,31 @@ if [ $inistep = cold ] ; then
   coldstart=true     # this is the correct setting
   ice_restart=.false.
   export WRITE_DOPOST_CPLD=.false.
-  if [ $DONST = YES ] ; then export nstf_name=2,1,1,0,5 ; fi
+  if [ $DONST = YES ] ; then export nstf_name=2,1,1,0,10 ; fi
+# if [ $DONST = YES ] ; then export nstf_name=2,1,1,0,5 ; fi
+  export diag_table_cpl=diag_table_cpl
 elif [ $inistep = warm ] ; then
   restart_interval=${restart_interval:-1296000}    # Interval in seconds to write restarts
   coldstart=false
   ice_restart=.false.
   export WRITE_DOPOST_CPLD=$WRITE_DOPOST
   if [ $DONST = YES ] ; then export nstf_name=2,1,1,0,5 ; fi
+  if [ ${OCN_AVG:-NO} = YES ] ; then
+    export diag_table_cpld=diag_table_cpl_hourly_mean
+  else
+    export diag_table_cpld=diag_table_cpl_hourly_inst
+  fi
 else
   restart_interval=${restart_interval:-1296000}    # Interval in seconds to write restarts
   coldstart=false
   ice_restart=.true.
   export WRITE_DOPOST_CPLD=$WRITE_DOPOST
   if [ $DONST = YES ] ; then export nstf_name=2,0,1,0,5 ; fi
+  if [ ${OCN_AVG:-NO} = YES ] ; then
+    export diag_table_cpld=diag_table_cpl_hourly_mean
+  else
+    export diag_table_cpld=diag_table_cpl_hourly_inst
+  fi
 fi
 restart_ext=.true.
 restart_interval=${restart_interval:-86400}    # Interval in seconds to write restarts
@@ -882,7 +894,13 @@ fi
 if [ ${LINK_OCN_FILES:-NO} = YES ] ; then
   export FHOUT_O=${FHOUT_O:-6}
   export FHMIN=$((FHMIN+0))
-  fhr=$((10#$FHMIN+10#$FHOUT_O/2))
+  if [ ${OCN_AVG:-NO} = YES ] ; then
+    fhr=$((10#$FHMIN+10#$FHOUT_O/2))
+    min=$((FHOUT*30-(FHOUT/2)*60))
+  else
+    fhr=$((10#$FHMIN+10#$FHOUT_O))
+    min=0
+  fi
   while [ $fhr -le $FHMAX ] ; do
     XDATE=$($NDATE +$fhr $CDATE)
     PDYX=$(echo $XDATE | cut -c1-8)
@@ -890,8 +908,14 @@ if [ ${LINK_OCN_FILES:-NO} = YES ] ; then
       mm=$(echo $XDATE | cut -c5-6)
       dd=$(echo $XDATE | cut -c7-8)
     cycx=$(echo $XDATE | cut -c9-10)
-    ocn_file=ocn_${yyyy}_${mm}_${dd}_${cycx}.nc
-    eval $NLN $OCN_OUTDIR/$ocn_file $ocn_file
+    for file in ocn SST ; do
+      if [ $min -gt 0 ] ; then
+        file_name=${file}_${yyyy}_${mm}_${dd}_${cycx}_${min}.nc
+      else
+        file_name=${file}_${yyyy}_${mm}_${dd}_${cycx}.nc
+      fi
+      eval $NLN $OCN_OUTDIR/$file_name $file_name
+    done
     fhr=$((fhr+FHOUT_O))
   done
 fi

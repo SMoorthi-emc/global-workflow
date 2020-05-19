@@ -32,7 +32,7 @@ HH=$(echo $IDATE | cut -c9-10)
 RES=$(echo $CASE|cut -c 2-)
 
 # $PSLOT is the name of your experiment
- expt=_phyab
+ expt=_phybb
 #expt=_phyad
 #expt=_phyg
 #expt=_phyf

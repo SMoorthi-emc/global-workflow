@@ -500,7 +500,7 @@ export FHMIN_GFS=0
 #export FHMAX_GFS_00=96
 #export FHMAX_GFS_00=36
 #export FHMAX_GFS_00=27
-#export FHMAX_GFS_00=24
+ export FHMAX_GFS_00=24
 #export FHMAX_GFS_00=15
 #export FHMAX_GFS_00=12
 #export FHMAX_GFS_00=9
@@ -537,6 +537,10 @@ export FHMIN_GFS=0
 #export FHOUT_GFS=0.125
  export FHOUT=$FHOUT_GFS
  export FHOUT_O=6            # ocan history output frequency
+ export FHOUT_O=3            # ocan history output frequency
+ export OCN_AVG=NO
+#export OCN_AVG=YES
+
 
 #BL2018
 export FHMAX_HF_GFS=$FHMAX_GFS_00
