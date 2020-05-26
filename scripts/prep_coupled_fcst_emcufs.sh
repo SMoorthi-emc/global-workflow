@@ -132,6 +132,10 @@ else
    echo "Currently initial conditions not available"
    exit 777
   fi
+  if [ $CPLDWAV = YES -a $USE_WAVES = True ] ; then
+    yyyymmdd=$(echo $CDATE | cut -c1-8)
+    $NCP $ICSDIR/$CDATE/$yyyymmdd.000000.restart.gwes_30m restart.gwes_30m
+  fi
 fi
 RESTART_CHECKSUMS_REQUIRED=${RESTART_CHECKSUMS_REQUIRED:-False}
 
@@ -201,8 +205,7 @@ if [ $inistep = cold ] ; then
   coldstart=true     # this is the correct setting
   ice_restart=.false.
   export WRITE_DOPOST_CPLD=.false.
-  if [ $DONST = YES ] ; then export nstf_name=2,1,1,0,10 ; fi
-# if [ $DONST = YES ] ; then export nstf_name=2,1,1,0,5 ; fi
+  if [ $DONST = YES ] ; then export nstf_name=2,1,1,0,5 ; fi
   export diag_table_cpl=diag_table_cpl
 elif [ $inistep = warm ] ; then
   restart_interval=${restart_interval:-1296000}    # Interval in seconds to write restarts
@@ -292,6 +295,7 @@ MED_attributes::
   OverwriteSlice_MED = $OverwriteSlice_MED
   DumpRHs = $DumpFields_MED
   coldstart = $coldstart
+  ProfileMemory = ${ProfileMemory:-False}
   restart_interval = $restart_interval
 ::
 
@@ -305,6 +309,7 @@ ATM_petlist_bounds:             $ATM_petlist_bounds
 ATM_attributes::
   Verbosity = ${Verbosity:-0}
   DumpFields_ATM = $DumpFields_ATM
+  ProfileMemory = ${ProfileMemory:-False}
 ::
 
 eof
@@ -322,6 +327,7 @@ OCN_attributes::
   restart_option = 'nseconds'
   restart_n = $restart_interval
   Restart_Prefix = $Restart_Prefix
+  ProfileMemory = ${ProfileMemory:-False}
 ::
 
 eof
@@ -335,7 +341,8 @@ ICE_petlist_bounds:             $ICE_petlist_bounds
 ICE_attributes::
   Verbosity = ${Verbosity:-0}
   DumpFields_ICE = $DumpFields_ICE
-  OverwriteSliceICE = $OverwriteSlice_ICE
+  OverwriteSlice_ICE = $OverwriteSlice_ICE
+  ProfileMemory = ${ProfileMemory:-False}
 ::
 eof
 fi
@@ -347,6 +354,7 @@ cat >>nems.configure <<eof
   WAV_petlist_bounds:           $WAV_petlist_bounds
   WAV_attributes::
   Verbosity = ${Verbosity:-0}
+  OverwriteSlice_Wav = ${OverwriteSlice_WAV:-False}
 ::
 eof
 fi
@@ -411,7 +419,72 @@ runSeq::
 eof
   fi  # nems.configure
  else                            # include wave model
-  if [[ $inistep = cold ]] ; then
+   if [ $USE_WAVES = True ] ; then
+     if [[ $inistep = cold ]] ; then
+
+cat >> nems.configure <<eof
+# Coldstart Run Sequence #
+runSeq::
+  @$CPL_SLOW
+    OCN -> WAV
+    WAV -> OCN :srcMaskValues=1
+    @$CPL_FAST
+      MED MedPhase_prep_atm
+      MED -> ATM :remapMethod=redist
+      WAV -> ATM :srcMaskValues=1
+      ATM
+      ATM -> WAV
+      ATM -> MED :remapMethod=redist
+      MED MedPhase_prep_ice
+      MED -> ICE :remapMethod=redist
+      ICE
+      ICE -> WAV
+      WAV
+      ICE -> MED :remapMethod=redist
+      MED MedPhase_accum_fast
+    @
+    MED MedPhase_prep_ocn
+    MED -> OCN :remapMethod=redist
+    OCN
+    OCN -> MED :remapMethod=redist
+  @
+::
+eof
+
+     else   # NOT a coldstart
+
+cat >> nems.configure <<eof
+# Forecast Run Sequence #
+runSeq::
+  @$CPL_SLOW
+    MED MedPhase_write_restart
+    MED MedPhase_prep_ocn
+    MED -> OCN :remapMethod=redist
+    OCN -> WAV
+    WAV -> OCN :srcMaskValues=1
+    OCN
+    @$CPL_FAST
+      MED MedPhase_prep_ice
+      MED MedPhase_prep_atm
+      MED -> ATM :remapMethod=redist
+      MED -> ICE :remapMethod=redist
+      WAV -> ATM :srcMaskValues=1
+      ATM -> WAV
+      ICE -> WAV
+      WAV
+      ATM
+      ICE
+      ATM -> MED :remapMethod=redist
+      ICE -> MED :remapMethod=redist
+      MED MedPhase_accum_fast
+    @
+    OCN -> MED :remapMethod=redist
+  @
+::
+eof
+     fi
+   else
+     if [[ $inistep = cold ]] ; then
 
 cat >> nems.configure <<eof
 # Coldstart Run Sequence #
@@ -439,7 +512,7 @@ runSeq::
 ::
 eof
 
-  else   # NOT a coldstart
+     else   # NOT a coldstart
 
 cat >> nems.configure <<eof
 # Forecast Run Sequence #
@@ -467,8 +540,9 @@ runSeq::
   @
 ::
 eof
-  fi  # nems.configure
- fi
+     fi
+   fi # USE_WAVES
+ fi   # nems.configure
 fi
 
 #export histfreq_n=$FHOUT

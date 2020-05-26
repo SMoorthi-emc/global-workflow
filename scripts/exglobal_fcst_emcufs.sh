@@ -717,6 +717,7 @@ if [ $cplwav = .true. ] ; then
  export ww3_res=${ww3_res:-'glo_30m'}
  FIX_WW3=${FIX_WW3:-/gpfs/dell2/emc/modeling/noscrub/Shrinivas.Moorthi/WW3_input_data}
  $NCP $FIX_WW3/mod* $DATA/
+ mv $DATA/mod_def.points_$ww3_res $DATA/mod_def.points
  ymd=$(echo $CDATE |cut -c 1-8)
  export ww3_coupling_interval_sec=${ww3_coupling_interval_sec:-$DELTIM}
 #$NCP $FIX_WW3/ww3_multi.inp_$ymd $DATA/ww3_multi.inp
@@ -1400,7 +1401,6 @@ cat > input.nml << EOF
        ca_smooth      = ${ca_smooth:-.false.}
        nspinup        = ${nspinup:-1000}
        iseed_ca       = ${iseed_ca:-0}
-       isppt_deep     = ${isppt_deep:-.false.}
        min_seaice     = ${min_seaice:-1.0e-6}
        min_lakeice    = ${min_lakeice:-0.15}
        ignore_lake    = ${ignore_lake:-.false.}
@@ -1411,6 +1411,7 @@ cat > input.nml << EOF
        do_skeb        = ${do_skeb:-.false.}
 
 EOF
+#      isppt_deep     = ${isppt_deep:-.false.}
 if [ ${lsm:-${LSM:-1}} -eq 2 ] ; then
 
 # add noahMP related namelist variables
@@ -1431,8 +1432,8 @@ EOF
 fi
 if [ $CCPPDIR != none ] ; then
   cat >> input.nml << EOF
-  oz_phys      = ${oz_phys:-.false.}
-  oz_phys_2015 = ${oz_phys_2015:-.true.}
+       oz_phys      = ${oz_phys:-.false.}
+       oz_phys_2015 = ${oz_phys_2015:-.true.}
 EOF
 fi
 # Add namelist for IAU
@@ -1675,25 +1676,37 @@ EOF
 cat >> INPUT/MOM_input << EOF
  DT = $OCNTIM
  DT_THERM = ${DT_THERM:-$OCNTIM}
- USE_IDEAL_AGE_TRACER=${USE_IDEAL_AGE_TRACER:-False}
+ USE_IDEAL_AGE_TRACER = ${USE_IDEAL_AGE_TRACER:-False}
 
 EOF
 if [ ${IN_Z_DIAG_INTERVAL:-0} -gt 0 ] ; then
 cat >> INPUT/MOM_input << EOF
- IN_Z_DIAG_INTERVAL=$IN_Z_DIAG_INTERVAL
+ IN_Z_DIAG_INTERVAL = $IN_Z_DIAG_INTERVAL
 EOF
 #else
 #cat >> INPUT/MOM_input << EOF
-# WIND_STAGGER=$WIND_STAGGER
+# WIND_STAGGER = $WIND_STAGGER
 #EOF
 fi
 if [ ${Z_OUTPUT_GRID_FILE:-none} != none ] ; then
 cat >> INPUT/MOM_input << EOF
- Z_OUTPUT_GRID_FILE=$Z_OUTPUT_GRID_FILE
+ Z_OUTPUT_GRID_FILE = $Z_OUTPUT_GRID_FILE
 EOF
 fi
-
+if [ ${USE_WAVES:-False} = True ] ; then          # for coupled MOM6 and WW3
+cat >> INPUT/MOM_input << EOF
+ USE_WAVES = $USE_WAVES
+EOF
+#WAVE_METHOD=$WAVE_METHOD
+#SURFBAND_SOURCE = "COUPLER"               ! default = "EMPTY"
+#SURFBAND_WAVENUMBERS = 0.04, 0.11, 0.3305 !   [rad/m] default = 0.12566
+#STK_BAND_COUPLER = 3
 fi
+if [ ${MOM6_RIVER_RUNOF:-False} = True ] ; then          # for coupled MOM6 and WW3
+ LIQUID_RUNOFF_FROM_DATA = $MOM6_RIVER_RUNOF
+fi
+
+fi                                         # if [ cplflx = .true. ] ; then
 
 #------------------------------------------------------------------
 # make symbolic links to write forecast files directly in memdir
