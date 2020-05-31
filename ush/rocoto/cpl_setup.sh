@@ -20,8 +20,8 @@ IDATE=2018010100
 #IDATE=2018011500
  IDATE=2018031500
  CASE=C384
-#IDATE=2017051500
-#CASE=C768
+ IDATE=2017051500
+ CASE=C768
 # $EDATE is the ending date of your run (YYYYMMDDCC) and is the last cycle that will complete
 #EDATE=2016010100
 EDATE=$IDATE
@@ -32,7 +32,7 @@ HH=$(echo $IDATE | cut -c9-10)
 RES=$(echo $CASE|cut -c 2-)
 
 # $PSLOT is the name of your experiment
- expt=_phydc
+ expt=_phyaa
 #expt=_phyad
 #expt=_phyg
 #expt=_phyf
