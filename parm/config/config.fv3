@@ -155,6 +155,8 @@ case $case_in in
         export layout_y=12
 #       export layout_y=16
 #       export layout_y=24
+        export io_layout_x=${io_layout_x:-4}
+        export io_layout_y=${io_layout_y:-4}
         if [ $machine == WCOSS_DELL_P3 ] ; then
           if [ $QUEUE = dev -o $QUEUE = debug ] ; then
             export npe_node_max=28

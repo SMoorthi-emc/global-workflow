@@ -36,7 +36,7 @@ elif [ $machine = WCOSS_DELL_P3 ] ; then  # set QSUFFIX=2 for Dell 3.5
 fi
 
 LEVS=128
-#LEVS=65
+ LEVS=65
 
 # Project to use in mass store:
 HPSS_PROJECT=emc-global
@@ -139,7 +139,7 @@ fi
 #fi
 
  export print_esmf=.true.
- export print_esmf=${print_esmf=:-.false.}
+ export print_esmf=${print_esmf:-.false.}
  export ESMF_RUNTIME_PROFILE=ON
  export ESMF_RUNTIME_PROFILE_OUTPUT=SUMMARY
 # Toggle to turn on/off GFS downstream processing.
@@ -519,7 +519,7 @@ export FHMIN_GFS=0
 #export FHMAX_GFS_00=12
 #export FHMAX_GFS_00=9
 #export FHMAX_GFS_00=6
-#export FHMAX_GFS_00=3
+ export FHMAX_GFS_00=3
 #export FHMAX_GFS_00=84
 #export FHMAX_GFS_00=93
 #export FHMAX_GFS_00=99

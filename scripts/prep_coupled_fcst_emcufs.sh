@@ -218,6 +218,7 @@ elif [ $inistep = warm ] ; then
   else
     export diag_table_cpld=diag_table_cpl_hourly_inst
   fi
+  export generate_landmask=false
 else
   restart_interval=${restart_interval:-1296000}    # Interval in seconds to write restarts
   coldstart=false
@@ -229,6 +230,7 @@ else
   else
     export diag_table_cpld=diag_table_cpl_hourly_inst
   fi
+  export generate_landmask=false
 fi
 restart_ext=.true.
 restart_interval=${restart_interval:-86400}    # Interval in seconds to write restarts
@@ -297,6 +299,7 @@ MED_attributes::
   coldstart = $coldstart
   ProfileMemory = ${ProfileMemory:-False}
   restart_interval = $restart_interval
+  generate_landmask=${generate_landmask:-true}
 ::
 
 eof
