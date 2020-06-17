@@ -287,6 +287,12 @@ fi
 
 npe_fv3=$npe_fcst # This is model resolution dependent, see note above
 
+#if [[ "$CDUMP" == "gfs" ]] ; then
+# export npe_fv3=$npe_fcst_gfs
+# export layout_x=${layout_x_gfs:-$layout_x}
+# export layout_y=${layout_y_gfs:-$layout_y}
+#fi
+  
 
 npe_med=${npe_med:-$((npe_fv3-1))}
 npe_med_max=${npe_med_max:-1024}
@@ -978,7 +984,7 @@ n_sponge=$((LEVS/3))
  n_sponge=24
 min_seaice=1.0e-11
 min_seaice=1.0e-6
- min_seaice=1.0e-3
+#min_seaice=1.0e-3
 min_seaice=${min_seaice:-0.15}
 min_lakeice=${min_lakeice:-0.15}
 sfc_z0_type=${sfc_z0_type:-0}
@@ -1002,9 +1008,13 @@ else
 fi
 # Radiation options
 IAER=111    #spectral band mapping method for aerosol optical properties
-iovr_lw=1   #de-correlation length cloud overlap method (Barker, 2008)
-iovr_sw=1   #de-correlation length cloud overlap method (Barker, 2008)
-icliq_sw=1  #cloud optical coeffs from AER's newer version v3.9-v4.0 for hu and stamnes
+iovr_lw=3   #de-correlation length cloud overlap method (Barker, 2008)
+iovr_sw=3   #de-correlation length cloud overlap method (Barker, 2008)
+icliq_sw=2  #cloud optical coeffs from AER's newer version v3.9-v4.0 for hu and stamnes
+#
+#--------------------------------------------------------------------------
+
+
 
 set +a
 echo "END: config.fcst"

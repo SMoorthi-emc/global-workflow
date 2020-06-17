@@ -29,14 +29,14 @@ elif [ $machine = WCOSS_DELL_P3 ] ; then  # set QSUFFIX=2 for Dell 3.5
 
   export ACCOUNT=GFS-DEV
   export QUEUE=dev$QSUFIX
-  export QUEUE=debug$QSUFIX
+# export QUEUE=debug$QSUFIX
 # export QUEUE_ARCH=dev_transfer
   export QUEUE_ARCH=dev${QSUFIX}_transfer
 
 fi
 
-LEVS=128
- LEVS=65
+ export LEVS=128
+ export LEVS=65
 
 # Project to use in mass store:
 HPSS_PROJECT=emc-global
@@ -138,7 +138,7 @@ fi
 
 #fi
 
- export print_esmf=.true.
+#export print_esmf=.true.
  export print_esmf=${print_esmf:-.false.}
  export ESMF_RUNTIME_PROFILE=ON
  export ESMF_RUNTIME_PROFILE_OUTPUT=SUMMARY
@@ -204,8 +204,11 @@ if [ $cplflx = .true. ] ; then
 #appdir=cfv3_git_jan08
 #export SCRDIR=$HOMEgfs/scripts
 #export FORECASTSH="$SCRDIR/exglobal_fcst_emcufs.sh_feb02"    # with    UGW
-#appdir=cfv3_git_jan31
- appdir=cfv3_git_may02
+#export appdir=cfv3_git_jan31
+ export appdir=cfv3_git_may02
+ export  appdir=cfv3_git_Jun04_2
+#export  appdir=cfv3_git_may19_hera
+#export appdir=cfv3_git_Jun16
 #appdir=cfv3_git_jan31_mars/cfv3_git_jan31
 #export cpl=.true.
  export CPLDFV3_MOM6_CICE=YES
@@ -224,8 +227,11 @@ elif [ $CPLD_APP = YES ] ; then
 #appdir=cfv3_git_jan08
 #export SCRDIR=$HOMEgfs/scripts
 #export FORECASTSH="$SCRDIR/exglobal_fcst_emcufs.sh_feb02"    # with    UGW
-#appdir=cfv3_git_jan31
- appdir=cfv3_git_may02
+#export appdir=cfv3_git_jan31
+ export appdir=cfv3_git_may02
+ export  appdir=cfv3_git_Jun04_2
+#export  appdir=cfv3_git_may19_hera
+#export appdir=cfv3_git_Jun16
 #export cplwav=.true.   # to turn on fv3 and WW3 using coupled exec
 #export CPLDWAV=YES
 #export cplwav2atm=.true.
@@ -332,19 +338,19 @@ if [ $WRITE_DOPOST = .true. ] ; then
  elif [ $machine = HERA ] ; then
   export POSTDIR=/scratch1/NCEPDEV/global/Shrinivas.Moorthi/save/postdir/EMC_post
  fi
-  KPO=${KPO:-57}
-  if [ $KPO -eq 47 ] ; then
+ KPO=${KPO:-57}
+ if [ $KPO -eq 47 ] ; then
    export POSTGPVARS=${POSTGPVARS:-"KPO=47,PO=1000.,975.,950.,925.,900.,875.,850.,825.,800.,775.,750.,725.,700.,675.,650.,625.,600.,575.,550.,525.,500.,475.,450.,425.,400.,375.,350.,325.,300.,275.,250.,225.,200.,175.,150.,125.,100.,70.,50.,30.,20.,10.,7.,5.,3.,2.,1.,"}
-  elif [ $KPO -eq 50 ] ; then
+ elif [ $KPO -eq 50 ] ; then
    export POSTGPVARS=${POSTGPVARS:-"KPO=50,PO=1000.,975.,950.,925.,900.,875.,850.,825.,800.,775.,750.,725.,700.,675.,650.,625.,600.,575.,550.,525.,500.,475.,450.,425.,400.,375.,350.,325.,300.,275.,250.,225.,200.,175.,150.,125.,100.,70.,50.,40.,30.,20.,15.,10.,7.,5.,3.,2.,1.,0.4"}
-  elif [ $KPO -eq 57 ] ; then
+ elif [ $KPO -eq 57 ] ; then
    export POSTGPVARS=${POSTGPVARS:-"KPO=57,PO=1000.,975.,950.,925.,900.,875.,850.,825.,800.,775.,750.,725.,700.,675.,650.,625.,600.,575.,550.,525.,500.,475.,450.,425.,400.,375.,350.,325.,300.,275.,250.,225.,200.,175.,150.,125.,100.,70.,50.,40.,30.,20.,10.,7.,5.,4.,3.,2.,1.,0.7,0.5,0.4,0.3,0.2,0.1,0.07,0.05"}
-  fi
+ fi
 
-  export PostFlatFile00=${PostFlatFile00:-postcntrl_gfs_tke_mg3_${KPO}l_00_two.txt}
-  export PostFlatFile=${PostFlatFile:-postcntrl_gfs_tke_mg3_${KPO}l_two.txt}
+ export PostFlatFile00=${PostFlatFile00:-postcntrl_gfs_tke_mg3_${KPO}l_00_two.txt}
+ export PostFlatFile=${PostFlatFile:-postcntrl_gfs_tke_mg3_${KPO}l_two.txt}
 
-  export LEVS=${LEVS:-65}
+ export LEVS=${LEVS:-65}
  LVER=${LVER:-""}
  if [ $LEVS -gt 65 ] ; then
    export SIGLEVEL=${SIGLEVEL:-$HOMEgfs/fix/fix_am/global_hyblev.l${LEVS}${LVER}.txt}
@@ -496,8 +502,8 @@ export FHMIN_GFS=0
 #export FHMIN=1731
 
  export restart_interval=432000
-#export restart_interval=864000
- export restart_interval=86400
+ export restart_interval=864000
+#export restart_interval=86400
 #export restart_interval=43200
 #export restart_interval=21600
 #export restart_interval=10800
@@ -507,19 +513,19 @@ export FHMIN_GFS=0
 
  export FHMAX=1080
  export FHMAX_GFS_00=48
- export FHMAX_GFS_00=72
- export FHMAX_GFS_00=240
+#export FHMAX_GFS_00=72
+#export FHMAX_GFS_00=240
 #export FHMAX_GFS_00=120
 #export FHMAX_GFS_00=72
 #export FHMAX_GFS_00=96
 #export FHMAX_GFS_00=36
 #export FHMAX_GFS_00=27
- export FHMAX_GFS_00=24
+#export FHMAX_GFS_00=24
 #export FHMAX_GFS_00=15
 #export FHMAX_GFS_00=12
 #export FHMAX_GFS_00=9
 #export FHMAX_GFS_00=6
- export FHMAX_GFS_00=3
+#export FHMAX_GFS_00=3
 #export FHMAX_GFS_00=84
 #export FHMAX_GFS_00=93
 #export FHMAX_GFS_00=99
@@ -532,7 +538,7 @@ export FHMIN_GFS=0
 #export FHMAX_GFS_00=360
 #export FHMAX_GFS_00=840
 #export FHMAX_GFS_00=1080 # uncomment this line for 45 day run
-#export FHMAX_GFS_00=1440
+ export FHMAX_GFS_00=1440
 #export FHMAX_GFS_00=1806 # uncomment this line for 45 day run
 #export FHMAX_GFS_00=1920 # uncomment this line for 45 day run
 #export FHMAX_GFS_00=2160 # uncomment this line for 45 day run
@@ -618,23 +624,30 @@ export SCRDIR=$HOMEgfs/scripts
 #export FORECASTSH="$SCRDIR/exglobal_fcst_emcufs.sh_feb02"    # with    UGW
 #export FORECASTSH="$SCRDIR/exglobal_fcst_emcufs0.sh"    # with    UGW
 if [ $CPLD_APP = YES ] ; then
-  export FCSTEXECDIR="$HOMEgfs/exec"
+# export FCSTEXECDIR="$HOMEgfs/exec"
 # export FCSTEXEC="fv3_gfs_nh.prod.32bit.x"
 # export FCSTEXEC="nems_fv3_mom6_cice5.x"
 # export FCSTEXEC="nems_fv3_mom6_cice5.xn"
 # export FCSTEXEC="nems_fv3_mom6_cice5.xn2"
 # export FCSTEXEC="nems_fv3_mom6_cice5.xf"
-  export FCSTEXEC="nems_fv3_mom6_cice5.xfg2"
-  export FCSTEXEC="nems_fv3_mom6_cice5.xfgn"
-  export FCSTEXEC="nems_fv3_mom6_cice5.xfgn2"
-  export FCSTEXEC="nems_fv3_mom6_cice5.xfgn3"
-  export FCSTEXEC="nems_fv3_mom6_cice5.xfgn4"
-  export FCSTEXEC="nems_fv3_mom6_cice5.xfgn5"
-  export FCSTEXEC="nems_fv3_mom6_cice5.ccpp"
-  export FCSTEXEC="nems_fv3_mom6_cice5.ccppn"
+# export FCSTEXEC="nems_fv3_mom6_cice5.xfg2"
+# export FCSTEXEC="nems_fv3_mom6_cice5.xfgn"
+# export FCSTEXEC="nems_fv3_mom6_cice5.xfgn2"
+# export FCSTEXEC="nems_fv3_mom6_cice5.xfgn3"
+# export FCSTEXEC="nems_fv3_mom6_cice5.xfgn4"
+# export FCSTEXEC="nems_fv3_mom6_cice5.xfgn5"
+# export FCSTEXEC="nems_fv3_mom6_cice5.ccpp"
+# export FCSTEXEC="nems_fv3_mom6_cice5.ccppn"
 # export FCSTEXEC="nems_fv3_mom6_cice5.ccppo"
-  export FCSTEXECDIR=$EXECBASE/$appdir/$app/NEMS/exe
-  export FCSTEXEC="NEMS.x"
+# export FCSTEXECDIR=$EXECBASE/$appdir/$app/NEMS/exe
+# export FCSTEXEC="NEMS.x"
+  export FCSTEXECDIR=${FCSTEXECDIR:-$EXECBASE/$appdir/$app/tests}
+  export model_name=fv3_mom6_cice_nemsland
+  export model_name=fcst_nemsland
+# export model_name=fcst_nems_debug
+  export FCSTEXEC=${FCSTEXEC:-$model_name.exe}
+# export MODULES_TO_USE="modules.${model_name}"
+
 elif [ $RUN_CCPP = NO ] ; then
 # g0nosc=/gpfs/dell2/emc/modeling/noscrub
 # export FCSTEXECDIR=$g0nosc/Shrinivas.Moorthi/fv3_git1104/ufs-weather-model3/tests

@@ -207,6 +207,7 @@ if [ $inistep = cold ] ; then
   export WRITE_DOPOST_CPLD=.false.
   if [ $DONST = YES ] ; then export nstf_name=2,1,1,0,5 ; fi
   export diag_table_cpl=diag_table_cpl
+  export generate_landmask=${generate_landmask:-false}
 elif [ $inistep = warm ] ; then
   restart_interval=${restart_interval:-1296000}    # Interval in seconds to write restarts
   coldstart=false
@@ -293,13 +294,13 @@ MED_model:                      $MED_model
 MED_petlist_bounds:             $MED_petlist_bounds
 MED_attributes::
   Verbosity = ${Verbosity:-0}
-  DumpFields_MED = $DumpFields_OCN
+  DumpFields_MED = $DumpFields_MED
   OverwriteSlice_MED = $OverwriteSlice_MED
   DumpRHs = $DumpFields_MED
   coldstart = $coldstart
   ProfileMemory = ${ProfileMemory:-False}
   restart_interval = $restart_interval
-  generate_landmask=${generate_landmask:-true}
+  generate_landmask = ${generate_landmask:-true}
 ::
 
 eof
