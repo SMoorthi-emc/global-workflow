@@ -17,6 +17,12 @@ for config in $configs; do
     [[ $status -ne 0 ]] && exit $status
 done
 
+if [ ${MODULES_TO_USE:-none} != none ] ; then
+ . $MODULESHOME/init/sh 2>/dev/null
+  module purge
+  module load $MODULES_TO_USE 2>/dev/null
+  module list
+fi
 
 ##########################################
 # Source machine runtime environment
