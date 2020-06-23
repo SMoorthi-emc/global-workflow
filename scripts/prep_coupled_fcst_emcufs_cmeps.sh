@@ -33,7 +33,30 @@ mkdir -p $MED_RESTDIR
 mkdir -p $OCN_RESTDIR
 mkdir -p $ICE_RESTDIR
 
-if [ $inistep = restart ] ; then # using restart files for MOM6 and CICE here, FV3 will set in exglobal script
+if [[ $inistep = cold ]] ; then
+  export start_type=startup
+  export case_name=$MED_RESTDIR/ufs.med.cold
+  export history_n=1
+  export mediator_read_restart=.false.
+else
+  export start_type=startup
+  export case_name=$MED_RESTDIR/ufs.med
+  export history_n=0
+  export mediator_read_restart=.true.
+fi
+
+if [ $inistep = warm ] ; then # using restart file for the cmeps mediator
+  SDATE=$($NDATE +1 $CDATE)
+  PDYS=$(echo $SDATE | cut -c1-8)
+  yyyy=$(echo $SDATE | cut -c1-4)
+    mm=$(echo $SDATE | cut -c5-6)
+    dd=$(echo $SDATE | cut -c7-8)
+  secs=$(($(echo $SDATE | cut -c9-10)*3600))
+    RFILE=${case_name}.cold.cpl.r.${yyyy}-${mm}-${dd}-$(printf %05i $secs).nc
+    echo "$RFILE" > $DATA/rpointer.cpl
+#   echo "$MED_RESTDIR/$RFILE" > $DATA/rpointer.cpl
+
+elif [ $inistep = restart ] ; then # using restart files for MOM6 and CICE here, FV3 will set in exglobal script
                                  # ---------------------------------------------------------------------------
   export warm_start=.true.
 
@@ -44,21 +67,11 @@ if [ $inistep = restart ] ; then # using restart files for MOM6 and CICE here, F
   yyyy=$(echo $SDATE | cut -c1-4)
     mm=$(echo $SDATE | cut -c5-6)
     dd=$(echo $SDATE | cut -c7-8)
-  cycs=$(echo $SDATE | cut -c9-10)
+  secs=$(($(echo $SDATE | cut -c9-10)*3600))
+    RFILE=${case_name}.cpl.r.${yyyy}-${mm}-${dd}-$(printf %05i $secs).nc
 
-  if [ -s $MED_RESTDIR ] ; then
-    nfiles=$(ls -1 $MED_RESTDIR/${PDYS}-${cycs}0000_mediator* | wc -l)
-    if [ $nfiles -gt 0 ] ; then
-      cd $MED_RESTDIR
-      for ff in $(ls -1 ${PDYS}-${cycs}0000*) ; do
-        yy=$(echo $ff | cut -c17-)
-        $NCP $ff $DATA/$yy
-      done
-      cd $DATA
-    else
-      $NCP $MED_RESTDIR/mediator* .
-    fi
-  fi
+    echo "$RFILE" > $DATA/rpointer.cpl
+#   echo "$MED_RESTDIR/$RFILE" > $DATA/rpointer.cpl
 
 # for Ocean (MOM6)
 # ----------------
@@ -178,8 +191,8 @@ $NCP $FIXgrid/$CASE/* .
 #cp -p MOM_layout ..
 #cp -p MOM_saltrestore ..
 
-cd ..
-
+cd $DATA
+ 
 # Setup namelists
 # ---------------
 
@@ -207,7 +220,6 @@ if [ $inistep = cold ] ; then
   export WRITE_DOPOST_CPLD=.false.
   if [ $DONST = YES ] ; then export nstf_name=2,1,1,0,5 ; fi
   export diag_table_cpl=diag_table_cpl
-  export generate_landmask=${generate_landmask:-false}
 elif [ $inistep = warm ] ; then
   restart_interval=${restart_interval:-1296000}    # Interval in seconds to write restarts
   coldstart=false
@@ -255,7 +267,8 @@ export CPLDWAV=${CPLDWAV:-NO}
 
 export ATM_model=${ATM_model:-fv3}
 if [ $CPLDFV3_MOM6_CICE = YES ] ; then
- export MED_model=${MED_model:-nems}
+ export MED_model=${MED_model:-cmeps}
+ export MED_model=nems
  export OCN_model=${OCN_model:-mom6}
  export ICE_model=${ICE_model:-cice}
  if [ $CPLDWAV = NO ] ; then
@@ -292,15 +305,6 @@ cat >>nems.configure <<eof
 # MED #
 MED_model:                      $MED_model
 MED_petlist_bounds:             $MED_petlist_bounds
-MED_attributes::
-  Verbosity = ${Verbosity:-0}
-  DumpFields_MED = $DumpFields_MED
-  OverwriteSlice_MED = $OverwriteSlice_MED
-  DumpRHs = $DumpFields_MED
-  coldstart = $coldstart
-  ProfileMemory = ${ProfileMemory:-False}
-  restart_interval = $restart_interval
-  generate_landmask = ${generate_landmask:-true}
 ::
 
 eof
@@ -312,8 +316,9 @@ ATM_model:                      $ATM_model
 ATM_petlist_bounds:             $ATM_petlist_bounds
 ATM_attributes::
   Verbosity = ${Verbosity:-0}
-  DumpFields_ATM = $DumpFields_ATM
+  DumpFields_ATM = ${DumpFields_ATM:-false}
   ProfileMemory = ${ProfileMemory:-False}
+  OverwriteSlice = ${OverwriteSlice_ATM:-true}
 ::
 
 eof
@@ -325,8 +330,8 @@ OCN_model:                      $OCN_model
 OCN_petlist_bounds:             $OCN_petlist_bounds
 OCN_attributes::
   Verbosity = ${Verbosity:-0}
-  DumpFields_OCN = $DumpFields_OCN
-  OverwriteSlice_OCN = $OverwriteSlice_OCN
+  DumpFields_OCN = ${DumpFields_OCN:-false}
+  OverwriteSlice_OCN = ${OverwriteSlice_OCN:-true}
   restart_interval = $restart_interval
   restart_option = 'nseconds'
   restart_n = $restart_interval
@@ -344,8 +349,8 @@ ICE_model:                      $ICE_model
 ICE_petlist_bounds:             $ICE_petlist_bounds
 ICE_attributes::
   Verbosity = ${Verbosity:-0}
-  DumpFields_ICE = $DumpFields_ICE
-  OverwriteSlice_ICE = $OverwriteSlice_ICE
+  DumpFields_ICE = ${DumpFields_ICE:-false}
+  OverwriteSlice = ${OverwriteSlice_ICE:-true}
   ProfileMemory = ${ProfileMemory:-False}
 ::
 eof
@@ -358,7 +363,7 @@ cat >>nems.configure <<eof
   WAV_petlist_bounds:           $WAV_petlist_bounds
   WAV_attributes::
   Verbosity = ${Verbosity:-0}
-  OverwriteSlice_Wav = ${OverwriteSlice_WAV:-False}
+  OverwriteSlice = ${OverwriteSlice_WAV:-False}
 ::
 eof
 fi
@@ -374,24 +379,27 @@ if [ $CPLDFV3_MOM6_CICE = YES ] ; then
   if [[ $inistep = cold ]] ; then
 
 cat >> nems.configure <<eof
-# Coldstart Run Sequence #
+# CMEPS Coldstart Run Sequence #
 runSeq::
   @$CPL_SLOW
     @$CPL_FAST
-      MED MedPhase_prep_atm
+      MED med_phases_prep_atm
       MED -> ATM :remapMethod=redist
       ATM
       ATM -> MED :remapMethod=redist
-      MED MedPhase_prep_ice
+      MED med_phases_prep_ice
       MED -> ICE :remapMethod=redist
       ICE
       ICE -> MED :remapMethod=redist
-      MED MedPhase_accum_fast
+      MED med_phases_prep_ocn_map
+      MED med_phases_prep_ocn_merge
+      MED med_phases_prep_ocn_accum_fast
     @
-    MED MedPhase_prep_ocn
+    MED med_phases_prep_ocn_accum_avg
     MED -> OCN :remapMethod=redist
     OCN
     OCN -> MED :remapMethod=redist
+    MED med_phases_restart_write
   @
 ::
 eof
@@ -402,20 +410,24 @@ cat >> nems.configure <<eof
 # Forecast Run Sequence #
 runSeq::
   @$CPL_SLOW
-    MED MedPhase_write_restart
-    MED MedPhase_prep_ocn
+    MED med_phases_restart_write
+    MED med_phases_prep_ocn_accum_avg
     MED -> OCN :remapMethod=redist
     OCN
     @$CPL_FAST
-      MED MedPhase_prep_ice
-      MED MedPhase_prep_atm
+      MED med_phases_prep_atm
+      MED med_phases_prep_ice
       MED -> ATM :remapMethod=redist
       MED -> ICE :remapMethod=redist
       ATM
       ICE
       ATM -> MED :remapMethod=redist
       ICE -> MED :remapMethod=redist
-      MED MedPhase_accum_fast
+      MED med_fraction_set
+      MED med_phases_prep_ocn_map
+      MED med_phases_prep_ocn_merge
+      MED med_phases_prep_ocn_accum_fast
+      MED med_phases_profile
     @
     OCN -> MED :remapMethod=redist
   @
@@ -423,6 +435,7 @@ runSeq::
 eof
   fi  # nems.configure
  else                            # include wave model
+                                 # ------------------
    if [ $USE_WAVES = True ] ; then
      if [[ $inistep = cold ]] ; then
 
@@ -433,24 +446,28 @@ runSeq::
     OCN -> WAV
     WAV -> OCN :srcMaskValues=1
     @$CPL_FAST
-      MED MedPhase_prep_atm
+      MED med_phases_prep_atm
       MED -> ATM :remapMethod=redist
       WAV -> ATM :srcMaskValues=1
       ATM
       ATM -> WAV
       ATM -> MED :remapMethod=redist
-      MED MedPhase_prep_ice
+      MED med_phases_prep_ice
       MED -> ICE :remapMethod=redist
       ICE
       ICE -> WAV
       WAV
       ICE -> MED :remapMethod=redist
-      MED MedPhase_accum_fast
+      MED med_fraction_set
+      MED med_phases_prep_ocn_map
+      MED med_phases_prep_ocn_merge
+      MED med_phases_prep_ocn_accum_fast
     @
-    MED MedPhase_prep_ocn
+    MED med_phases_prep_ocn_accum_avg
     MED -> OCN :remapMethod=redist
     OCN
     OCN -> MED :remapMethod=redist
+    MED med_phases_restart_write
   @
 ::
 eof
@@ -461,26 +478,30 @@ cat >> nems.configure <<eof
 # Forecast Run Sequence #
 runSeq::
   @$CPL_SLOW
-    MED MedPhase_write_restart
-    MED MedPhase_prep_ocn
+    MED med_phases_restart_write
+    MED med_phases_prep_ocn_accum_avg
     MED -> OCN :remapMethod=redist
     OCN -> WAV
     WAV -> OCN :srcMaskValues=1
     OCN
     @$CPL_FAST
-      MED MedPhase_prep_ice
-      MED MedPhase_prep_atm
+      MED med_phases_prep_atm
+      MED med_phases_prep_ice
       MED -> ATM :remapMethod=redist
       MED -> ICE :remapMethod=redist
       WAV -> ATM :srcMaskValues=1
       ATM -> WAV
       ICE -> WAV
-      WAV
       ATM
       ICE
+      WAV
       ATM -> MED :remapMethod=redist
       ICE -> MED :remapMethod=redist
-      MED MedPhase_accum_fast
+      MED med_fraction_set
+      MED med_phases_prep_ocn_map
+      MED med_phases_prep_ocn_merge
+      MED med_phases_prep_ocn_accum_fast
+      MED med_phases_profile
     @
     OCN -> MED :remapMethod=redist
   @
@@ -495,23 +516,27 @@ cat >> nems.configure <<eof
 runSeq::
   @$CPL_SLOW
     @$CPL_FAST
-      MED MedPhase_prep_atm
+      MED med_phases_prep_atm
       MED -> ATM :remapMethod=redist
       ATM -> WAV
       WAV -> ATM :srcMaskValues=1
       WAV
       ATM
       ATM -> MED :remapMethod=redist
-      MED MedPhase_prep_ice
+      MED med_phases_prep_ice
       MED -> ICE :remapMethod=redist
       ICE
       ICE -> MED :remapMethod=redist
-      MED MedPhase_accum_fast
+      MED med_fraction_set
+      MED med_phases_prep_ocn_map
+      MED med_phases_prep_ocn_merge
+      MED med_phases_prep_ocn_accum_fast
     @
-    MED MedPhase_prep_ocn
+    MED med_phases_prep_ocn_accum_avg
     MED -> OCN :remapMethod=redist
     OCN
     OCN -> MED :remapMethod=redist
+    MED med_phases_restart_write
   @
 ::
 eof
@@ -522,13 +547,13 @@ cat >> nems.configure <<eof
 # Forecast Run Sequence #
 runSeq::
   @$CPL_SLOW
-    MED MedPhase_write_restart
-    MED MedPhase_prep_ocn
+    MED med_phases_restart_write
+    MED med_phases_prep_ocn_accum_avg
     MED -> OCN :remapMethod=redist
     OCN
     @$CPL_FAST
-      MED MedPhase_prep_ice
-      MED MedPhase_prep_atm
+      MED med_phases_prep_atm
+      MED med_phases_prep_ice
       MED -> ATM :remapMethod=redist
       MED -> ICE :remapMethod=redist
       ATM -> WAV
@@ -538,7 +563,11 @@ runSeq::
       ICE
       ATM -> MED :remapMethod=redist
       ICE -> MED :remapMethod=redist
-      MED MedPhase_accum_fast
+      MED med_fraction_set
+      MED med_phases_prep_ocn_map
+      MED med_phases_prep_ocn_merge
+      MED med_phases_prep_ocn_accum_fast
+      MED med_phases_profile
     @
     OCN -> MED :remapMethod=redist
   @
@@ -549,6 +578,36 @@ eof
  fi   # nems.configure
 fi
 
+
+# CMEPS variables
+
+cat >> nems.configure <<eof
+DRIVER_attributes::
+      mediator_read_restart = ${mediator_read_restart:-.true.}
+::
+MED_attributes::
+      ATM_model = $ATM_model
+      ICE_model = $ICE_model
+      OCN_model = $OCN_model
+      history_n = ${history_n:-1}
+      history_option = nhours
+      history_ymd = -999
+      coupling_mode = nems_orig
+::
+ALLCOMP_attributes::
+      ScalarFieldCount = 2
+      ScalarFieldIdxGridNX = 1
+      ScalarFieldIdxGridNY = 2
+      ScalarFieldName = cpl_scalars
+      start_type = ${start_type:-startup}
+      case_name = ${case_name:-$MED_RESTDIR/ufs.s2s.cold}
+      restart_n = 1
+      restart_option = nhours
+      restart_ymd = -999
+::
+eof
+
+#     restart_n = ${restart_interval:-1}
 #export histfreq_n=$FHOUT
 
 # Create ice_in file
@@ -960,8 +1019,25 @@ cat > ice_in <<eof
 /
 eof
 
+echo $(pwd)
+cd $DATA
+cat > med_modelio.nml <<eof  
+&pio_inparm
+  pio_netcdf_format = "64bit_offset"
+  pio_numiotasks = -99
+  pio_rearranger = 1
+  pio_root = 1
+  pio_stride = 36
+  pio_typename = ${NETCDF_TYPE:-"netcdf"}
+/
+eof
+
+echo $(pwd)
+ls -ltr med_mo*
+
 # Enables linking files for the warm and restart steps
 # ----------------------------------------------------
+export LINK_MED_RST_FILES=${LINK_MED_RST_FILES:-YES}
 if [ $inistep = warm -o $inistep = restart ] ; then
  export LINK_OCN_FILES=${LINK_OCN_FILES:-YES}
  export LINK_MED_RST_FILES=${LINK_MED_RST_FILES:-YES}
@@ -999,37 +1075,27 @@ if [ ${LINK_OCN_FILES:-NO} = YES ] ; then
 fi
 if [ ${LINK_MED_RST_FILES:-NO} = YES ] ; then
   restart_hr=$((restart_interval/3600))
+  if [ $inistep = cold ] ; then restart_hr=1 ; fi
   export FHMIN=$((FHMIN+0))
   fhr=$((10#$FHMIN+10#$restart_hr))
-  while [ $fhr -lt $FHMAX ] ; do
+  if [ $fhr -gt $FHMAX ] ; then export fhr=$FHMAX ; fi
+  while [ $fhr -le $FHMAX ] ; do
     XDATE=$($NDATE +$fhr $CDATE)
-    PDYX=$(echo $XDATE | cut -c1-8)
-    cycx=$(echo $XDATE | cut -c9-10) 
-    pres=${PDYX}-${cycx}0000_
+    XYEAR=$(echo $XDATE | cut -c1-4)
+    XMON=$(echo $XDATE | cut -c5-6)
+    XDAY=$(echo $XDATE | cut -c7-8)
+    XSEC=$(($(echo $XDATE | cut -c9-10)*3600)) 
+    RFILE=${case_name}.cpl.r.${XYEAR}-${XMON}-${XDAY}-$(printf %05i $XSEC).nc
 
-    n=1
-    while [ $n -le 6 ] ; do
-      eval $NLN $MED_RESTDIR/${pres}mediator_FBaccumAtm_restart.tile$n.nc  ${pres}mediator_FBaccumAtm_restart.tile$n.nc
-      eval $NLN $MED_RESTDIR/${pres}mediator_FBAtm_a_restart.tile$n.nc     ${pres}mediator_FBAtm_a_restart.tile$n.nc
-      n=$((n+1))
-    done
+ #  eval $NLN $MED_RESTDIR/$RFILE $RFILE
 
-    eval $NLN $MED_RESTDIR/${pres}mediator_FBaccumAtm_restart.nc        ${pres}mediator_FBaccumAtm_restart.nc
-    eval $NLN $MED_RESTDIR/${pres}mediator_FBaccumHyd_restart.nc        ${pres}mediator_FBaccumHyd_restart.nc
-    eval $NLN $MED_RESTDIR/${pres}mediator_FBaccumIce_restart.nc        ${pres}mediator_FBaccumIce_restart.nc
-    eval $NLN $MED_RESTDIR/${pres}mediator_FBaccumLnd_restart.nc        ${pres}mediator_FBaccumLnd_restart.nc
-    eval $NLN $MED_RESTDIR/${pres}mediator_FBaccumOcn_restart.nc        ${pres}mediator_FBaccumOcn_restart.nc
-
-    eval $NLN $MED_RESTDIR/${pres}mediator_FBAtmOcn_o_restart.nc        ${pres}mediator_FBAtmOcn_o_restart.nc
-    eval $NLN $MED_RESTDIR/${pres}mediator_FBHyd_h_restart.nc           ${pres}mediator_FBHyd_h_restart.nc
-    eval $NLN $MED_RESTDIR/${pres}mediator_FBIce_i_restart.nc           ${pres}mediator_FBIce_i_restart.nc
-    eval $NLN $MED_RESTDIR/${pres}mediator_FBLnd_l_restart.nc           ${pres}mediator_FBLnd_l_restart.nc
-    eval $NLN $MED_RESTDIR/${pres}mediator_FBOcn_o_restart.nc           ${pres}mediator_FBOcn_o_restart.nc
-    eval $NLN $MED_RESTDIR/${pres}mediator_FBaccumAtmOcn_restart.nc     ${pres}mediator_FBaccumAtmOcn_restart.nc
-    eval $NLN $MED_RESTDIR/${pres}mediator_scalars_restart.txt          ${pres}mediator_scalars_restart.txt
     fhr=$((fhr+restart_hr))
   done
 fi
+
+CMEPS_DIR=${CMEPS_DIR:-$appdir/CMEPS}
+$NLN $CMEPS_DIR/mediator/fd_nems.yaml fd_nems.yaml
+$NLN $CMEPS_DIR/../parm/pio_in        pio_in
 
 #rty=pe${rtype:-"n"}
 

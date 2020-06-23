@@ -35,8 +35,8 @@ elif [ $machine = WCOSS_DELL_P3 ] ; then  # set QSUFFIX=2 for Dell 3.5
 
 fi
 
-LEVS=128
- LEVS=65
+export LEVS=128
+export LEVS=65
 
 # Project to use in mass store:
 HPSS_PROJECT=emc-global
@@ -109,10 +109,12 @@ elif [ $machine = WCOSS_DELL_P3 ] ; then
 
   # USER specific paths
   export NOSCRUB="/gpfs/dell2/emc/modeling/noscrub/$USER"
+  export SAVE="/gpfs/dell2/emc/modeling/save/$USER"
   export HOMEDIR=$NOSCRUB
   export STMP="/gpfs/dell2/stmp/$USER"
   export PTMP="/gpfs/dell2/ptmp/$USER"
   export EXECBASE=$NOSCRUB
+# export EXECBASE=$SAVE
 
   # Base directories for various builds
   export BASE_GIT="/gpfs/dell2/emc/modeling/noscrub/emc.glopara/git"
@@ -150,7 +152,6 @@ export DO_AWIPS=NO
 # NO for retrospective parallel; YES for real-time parallel
 export REALTIME=NO
 
-
 # For coupled
 export FIXcice=$HOMEgfs/fix/fix_cice5
 export FIXmom=$HOMEgfs/fix/fix_mom6
@@ -183,7 +184,10 @@ export use_lake_oro=NO
  export RUN_CCPP=YES
  export cplflx=.true.
  export CPLD_APP=YES
- export INLINE_POST=YES
+#export INLINE_POST=YES
+#export mediator=cmeps
+ export mediator=${mediator:-nems}
+#export NETCDF_TYPE=\"pnetcdf\"
 
 #export DumpFields_MED=true
 #export DumpFields_ATM=true
@@ -201,12 +205,15 @@ if [ $cplflx = .true. ] ; then
 #app=ufs-s2s-model_feb25
 #app=ufs-s2s-model_mar30
 #app=ufs-s2s-model_feb25_sav
-#appdir=cfv3_git_jan08
+#export appdir=cfv3_git_jan08
 #export SCRDIR=$HOMEgfs/scripts
 #export FORECASTSH="$SCRDIR/exglobal_fcst_emcufs.sh_feb02"    # with    UGW
-#appdir=cfv3_git_jan31
- appdir=cfv3_git_may02
-#appdir=cfv3_git_jan31_mars/cfv3_git_jan31
+#export appdir=cfv3_git_jan31
+ export  appdir=cfv3_git_may02
+ export  appdir=cfv3_git_may19
+ export  appdir=cfv3_git_Jun04_2
+ export appdir=cfv3_git_Jun16
+#export appdir=cfv3_git_jan31_mars/cfv3_git_jan31
 #export cpl=.true.
  export CPLDFV3_MOM6_CICE=YES
  export Restart_Prefix='MOM.res'
@@ -221,33 +228,36 @@ elif [ $CPLD_APP = YES ] ; then
  app=ufs-s2s-model
 #app=ufs-s2s-model_feb25
 #app=ufs-s2s-model_mar30
-#appdir=cfv3_git_jan08
+#export appdir=cfv3_git_jan08
 #export SCRDIR=$HOMEgfs/scripts
 #export FORECASTSH="$SCRDIR/exglobal_fcst_emcufs.sh_feb02"    # with    UGW
-#appdir=cfv3_git_jan31
- appdir=cfv3_git_may02
+#export appdir=cfv3_git_jan31
+ export appdir=cfv3_git_may02
+ export appdir=cfv3_git_Jun04_2
+ export appdir=cfv3_git_Jun16
+
 #export cplwav=.true.   # to turn on fv3 and WW3 using coupled exec
 #export CPLDWAV=YES
 #export cplwav2atm=.true.
 else
  app=ufs-weather-model
- appdir=fv3_git1230
- appdir=fv3_feb24
+ export appdir=fv3_git1230
+ export appdir=fv3_feb24
  export cplwav=.true.
  export cplwav2atm=.true.
  export CPLDWAV=YES
 
-#appdir=fv3_git_jan10
+#export appdir=fv3_git_jan10
 #app=ufs-s2s-model
-#appdir=cfv3_git_jan31
+#export appdir=cfv3_git_jan31
 fi
 if [ $machine = HERA ]; then
-#appdir=cfv3_git_May12
- appdir=cfv3_git_may13
- appdir=cfv3_venus/cfv3_git_may02
- appdir=cfv3_git_may19
-#appdir=ufs_compile
-#appdir=ufs_compile2
+#export appdir=cfv3_git_May12
+ export appdir=cfv3_git_may13
+ export appdir=cfv3_venus/cfv3_git_may02
+ export appdir=cfv3_git_may19
+#export appdir=ufs_compile
+#export appdir=ufs_compile2
 fi
 
   export DONST=NO
@@ -478,10 +488,10 @@ export FHMIN_GFS=0
 #export FHMIN=2
 #export FHMIN=3
 #export FHMIN=6
-#export FHMIN=12
+#export FHMIN=21
 #export FHMIN=36
 #export FHMIN=24
-#export FHMIN=48
+#export FHMIN=45
 #export FHMIN=66
 #export FHMIN=72
 #export FHMIN=120
@@ -496,30 +506,32 @@ export FHMIN_GFS=0
 #export FHMIN=1731
 
  export restart_interval=432000
-#export restart_interval=864000
- export restart_interval=86400
+ export restart_interval=864000
+#export restart_interval=86400
 #export restart_interval=43200
 #export restart_interval=21600
-#export restart_interval=10800
+ export restart_interval=10800
 #export restart_interval=7200
 #export restart_interval=3600
  export restart_interval_atm=$((restart_interval/3600))
 
  export FHMAX=1080
  export FHMAX_GFS_00=48
- export FHMAX_GFS_00=72
- export FHMAX_GFS_00=240
+#export FHMAX_GFS_00=72
+#export FHMAX_GFS_00=240
 #export FHMAX_GFS_00=120
 #export FHMAX_GFS_00=72
 #export FHMAX_GFS_00=96
 #export FHMAX_GFS_00=36
 #export FHMAX_GFS_00=27
+#export FHMAX_GFS_00=48
  export FHMAX_GFS_00=24
-#export FHMAX_GFS_00=15
+#export FHMAX_GFS_00=21
+#export FHMAX_GFS_00=18
 #export FHMAX_GFS_00=12
 #export FHMAX_GFS_00=9
 #export FHMAX_GFS_00=6
- export FHMAX_GFS_00=3
+#export FHMAX_GFS_00=3
 #export FHMAX_GFS_00=84
 #export FHMAX_GFS_00=93
 #export FHMAX_GFS_00=99
@@ -615,26 +627,18 @@ fi
 export SCRDIR=$HOMEgfs/scripts
 #FORECASTSH="$SCRDIR/exglobal_fcst_nemsfv3_res.sh"   # with    UGW
  export FORECASTSH=${FORECASTSH:-"$SCRDIR/exglobal_fcst_emcufs.sh"}    # with    UGW
-#export FORECASTSH="$SCRDIR/exglobal_fcst_emcufs.sh_feb02"    # with    UGW
-#export FORECASTSH="$SCRDIR/exglobal_fcst_emcufs0.sh"    # with    UGW
 if [ $CPLD_APP = YES ] ; then
-  export FCSTEXECDIR="$HOMEgfs/exec"
-# export FCSTEXEC="fv3_gfs_nh.prod.32bit.x"
-# export FCSTEXEC="nems_fv3_mom6_cice5.x"
-# export FCSTEXEC="nems_fv3_mom6_cice5.xn"
-# export FCSTEXEC="nems_fv3_mom6_cice5.xn2"
-# export FCSTEXEC="nems_fv3_mom6_cice5.xf"
-  export FCSTEXEC="nems_fv3_mom6_cice5.xfg2"
-  export FCSTEXEC="nems_fv3_mom6_cice5.xfgn"
-  export FCSTEXEC="nems_fv3_mom6_cice5.xfgn2"
-  export FCSTEXEC="nems_fv3_mom6_cice5.xfgn3"
-  export FCSTEXEC="nems_fv3_mom6_cice5.xfgn4"
-  export FCSTEXEC="nems_fv3_mom6_cice5.xfgn5"
-  export FCSTEXEC="nems_fv3_mom6_cice5.ccpp"
-  export FCSTEXEC="nems_fv3_mom6_cice5.ccppn"
+# export FCSTEXECDIR="$HOMEgfs/exec"
 # export FCSTEXEC="nems_fv3_mom6_cice5.ccppo"
-  export FCSTEXECDIR=$EXECBASE/$appdir/$app/NEMS/exe
-  export FCSTEXEC="NEMS.x"
+# export FCSTEXECDIR=$EXECBASE/$appdir/$app/NEMS/exe
+# export FCSTEXEC="NEMS.x"
+  export FCSTEXECDIR=${FCSTEXECDIR:-$EXECBASE/$appdir/$app/tests}
+  export model_name=fv3_mom6_cice_nemsland
+  export model_name=fcst_nemsland
+# export model_name=fcst_nems_debug
+  export FCSTEXEC=${FCSTEXEC:-$model_name.exe}
+# export MODULES_TO_USE="modules.${model_name}"
+
 elif [ $RUN_CCPP = NO ] ; then
 # g0nosc=/gpfs/dell2/emc/modeling/noscrub
 # export FCSTEXECDIR=$g0nosc/Shrinivas.Moorthi/fv3_git1104/ufs-weather-model3/tests
@@ -651,7 +655,12 @@ if [ ${NUMOM:-NO} = NO ] ; then
 fi
 
 if [ $CPLDFV3_MOM6_CICE = YES ] ; then
-  export CPLPREPSH=$HOMEgfs/scripts/prep_coupled_fcst_emcufs.sh
+  if [ $mediator = cmeps ] ; then
+    export CPLPREPSH=$HOMEgfs/scripts/prep_coupled_fcst_emcufs_cmeps.sh
+    export CMEPS_DIR=${CMEPS_DIR:-$EXECBASE/$appdir/$app/CMEPS}
+  else
+    export CPLPREPSH=$HOMEgfs/scripts/prep_coupled_fcst_emcufs.sh
+  fi
 # export CPLPREPSH=$HOMEgfs/scripts/prep_coupled_fcst_res.sh
 # export CPLPREPSH=$HOMEgfs/scripts/prep_coupled_fcst.sh
 # If YES, NSST is turned on in anal and/or fcst steps
