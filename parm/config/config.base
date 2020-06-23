@@ -29,14 +29,14 @@ elif [ $machine = WCOSS_DELL_P3 ] ; then  # set QSUFFIX=2 for Dell 3.5
 
   export ACCOUNT=GFS-DEV
   export QUEUE=dev$QSUFIX
-  export QUEUE=debug$QSUFIX
+# export QUEUE=debug$QSUFIX
 # export QUEUE_ARCH=dev_transfer
   export QUEUE_ARCH=dev${QSUFIX}_transfer
 
 fi
 
-export LEVS=128
-export LEVS=65
+ export LEVS=128
+ export LEVS=65
 
 # Project to use in mass store:
 HPSS_PROJECT=emc-global
@@ -140,7 +140,7 @@ fi
 
 #fi
 
- export print_esmf=.true.
+#export print_esmf=.true.
  export print_esmf=${print_esmf:-.false.}
  export ESMF_RUNTIME_PROFILE=ON
  export ESMF_RUNTIME_PROFILE_OUTPUT=SUMMARY
@@ -209,11 +209,11 @@ if [ $cplflx = .true. ] ; then
 #export SCRDIR=$HOMEgfs/scripts
 #export FORECASTSH="$SCRDIR/exglobal_fcst_emcufs.sh_feb02"    # with    UGW
 #export appdir=cfv3_git_jan31
- export  appdir=cfv3_git_may02
- export  appdir=cfv3_git_may19
+ export appdir=cfv3_git_may02
  export  appdir=cfv3_git_Jun04_2
- export appdir=cfv3_git_Jun16
-#export appdir=cfv3_git_jan31_mars/cfv3_git_jan31
+#export  appdir=cfv3_git_may19_hera
+#export appdir=cfv3_git_Jun16
+#appdir=cfv3_git_jan31_mars/cfv3_git_jan31
 #export cpl=.true.
  export CPLDFV3_MOM6_CICE=YES
  export Restart_Prefix='MOM.res'
@@ -233,9 +233,9 @@ elif [ $CPLD_APP = YES ] ; then
 #export FORECASTSH="$SCRDIR/exglobal_fcst_emcufs.sh_feb02"    # with    UGW
 #export appdir=cfv3_git_jan31
  export appdir=cfv3_git_may02
- export appdir=cfv3_git_Jun04_2
- export appdir=cfv3_git_Jun16
-
+ export  appdir=cfv3_git_Jun04_2
+#export  appdir=cfv3_git_may19_hera
+#export appdir=cfv3_git_Jun16
 #export cplwav=.true.   # to turn on fv3 and WW3 using coupled exec
 #export CPLDWAV=YES
 #export cplwav2atm=.true.
@@ -342,19 +342,19 @@ if [ $WRITE_DOPOST = .true. ] ; then
  elif [ $machine = HERA ] ; then
   export POSTDIR=/scratch1/NCEPDEV/global/Shrinivas.Moorthi/save/postdir/EMC_post
  fi
-  KPO=${KPO:-57}
-  if [ $KPO -eq 47 ] ; then
+ KPO=${KPO:-57}
+ if [ $KPO -eq 47 ] ; then
    export POSTGPVARS=${POSTGPVARS:-"KPO=47,PO=1000.,975.,950.,925.,900.,875.,850.,825.,800.,775.,750.,725.,700.,675.,650.,625.,600.,575.,550.,525.,500.,475.,450.,425.,400.,375.,350.,325.,300.,275.,250.,225.,200.,175.,150.,125.,100.,70.,50.,30.,20.,10.,7.,5.,3.,2.,1.,"}
-  elif [ $KPO -eq 50 ] ; then
+ elif [ $KPO -eq 50 ] ; then
    export POSTGPVARS=${POSTGPVARS:-"KPO=50,PO=1000.,975.,950.,925.,900.,875.,850.,825.,800.,775.,750.,725.,700.,675.,650.,625.,600.,575.,550.,525.,500.,475.,450.,425.,400.,375.,350.,325.,300.,275.,250.,225.,200.,175.,150.,125.,100.,70.,50.,40.,30.,20.,15.,10.,7.,5.,3.,2.,1.,0.4"}
-  elif [ $KPO -eq 57 ] ; then
+ elif [ $KPO -eq 57 ] ; then
    export POSTGPVARS=${POSTGPVARS:-"KPO=57,PO=1000.,975.,950.,925.,900.,875.,850.,825.,800.,775.,750.,725.,700.,675.,650.,625.,600.,575.,550.,525.,500.,475.,450.,425.,400.,375.,350.,325.,300.,275.,250.,225.,200.,175.,150.,125.,100.,70.,50.,40.,30.,20.,10.,7.,5.,4.,3.,2.,1.,0.7,0.5,0.4,0.3,0.2,0.1,0.07,0.05"}
-  fi
+ fi
 
-  export PostFlatFile00=${PostFlatFile00:-postcntrl_gfs_tke_mg3_${KPO}l_00_two.txt}
-  export PostFlatFile=${PostFlatFile:-postcntrl_gfs_tke_mg3_${KPO}l_two.txt}
+ export PostFlatFile00=${PostFlatFile00:-postcntrl_gfs_tke_mg3_${KPO}l_00_two.txt}
+ export PostFlatFile=${PostFlatFile:-postcntrl_gfs_tke_mg3_${KPO}l_two.txt}
 
-  export LEVS=${LEVS:-65}
+ export LEVS=${LEVS:-65}
  LVER=${LVER:-""}
  if [ $LEVS -gt 65 ] ; then
    export SIGLEVEL=${SIGLEVEL:-$HOMEgfs/fix/fix_am/global_hyblev.l${LEVS}${LVER}.txt}
@@ -483,7 +483,7 @@ export FHMIN_GFS=0
 
 #export USE_LAST_RESTART=YES
 #export restart_ext=.false.
-#export warm_start=.true.   # for warm_start need to set FHMIN (i.e. starting time)
+ export warm_start=.true.   # for warm_start need to set FHMIN (i.e. starting time)
 #export FHMIN=1
 #export FHMIN=2
 #export FHMIN=3
@@ -503,6 +503,11 @@ export FHMIN_GFS=0
 #export FHMIN=504
 #export FHMIN=1056
 #export FHMIN=1080
+ export FHMIN=1440
+ export FHMIN=2880
+ export FHMIN=4560
+ export FHMIN=5280
+ export FHMIN=6720
 #export FHMIN=1731
 
  export restart_interval=432000
@@ -524,10 +529,8 @@ export FHMIN_GFS=0
 #export FHMAX_GFS_00=96
 #export FHMAX_GFS_00=36
 #export FHMAX_GFS_00=27
-#export FHMAX_GFS_00=48
- export FHMAX_GFS_00=24
-#export FHMAX_GFS_00=21
-#export FHMAX_GFS_00=18
+#export FHMAX_GFS_00=24
+#export FHMAX_GFS_00=15
 #export FHMAX_GFS_00=12
 #export FHMAX_GFS_00=9
 #export FHMAX_GFS_00=6
@@ -548,7 +551,11 @@ export FHMIN_GFS=0
 #export FHMAX_GFS_00=1806 # uncomment this line for 45 day run
 #export FHMAX_GFS_00=1920 # uncomment this line for 45 day run
 #export FHMAX_GFS_00=2160 # uncomment this line for 45 day run
-#export FHMAX_GFS_00=2880 # uncomment this line for 45 day run
+ export FHMAX_GFS_00=2880 # uncomment this line for 45 day run
+ export FHMAX_GFS_00=4560 # uncomment this line for 45 day run
+ export FHMAX_GFS_00=6240 # uncomment this line for 45 day run
+ export FHMAX_GFS_00=6960 # uncomment this line for 45 day run
+ export FHMAX_GFS_00=7200 # uncomment this line for 45 day run
 #export FHMAX_GFS=1080
 #export FHMAX_GFS_00=1440
 
