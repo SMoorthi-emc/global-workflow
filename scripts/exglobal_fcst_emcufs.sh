@@ -714,19 +714,21 @@ fi
 ######################  WW3 #########################################
 export cplwav=${cplwav:-${CPLWAV:-.false.}}
 if [ $cplwav = .true. ] ; then
- export ww3_res=${ww3_res:-'glo_30m'}
+ export ww3_grid=${ww3_grid:-'glo_30m'}
  FIX_WW3=${FIX_WW3:-/gpfs/dell2/emc/modeling/noscrub/Shrinivas.Moorthi/WW3_input_data}
  $NCP $FIX_WW3/mod* $DATA/
- mv $DATA/mod_def.points_$ww3_res $DATA/mod_def.points
+ mv $DATA/mod_def.points_$ww3_grid $DATA/mod_def.points
  ymd=$(echo $CDATE |cut -c 1-8)
  export ww3_coupling_interval_sec=${ww3_coupling_interval_sec:-$DELTIM}
 #$NCP $FIX_WW3/ww3_multi.inp_$ymd $DATA/ww3_multi.inp
  secout=$((FHOUT*3600))
- $NCP $FIX_WW3/ww3_multi.inp_template                 $DATA/ww3_multi.inp0
- sed -e "s/glo_30m/$ww3_res/g" $DATA/ww3_multi.inp0 > $DATA/ww3_multi.inp1
- sed -e "s/1800/$secout/g"     $DATA/ww3_multi.inp1 > $DATA/ww3_multi.inp2
- sed -e "s/20000000/$ymd/g"    $DATA/ww3_multi.inp2 > $DATA/ww3_multi.inp
- rm $DATA/ww3_multi.inp0       $DATA/ww3_multi.inp1   $DATA/ww3_multi.inp2
+ rsecs=$((restart_interval*3600))
+ $NCP $FIX_WW3/ww3_multi.inp_template                  $DATA/ww3_multi.inp0
+ sed -e "s/glo_30m/$ww3_grid/g" $DATA/ww3_multi.inp0 > $DATA/ww3_multi.inp1
+ sed -e "s/1800/$secout/g"      $DATA/ww3_multi.inp1 > $DATA/ww3_multi.inp2
+ sed -e "s/20000000/$ymd/g"     $DATA/ww3_multi.inp2 > $DATA/ww3_multi.inp0
+ sed -e "s/RSTSEC/$rsecs/g"     $DATA/ww3_multi.inp0 > $DATA/ww3_multi.inp
+ rm $DATA/ww3_multi.inp0        $DATA/ww3_multi.inp1   $DATA/ww3_multi.inp2
 fi
 
 # -----------------------------------------------------------------------
@@ -1784,7 +1786,7 @@ if [ $cplwav = .true. ] ; then   # link wave history files
     RDATE=$($NDATE +$fhr $CDATE)
     rPDY=$(echo $RDATE | cut -c1-8)
     rcyc=$(echo $RDATE | cut -c9-10)
-    file=${rPDY}.${rcyc}0000.out_grd.${ww3_res}
+    file=${rPDY}.${rcyc}0000.out_grd.${ww3_grid}
     eval $NLN $WW3_OUTDIR/$file $file
     FHINC=$FHOUT
     if [ $FHMAX_HF -gt 0 -a $FHOUT_HF -gt 0 -a $fhr -lt $FHMAX_HF ] ; then

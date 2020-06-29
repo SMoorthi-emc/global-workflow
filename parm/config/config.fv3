@@ -95,8 +95,8 @@ case $case_in in
 #       export layout_x=8
         export layout_y=8
 #       export layout_y=12
-#       export io_layout_x=2
-#       export io_layout_y=2
+#       export io_layout_x=2      # restart may not reproduce!
+#       export io_layout_y=2a     # restart may not reproduce!
         export io_layout_x=${io_layout_x:-1}
         export io_layout_y=${io_layout_y:-1}
         if [ $machine == WCOSS_DELL_P3 ] ; then

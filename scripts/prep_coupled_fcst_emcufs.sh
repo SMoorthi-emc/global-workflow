@@ -26,19 +26,22 @@ cd $DATA || exit 8
 export NCP=${NCP:-"/bin/cp -p"}
 PDY=$(echo $CDATE | cut -c1-8)
 cyc=$(echo $CDATE | cut -c9-10)
-MED_RESTDIR=${MED_RESTDIR:-$ROTDIR/${CDMUP}.$PDY/$cyc/MED_RESTDIR}
-OCN_RESTDIR=${OCN_RESTDIR:-$ROTDIR/${CDMUP}.$PDY/$cyc/OCN_RESTDIR}
-ICE_RESTDIR=${ICE_RESTDIR:-$ROTDIR/${CDMUP}.$PDY/$cyc/ICE_RESTDIR}
+MED_RESTDIR=${MED_RESTDIR:-$ROTDIR/${CDUMP}.$PDY/$cyc/MED_RESTDIR}
+OCN_RESTDIR=${OCN_RESTDIR:-$ROTDIR/${CDUMP}.$PDY/$cyc/OCN_RESTDIR}
+ICE_RESTDIR=${ICE_RESTDIR:-$ROTDIR/${CDUMP}.$PDY/$cyc/ICE_RESTDIR}
 mkdir -p $MED_RESTDIR
 mkdir -p $OCN_RESTDIR
 mkdir -p $ICE_RESTDIR
+
+if [ $CPLDWAV = YES ] ; then
+ WW3_RESTDIR=${WW3_RESTDIR:-$ROTDIR/${CDUMP}.$PDY/$cyc/WW3_RESTDIR}
+ mkdir -p $WW3_RESTDIR
+fi
 
 if [ $inistep = restart ] ; then # using restart files for MOM6 and CICE here, FV3 will set in exglobal script
                                  # ---------------------------------------------------------------------------
   export warm_start=.true.
 
-# for mediator
-# ------------
   SDATE=$($NDATE +$FHMIN $CDATE)
   PDYS=$(echo $SDATE | cut -c1-8)
   yyyy=$(echo $SDATE | cut -c1-4)
@@ -46,6 +49,8 @@ if [ $inistep = restart ] ; then # using restart files for MOM6 and CICE here, F
     dd=$(echo $SDATE | cut -c7-8)
   cycs=$(echo $SDATE | cut -c9-10)
 
+# for mediator
+# ------------
   if [ -s $MED_RESTDIR ] ; then
     nfiles=$(ls -1 $MED_RESTDIR/${PDYS}-${cycs}0000_mediator* | wc -l)
     if [ $nfiles -gt 0 ] ; then
@@ -96,12 +101,15 @@ if [ $inistep = restart ] ; then # using restart files for MOM6 and CICE here, F
     export use_restart_time=.true.
   fi
 
+  if [ $CPLDWAV = YES ] ; then
 # for Wave (WW3)    (to be done)
 # -----------------
-# cd $DATA
-# WW3_RESTDIR=${WW3_RESTDIR:-$ROTDIR/WW3_RESTDIR}
-# if [ -s $WW3_RESTDIR ] ; then
-# fi
+    cd $DATA
+    WW3_RESTDIR=${WW3_RESTDIR:-$ROTDIR/WW3_RESTDIR}
+    if [ -s $WW3_RESTDIR ] ; then
+      eval $NCP $WW3_RESTDIR/${yyyy}${mm}${dd}.${cycs}0000.restart.$ww3_grid restart.$ww3_grid
+    fi
+  fi
 
   cd $DATA
 else
@@ -134,7 +142,7 @@ else
   fi
   if [ $CPLDWAV = YES -a $USE_WAVES = True ] ; then
     yyyymmdd=$(echo $CDATE | cut -c1-8)
-    $NCP $ICSDIR/$CDATE/$yyyymmdd.000000.restart.gwes_30m restart.gwes_30m
+    $NCP $ICSDIR/$CDATE/$yyyymmdd.000000.restart.$ww3_grid restart.$ww3_grid
   fi
 fi
 RESTART_CHECKSUMS_REQUIRED=${RESTART_CHECKSUMS_REQUIRED:-False}
@@ -965,6 +973,7 @@ eof
 if [ $inistep = warm -o $inistep = restart ] ; then
  export LINK_OCN_FILES=${LINK_OCN_FILES:-YES}
  export LINK_MED_RST_FILES=${LINK_MED_RST_FILES:-YES}
+ export LINK_WW3_RST_FILES=${LINK_WW3_RST_FILES:-YES}
 fi
 
 # Optionally link ocean history files to OCN_OUTDIR directory
@@ -1029,6 +1038,22 @@ if [ ${LINK_MED_RST_FILES:-NO} = YES ] ; then
     eval $NLN $MED_RESTDIR/${pres}mediator_scalars_restart.txt          ${pres}mediator_scalars_restart.txt
     fhr=$((fhr+restart_hr))
   done
+fi
+
+# for Wave (WW3)    (to be done)
+if [ $CPLDWAV = YES ] ; then
+ if [ ${LINK_WW3_RST_FILES:-NO} = YES ] ; then
+  restart_hr=$((restart_interval/3600))
+  export FHMIN=$((FHMIN+0))
+  fhr=$((10#$FHMIN+10#$restart_hr))
+  while [ $fhr -le $FHMAX ] ; do
+    XDATE=$($NDATE +$fhr $CDATE)
+    PDYX=$(echo $XDATE | cut -c1-8)
+    cycx=$(echo $XDATE | cut -c9-10)
+    eval $NLN $WW3_RESTDIR/${PDYX}.${cycx}0000.restart.$ww3_grid ${PDYX}.${cycx}0000.restart.$ww3_grid
+    fhr=$((fhr+restart_hr))
+  done
+ fi
 fi
 
 #rty=pe${rtype:-"n"}
