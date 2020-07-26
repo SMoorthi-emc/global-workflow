@@ -18,7 +18,7 @@ IDATE=2018010100
  IDATE=2018090100
 #IDATE=2011100100
 #IDATE=2018011500
-#IDATE=2018031500
+ IDATE=2018031500
  CASE=C384
 #IDATE=2017051500
 #CASE=C768
@@ -32,7 +32,8 @@ HH=$(echo $IDATE | cut -c9-10)
 RES=$(echo $CASE|cut -c 2-)
 
 # $PSLOT is the name of your experiment
- expt=_phyad
+ expt=_phyde
+#expt=_phyai    # cmeps run
 #expt=_phyal    # 9 month run
 #expt=_phyad
 #expt=_phyg
@@ -94,9 +95,12 @@ CONFIGDIR=${CONFIGDIR:-../../parm/config}
 # Link the existing FV3ICS folder to here, I prefer this directory to be in main directory, but changing in script can cause issues
 #mkdir -p $COMROT
 cd $COMROT
-mkdir -p ../FV3ICS
-ln -s ../FV3ICS .
-ln -s $FROM_HPSS/* ../FV3ICS
+mkdir -p FV3ICS
+#ln -s ../FV3ICS .
+#ln -s $FROM_HPSS/* ../FV3ICS
+#ln -fs $FROM_HPSS/* ../FV3ICS
+#ln -fs $FROM_HPSS/$IDATE ../FV3ICS/$IDATE
+ ln -fs $FROM_HPSS/$IDATE FV3ICS/
 
 cd $CWD
 

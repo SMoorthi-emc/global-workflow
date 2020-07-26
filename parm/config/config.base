@@ -29,7 +29,7 @@ elif [ $machine = WCOSS_DELL_P3 ] ; then  # set QSUFFIX=2 for Dell 3.5
 
   export ACCOUNT=GFS-DEV
   export QUEUE=dev$QSUFIX
-  export QUEUE=debug$QSUFIX
+# export QUEUE=debug$QSUFIX
 # export QUEUE_ARCH=dev_transfer
   export QUEUE_ARCH=dev${QSUFIX}_transfer
 
@@ -161,7 +161,7 @@ export OCNFIXDIR=$HOMEgfs/fix/fix_ocnice
 export OCNPOSTsrc=$HOMEgfs/fix/ocean_ice_post
 #
 #For WW3
-#export USE_WAVES=True
+ export USE_WAVES=True
  export ww3_grid=gwes_30m
 export FIX_WW3=${FIX_WW3:-$NOSCRUB/WW3_input_data}
 export ww3_grid=${ww3_grid:-'glo_30m'}
@@ -184,8 +184,9 @@ export use_lake_oro=NO
  export RUN_CCPP=YES
  export cplflx=.true.
  export CPLD_APP=YES
-#export INLINE_POST=YES
-#export mediator=cmeps
+ export INLINE_POST=YES
+#export frac_grid=.true.
+ export mediator=cmeps
  export mediator=${mediator:-nems}
 #export NETCDF_TYPE=\"pnetcdf\"
 
@@ -212,15 +213,18 @@ if [ $cplflx = .true. ] ; then
  export appdir=cfv3_git_may02
  export appdir=cfv3_git_Jun04_2             # Venus
  export appdir=cfv3_git_Jun23               # Mars
+#export appdir=cfv3_git_Jul17
+ export appdir=cfv3_git_July20
+#export appdir=s2s_orig
 #export appdir=cfv3_git_may19_hera
 #export appdir=cfv3_git_Jun16
 #appdir=cfv3_git_jan31_mars/cfv3_git_jan31
 #export cpl=.true.
  export CPLDFV3_MOM6_CICE=YES
  export Restart_Prefix='MOM.res'
-#export cplwav=.true.
-#export cplwav2atm=.true.
-#export CPLDWAV=YES
+ export cplwav=.true.
+ export cplwav2atm=.true.
+ export CPLDWAV=YES
  export IC_FROM=bench1
  if [ $IC_FROM = bench1 ] ; then export USE_IDEAL_AGE_TRACER=True ; fi
  export NUMOM=YES
@@ -236,6 +240,8 @@ elif [ $CPLD_APP = YES ] ; then
  export appdir=cfv3_git_may02
  export appdir=cfv3_git_Jun04_2             # Venus
  export appdir=cfv3_git_Jun23               # Mars
+#export appdir=cfv3_git_Jul17
+ export appdir=cfv3_git_July20
 #export appdir=cfv3_git_may19_hera
 #export appdir=cfv3_git_Jun16
 #export cplwav=.true.   # to turn on fv3 and WW3 using coupled exec
@@ -493,6 +499,7 @@ export FHMIN_GFS=0
 #export FHMIN=3
 #export FHMIN=6
 #export FHMIN=9
+#export FHMIN=12
 #export FHMIN=21
 #export FHMIN=36
 #export FHMIN=24
@@ -504,11 +511,12 @@ export FHMIN_GFS=0
 #export FHMIN=168
 #export FHMIN=216
 #export FHMIN=288
-#export FHMIN=294
-#export FHMIN=504
+#export FHMIN=360
+#export FHMIN=720
 #export FHMIN=1056
 #export FHMIN=1080
 #export FHMIN=1440
+#export FHMIN=1800
 #export FHMIN=2880
 #export FHMIN=4560
 #export FHMIN=5280
@@ -517,10 +525,13 @@ export FHMIN_GFS=0
 
  export restart_interval=432000
  export restart_interval=864000
+ export restart_interval=1296000
+#export restart_interval=864000
+ export restart_interval=432000
 #export restart_interval=86400
 #export restart_interval=43200
 #export restart_interval=21600
- export restart_interval=10800
+#export restart_interval=10800
 #export restart_interval=7200
 #export restart_interval=3600
  export restart_interval_atm=$((restart_interval/3600))
@@ -528,7 +539,7 @@ export FHMIN_GFS=0
  export FHMAX=1080
  export FHMAX_GFS_00=48
 #export FHMAX_GFS_00=72
-#export FHMAX_GFS_00=240
+ export FHMAX_GFS_00=240
 #export FHMAX_GFS_00=120
 #export FHMAX_GFS_00=72
 #export FHMAX_GFS_00=96
@@ -537,8 +548,8 @@ export FHMIN_GFS=0
 #export FHMAX_GFS_00=24
 #export FHMAX_GFS_00=15
 #export FHMAX_GFS_00=12
- export FHMAX_GFS_00=9
- export FHMAX_GFS_00=6
+#export FHMAX_GFS_00=9
+#export FHMAX_GFS_00=6
 #export FHMAX_GFS_00=3
 #export FHMAX_GFS_00=84
 #export FHMAX_GFS_00=93
@@ -553,10 +564,12 @@ export FHMIN_GFS=0
 #export FHMAX_GFS_00=840
 #export FHMAX_GFS_00=1080 # uncomment this line for 45 day run
 #export FHMAX_GFS_00=1440
-#export FHMAX_GFS_00=1806 # uncomment this line for 45 day run
+#export FHMAX_GFS_00=1800 # uncomment this line for 45 day run
+#export FHMAX_GFS_00=2520 # uncomment this line for 45 day run
 #export FHMAX_GFS_00=1920 # uncomment this line for 45 day run
 #export FHMAX_GFS_00=2160 # uncomment this line for 45 day run
 #export FHMAX_GFS_00=2880 # uncomment this line for 45 day run
+#export FHMAX_GFS_00=3600 # uncomment this line for 45 day run
 #export FHMAX_GFS_00=4560 # uncomment this line for 45 day run
 #export FHMAX_GFS_00=6240 # uncomment this line for 45 day run
 #export FHMAX_GFS_00=6960 # uncomment this line for 45 day run
@@ -682,6 +695,10 @@ if [ $CPLDFV3_MOM6_CICE = YES ] ; then
 
 # The switch to apply SST elevation correction or not
   export nst_anl=.false.
+else
+  if [ $mediator = cmeps ] ; then
+    export CMEPS_DIR=${CMEPS_DIR:-$EXECBASE/$appdir/$app/CMEPS}
+  fi
 fi
 # CPL
 #export nst_anl=.false.

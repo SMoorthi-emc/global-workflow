@@ -277,7 +277,7 @@ export CPLDWAV=${CPLDWAV:-NO}
 
 export ATM_model=${ATM_model:-fv3}
 if [ $CPLDFV3_MOM6_CICE = YES ] ; then
- export MED_model=${MED_model:-cmeps}
+#export MED_model=${MED_model:-cmeps}
  export MED_model=nems
  export OCN_model=${OCN_model:-mom6}
  export ICE_model=${ICE_model:-cice}
@@ -326,7 +326,7 @@ ATM_model:                      $ATM_model
 ATM_petlist_bounds:             $ATM_petlist_bounds
 ATM_attributes::
   Verbosity = ${Verbosity:-0}
-  DumpFields_ATM = ${DumpFields_ATM:-false}
+  DumpFields    = ${DumpFields_ATM:-false}
   ProfileMemory = ${ProfileMemory:-False}
   OverwriteSlice = ${OverwriteSlice_ATM:-true}
 ::
@@ -340,8 +340,8 @@ OCN_model:                      $OCN_model
 OCN_petlist_bounds:             $OCN_petlist_bounds
 OCN_attributes::
   Verbosity = ${Verbosity:-0}
-  DumpFields_OCN = ${DumpFields_OCN:-false}
-  OverwriteSlice_OCN = ${OverwriteSlice_OCN:-true}
+  DumpFields       = ${DumpFields_OCN:-false}
+  OverwriteSlice   = ${OverwriteSlice_OCN:-true}
   restart_interval = $restart_interval
   restart_option = 'nseconds'
   restart_n = $restart_interval
@@ -359,9 +359,10 @@ ICE_model:                      $ICE_model
 ICE_petlist_bounds:             $ICE_petlist_bounds
 ICE_attributes::
   Verbosity = ${Verbosity:-0}
-  DumpFields_ICE = ${DumpFields_ICE:-false}
+  DumpFields     = ${DumpFields_ICE:-false}
   OverwriteSlice = ${OverwriteSlice_ICE:-true}
   ProfileMemory = ${ProfileMemory:-False}
+  OverwriteSlice = ${OverwriteSlice_ICE:-true}
 ::
 eof
 fi
@@ -401,6 +402,7 @@ runSeq::
       MED -> ICE :remapMethod=redist
       ICE
       ICE -> MED :remapMethod=redist
+      MED med_fraction_set
       MED med_phases_prep_ocn_map
       MED med_phases_prep_ocn_merge
       MED med_phases_prep_ocn_accum_fast
@@ -420,7 +422,6 @@ cat >> nems.configure <<eof
 # Forecast Run Sequence #
 runSeq::
   @$CPL_SLOW
-    MED med_phases_restart_write
     MED med_phases_prep_ocn_accum_avg
     MED -> OCN :remapMethod=redist
     OCN
@@ -440,6 +441,7 @@ runSeq::
       MED med_phases_profile
     @
     OCN -> MED :remapMethod=redist
+    MED med_phases_restart_write
   @
 ::
 eof
@@ -589,7 +591,13 @@ eof
 fi
 
 
+if [ $inistep = warm -o $inistep = restart ] ; then
+  restart_hr=$((restart_interval/3600))
+fi
+
 # CMEPS variables
+export frac_grid=${frac_grid:-.false.}
+if [ $frac_grid = .true. ] ; then export coupling_mode="nems_frac" ; fi
 
 cat >> nems.configure <<eof
 DRIVER_attributes::
@@ -602,7 +610,7 @@ MED_attributes::
       history_n = ${history_n:-1}
       history_option = nhours
       history_ymd = -999
-      coupling_mode = nems_orig
+      coupling_mode = ${coupling_mode:-nems_orig}
 ::
 ALLCOMP_attributes::
       ScalarFieldCount = 2
@@ -611,7 +619,7 @@ ALLCOMP_attributes::
       ScalarFieldName = cpl_scalars
       start_type = ${start_type:-startup}
       case_name = ${case_name:-$MED_RESTDIR/ufs.s2s.cold}
-      restart_n = 1
+      restart_n = ${restart_hr:-1}
       restart_option = nhours
       restart_ymd = -999
 ::
@@ -1085,7 +1093,7 @@ if [ ${LINK_OCN_FILES:-NO} = YES ] ; then
   done
 fi
 if [ ${LINK_MED_RST_FILES:-NO} = YES ] ; then
-  restart_hr=$((restart_interval/3600))
+# restart_hr=$((restart_interval/3600))
   if [ $inistep = cold ] ; then restart_hr=1 ; fi
   export FHMIN=$((FHMIN+0))
   fhr=$((10#$FHMIN+10#$restart_hr))
@@ -1107,7 +1115,7 @@ fi
 # for Wave (WW3)    (to be done)
 if [ $CPLDWAV = YES ] ; then
  if [ ${LINK_WW3_RST_FILES:-NO} = YES ] ; then
-  restart_hr=$((restart_interval/3600))
+# restart_hr=$((restart_interval/3600))
   export FHMIN=$((FHMIN+0))
   fhr=$((10#$FHMIN+10#$restart_hr))
   while [ $fhr -le $FHMAX ] ; do
@@ -1121,9 +1129,9 @@ if [ $CPLDWAV = YES ] ; then
 fi
 
 
-CMEPS_DIR=${CMEPS_DIR:-$appdir/CMEPS}
-$NLN $CMEPS_DIR/mediator/fd_nems.yaml fd_nems.yaml
-$NLN $CMEPS_DIR/../parm/pio_in        pio_in
+#CMEPS_DIR=${CMEPS_DIR:-$appdir/CMEPS}
+#$NLN $CMEPS_DIR/mediator/fd_nems.yaml fd_nems.yaml
+#$NLN $CMEPS_DIR/../parm/pio_in        pio_in
 
 #rty=pe${rtype:-"n"}
 

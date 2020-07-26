@@ -52,6 +52,7 @@ export ESMF_RUNTIME_COMPLIANCECHECK=${ESMF_RUNTIME_COMPLIANCECHECK:-'OFF:depth=4
 
 export cplflx=${cplflx:-${CPLFLX:-.false.}}
 export cpl=${cpl:-${CPL:-.false.}}
+export mediator=${mediator:-nems}
 
 # experiment name, horizontal and vertical resolutions
 #-----------------------------------------------------
@@ -704,6 +705,13 @@ cat itag
   $NLN $PARM_POST/params_grib2_tbl_new            $DATA/params_grib2_tbl_new
 # $NLN $LONSPERLAT                                $DATA/lonsperlat.dat
   $NLN $SIGLEVEL                                  $DATA/hyblev_file
+fi
+
+######################  mediator ########################################
+if [ $mediator = cmeps ] ; then
+  CMEPS_DIR=${CMEPS_DIR:-$appdir/CMEPS}
+  $NLN $CMEPS_DIR/mediator/fd_nems.yaml fd_nems.yaml
+  $NLN $CMEPS_DIR/../parm/pio_in        pio_in
 fi
 
 ######################  CCPP ########################################
@@ -1403,8 +1411,10 @@ cat > input.nml << EOF
        ca_smooth      = ${ca_smooth:-.false.}
        nspinup        = ${nspinup:-1000}
        iseed_ca       = ${iseed_ca:-0}
+
        min_seaice     = ${min_seaice:-1.0e-6}
        min_lakeice    = ${min_lakeice:-0.15}
+       frac_grid      = ${frac_grid:-.false.}
        ignore_lake    = ${ignore_lake:-.false.}
        sfc_z0_type    = ${sfc_z0_type:-0}
 
@@ -1898,7 +1908,7 @@ if [ $ERR -eq 0 -a $SEND = YES -a $cpl = .false. -a $LINK_RESTDIR = NO ] ; then
 fi
 
 if [ ${KEEPREST:-NO} = YES -a $FHMAX -gt ${FHMAX_COLD:-1} ] ; then
- if [ $cplflx = .true. ] ; then
+ if [ $cplflx = .true. -a $mediator = nems ] ; then
     MED_RESTDIR=${MED_RESTDIR:-$ROTDIR/gfs.$PDY/$cyc/MED_RESTART}
     mkdir -p $MED_RESTDIR
 #   $NCP  mediator_*restart*.nc mediator_scalars_restart.txt $MED_RESTDIR/
