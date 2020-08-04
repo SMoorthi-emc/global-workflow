@@ -593,6 +593,8 @@ dumpfreq_n=$restart_interval                     # restart write interval in sec
 restart_dir=${restart_dir:-\'$ICE_RESTDIR/\'}
 history_dir=${history_dir:-\'$ICE_OUTDIR/\'}
 
+ktherm=${ktherm:-1}
+if [ $ktherm -eq 1 ] ; then export conduc=MU17 ; fi
 
 # , restart_dir    = ${restart_dir:-'./restart/'}
 # , pointer_file   = ${pointer_file:-'./restart/ice.restart_file'}
@@ -681,8 +683,8 @@ cat > ice_in <<eof
 
 &thermo_nml
     kitd              = 1
-  , ktherm            = 1
-  , conduct           = 'bubbly'
+  , ktherm            = ${ktherm:-1}
+  , conduct           = ${conduct:-'bubbly'}
   , a_rapid_mode      =  0.5e-3
   , Rac_rapid_mode    =    10.0
   , aspect_rapid_mode =     1.0

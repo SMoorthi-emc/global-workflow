@@ -85,6 +85,8 @@ cplflx=${cplflx:-.false.}
 cpl=${cpl:-.false.}
 cplwav=${cplwav:-.false.}
 cplwav2atm=${cplwav2atm:-.false.}
+if [ $cplwav = .false. ] ; then USE_WAVES=False ; fi
+USE_WAVES=${USE_WAVES:-False}
 
 #################    CCPP    ######################
 if [ ${CCPP_SUITE:-none} != none ] ; then
@@ -353,6 +355,8 @@ h2o_phys=".true."
 
 # Options of stratosphere O3 physics reaction coefficients
 new_o3forc=YES
+oz_phys=${oz_phys:-.false.}
+if [ $oz_phys = .true. ] ; then new_o3forc=NO ; fi
 
 # Microphysics configuration
 dnats=0
@@ -556,8 +560,8 @@ NC2NEMSIOSH="$HOMEgfs/ush/fv3gfs_nc2nemsio.sh"
 #lwhtr=.false.
 #swhtr=.false.
 #lheatstrg=.false.
- hybedmf=.true.
- satmedmf=.false.
+#hybedmf=.true.
+#satmedmf=.false.
 #hybedmf=.false.
 #satmedmf=.true.
  dspheat=.false.                 # to turn off dissipative heating in moninedmf
@@ -605,7 +609,7 @@ NC2NEMSIOSH="$HOMEgfs/ush/fv3gfs_nc2nemsio.sh"
 #######################################################################
 
  ncld=${ncld:-1}                 # zhao-carr-sundqvist microphysics is default
- if [ $ncld -eq 2 ] ; then fast_sat_adj=.false. ; fi
+ if [ $ncld -le  2 ] ; then fast_sat_adj=.false. ; fi
 
  if [ $ncld -gt 1 ] ; then
    cal_pre=.false.
@@ -624,10 +628,10 @@ do_shoc=${do_shoc:-.false.}      # default
 #mg_qcvar=1.0
 #mg_ts_auto_ice=300.0
 
- mg_dcs=350.0
- mg_qcvar=2.0
+#mg_dcs=350.0
+#mg_qcvar=2.0
 #mg_ts_auto_ice=180.0
- mg_ts_auto_ice=300.0
+#mg_ts_auto_ice=300.0
 
 #######################################################################
  if [ ${CSAW:-NO} = YES ] ; then
@@ -827,7 +831,7 @@ if [ $ncld -eq 2 -a $imp_physics -eq 10 ] ; then
 #   mg_ts_auto_ice="360.0,360.0"    # first value is ts_auto_min
     mg_ts_auto_ice="360.0,360.0"    # first value is ts_auto_min
     mg_ts_auto_ice="300.0,300.0"    # first value is ts_auto_min
-   mg_ts_auto_ice="1800.0,1800.0"   # first value is ts_auto_min
+    mg_ts_auto_ice="1800.0,1800.0"   # first value is ts_auto_min
 #   mg_ts_auto_ice="600.0,180.0"    # first value is ts_auto_min
 #   mg_ts_auto_ice="600.0,600.0"    # first value is ts_auto_min
     mg_qcvar=1.0
@@ -926,7 +930,7 @@ prauras=${prauras:-"2.0d-3,2.0d-3"}
 wminras=${wminras:-"1.0d-5,1.0d-5"}
 mg_dcs=${mg_dcs:-200.0}
 mg_qcvar=${mg_qcvar:-1.0}
-mg_ts_auto_ice=${mg_ts_auto_ice:-"180.0,180.0"}
+mg_ts_auto_ice=${mg_ts_auto_ice:-"1800.0,1800.0"}
 fprcp=${fprcp:-0}
 mg_qcmin=${mg_qcmin:-"1.0e-8,1.0e-7"}
 mg_clf=${mg_alf:-1.0}
@@ -950,7 +954,7 @@ if [ $fprcp -eq 2 ] ; then
    FVRS="rsg"
  fi
 fi
-iccn=${iccn:-.false.}
+iccn=${iccn:-0}
 aero_in=${aero_in:-.false.}
 O3FORC=${O3FORC:-global_o3prdlos.f77}
 H2OFORC=${H2OFORC:-global_h2o_pltc.f77}

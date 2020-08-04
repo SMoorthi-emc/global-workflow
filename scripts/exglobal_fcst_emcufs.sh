@@ -1831,7 +1831,7 @@ fi
 export pgm=$PGM
 $LOGSCRIPT
 $NCP $FCSTEXEC $DATA
-ldd $DATA/$(basename $FCSTEXEC)
+#ldd $DATA/$(basename $FCSTEXEC)
 
 #eval $PGM $REDOUT$PGMOUT $REDERR$PGMERR
 eval $PGM 1>& 1 2>& 2
