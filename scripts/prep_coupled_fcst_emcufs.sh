@@ -303,7 +303,7 @@ MED_petlist_bounds:             $MED_petlist_bounds
 MED_attributes::
   Verbosity = ${Verbosity:-0}
   DumpFields_MED = $DumpFields_MED
-  OverwriteSlice_MED = $OverwriteSlice_MED
+  OverwriteSlice = $OverwriteSlice_MED
   DumpRHs = $DumpFields_MED
   coldstart = $coldstart
   ProfileMemory = ${ProfileMemory:-False}
@@ -320,8 +320,9 @@ ATM_model:                      $ATM_model
 ATM_petlist_bounds:             $ATM_petlist_bounds
 ATM_attributes::
   Verbosity = ${Verbosity:-0}
-  DumpFields_ATM = $DumpFields_ATM
+  DumpFields = $DumpFields_ATM
   ProfileMemory = ${ProfileMemory:-False}
+  OverwriteSlice = ${OverwriteSlice_ATM:-true}
 ::
 
 eof
@@ -333,8 +334,8 @@ OCN_model:                      $OCN_model
 OCN_petlist_bounds:             $OCN_petlist_bounds
 OCN_attributes::
   Verbosity = ${Verbosity:-0}
-  DumpFields_OCN = $DumpFields_OCN
-  OverwriteSlice_OCN = $OverwriteSlice_OCN
+  DumpFields = $DumpFields_OCN
+  OverwriteSlice = ${OverwriteSlice_OCN:-true}
   restart_interval = $restart_interval
   restart_option = 'nseconds'
   restart_n = $restart_interval
@@ -352,8 +353,8 @@ ICE_model:                      $ICE_model
 ICE_petlist_bounds:             $ICE_petlist_bounds
 ICE_attributes::
   Verbosity = ${Verbosity:-0}
-  DumpFields_ICE = $DumpFields_ICE
-  OverwriteSlice_ICE = $OverwriteSlice_ICE
+  DumpFields = $DumpFields_ICE
+  OverwriteSlice = ${OverwriteSlice_ICE:-true}
   ProfileMemory = ${ProfileMemory:-False}
 ::
 eof
@@ -366,7 +367,7 @@ cat >>nems.configure <<eof
   WAV_petlist_bounds:           $WAV_petlist_bounds
   WAV_attributes::
   Verbosity = ${Verbosity:-0}
-  OverwriteSlice_Wav = ${OverwriteSlice_WAV:-False}
+  OverwriteSlice = ${OverwriteSlice_WAV:-False}
 ::
 eof
 fi

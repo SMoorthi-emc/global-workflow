@@ -38,6 +38,8 @@ if [ $CPLDWAV = YES ] ; then
  mkdir -p $WW3_RESTDIR
 fi
 
+export OCNRES=${OCNRES:-'025'}
+
 if [[ $inistep = cold ]] ; then
   export start_type=startup
   export case_name=$MED_RESTDIR/ufs.med.cold
@@ -347,6 +349,7 @@ OCN_attributes::
   restart_n = $restart_interval
   Restart_Prefix = $Restart_Prefix
   ProfileMemory = ${ProfileMemory:-False}
+  dbug_flag = ${dbug_flag_OCN:-false}
 ::
 
 eof
@@ -362,6 +365,11 @@ ICE_attributes::
   DumpFields     = ${DumpFields_ICE:-false}
   OverwriteSlice = ${OverwriteSlice_ICE:-true}
   ProfileMemory = ${ProfileMemory:-False}
+  mesh_ice = ${MESHICE:-mesh.mx$OCNRES.nc}
+  stop_n = $FHMAX
+  stop_option = nhours
+  stop_ymd = -999
+  dbug_flag = ${dbug_flag_ICE:-false}
 ::
 eof
 fi

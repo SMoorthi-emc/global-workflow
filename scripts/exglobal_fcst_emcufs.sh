@@ -1686,9 +1686,11 @@ cat >> INPUT/MOM_override << EOF
 EOF
 
 cat >> INPUT/MOM_input << EOF
- DT = $OCNTIM
- DT_THERM = ${DT_THERM:-$OCNTIM}
- USE_IDEAL_AGE_TRACER = ${USE_IDEAL_AGE_TRACER:-False}
+  DT                   = $OCNTIM
+  DT_THERM             = ${DT_THERM:-$OCNTIM}
+  NJGLOBAL             = ${NJGLOBAL:-1080}
+  NIGLOBAL             = ${NIGLOBAL:-1440}
+  USE_IDEAL_AGE_TRACER = ${USE_IDEAL_AGE_TRACER:-False}
 
 EOF
 if [ ${IN_Z_DIAG_INTERVAL:-0} -gt 0 ] ; then

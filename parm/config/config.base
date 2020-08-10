@@ -159,6 +159,17 @@ export FIXgrid=$HOMEgfs/fix/fix_fv3grid
 # For coupled ocnpost
 export OCNFIXDIR=$HOMEgfs/fix/fix_ocnice
 export OCNPOSTsrc=$HOMEgfs/fix/ocean_ice_post
+export OCNRES=${OCNRES:-'025'}
+if [ $OCNRES = '025' ] ; then
+ export NIGLOBAL=1440
+ export NJGLOBAL=1080
+elif [ $OCNRES = '005' ] ; then
+ export NIGLOBAL=720
+ export NJGLOBAL=576
+elif [ $OCNRES = '100' ] ; then
+ export NIGLOBAL=360
+ export NJGLOBAL=320
+fi
 #
 #For WW3
  export USE_WAVES=True
@@ -184,9 +195,11 @@ export use_lake_oro=NO
  export RUN_CCPP=YES
  export cplflx=.true.
  export CPLD_APP=YES
- export INLINE_POST=YES
+#export INLINE_POST=YES
 #export frac_grid=.true.
  export mediator=cmeps
+#export CICE=CICE6
+ export CICE=${CICE:-CICE5}
  export mediator=${mediator:-nems}
 #export NETCDF_TYPE=\"pnetcdf\"
 
@@ -216,6 +229,7 @@ if [ $cplflx = .true. ] ; then
 #export appdir=cfv3_git_Jul17
  export appdir=cfv3_git_July20
 #export appdir=cfv3_git_Aug01
+ export appdir=cfv3_git_Aug08
 #export appdir=s2s_orig
 #export appdir=cfv3_git_may19_hera
 #export appdir=cfv3_git_Jun16
@@ -244,6 +258,7 @@ elif [ $CPLD_APP = YES ] ; then
 #export appdir=cfv3_git_Jul17
  export appdir=cfv3_git_July20
 #export appdir=cfv3_git_Aug01
+ export appdir=cfv3_git_Aug08
 #export appdir=cfv3_git_may19_hera
 #export appdir=cfv3_git_Jun16
 #export cplwav=.true.   # to turn on fv3 and WW3 using coupled exec
@@ -556,7 +571,7 @@ export FHMIN_GFS=0
 #export FHMAX_GFS_00=15
 #export FHMAX_GFS_00=12
 #export FHMAX_GFS_00=9
-#export FHMAX_GFS_00=6
+ export FHMAX_GFS_00=6
 #export FHMAX_GFS_00=3
 #export FHMAX_GFS_00=84
 #export FHMAX_GFS_00=93
@@ -699,7 +714,11 @@ fi
 
 if [ $CPLDFV3_MOM6_CICE = YES ] ; then
   if [ $mediator = cmeps ] ; then
-    export CPLPREPSH=$HOMEgfs/scripts/prep_coupled_fcst_emcufs_cmeps.sh
+    if [ $CICE = CICE5 ] ; then
+      export CPLPREPSH=$HOMEgfs/scripts/prep_coupled_fcst_emcufs_cmeps.sh
+    else
+      export CPLPREPSH=$HOMEgfs/scripts/prep_coupled_fcst_emcufs_cmeps_cice6.sh
+    fi
     export CMEPS_DIR=${CMEPS_DIR:-$EXECBASE/$appdir/$app/CMEPS}
   else
     export CPLPREPSH=$HOMEgfs/scripts/prep_coupled_fcst_emcufs.sh
