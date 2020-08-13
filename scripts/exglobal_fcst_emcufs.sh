@@ -1688,8 +1688,8 @@ EOF
 cat >> INPUT/MOM_input << EOF
   DT                   = $OCNTIM
   DT_THERM             = ${DT_THERM:-$OCNTIM}
-  NJGLOBAL             = ${NJGLOBAL:-1080}
-  NIGLOBAL             = ${NIGLOBAL:-1440}
+  NIGLOBAL             = ${NX_GLB:-1440}
+  NJGLOBAL             = ${NY_GLB:-1080}
   USE_IDEAL_AGE_TRACER = ${USE_IDEAL_AGE_TRACER:-False}
 
 EOF
