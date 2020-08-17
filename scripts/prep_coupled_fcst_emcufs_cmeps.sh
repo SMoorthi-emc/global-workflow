@@ -94,6 +94,12 @@ elif [ $inistep = restart ] ; then # using restart files for MOM6 and CICE here,
       $NCP ${ocnf}-00-00_2.nc MOM.res_2.nc
       $NCP ${ocnf}-00-00_3.nc MOM.res_3.nc
     else
+#  First copy the last restart files for future use
+      $NCP $OCN_RESTDIR/MOM.res.nc   ${ocnf}-00-00.nc
+      $NCP $OCN_RESTDIR/MOM.res_1.nc ${ocnf}-00-00_1.nc
+      $NCP $OCN_RESTDIR/MOM.res_2.nc ${ocnf}-00-00_2.nc
+      $NCP $OCN_RESTDIR/MOM.res_3.nc ${ocnf}-00-00_3.nc
+#  Now copy the restart files to INPUT directory under RUNDIR
       $NCP $OCN_RESTDIR/MOM.res*.nc .
     fi
     export input_filename="'r'"
