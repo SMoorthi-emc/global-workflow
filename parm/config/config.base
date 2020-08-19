@@ -140,7 +140,7 @@ fi
 
 #fi
 
- export print_esmf=.true.
+#export print_esmf=.true.
  export print_esmf=${print_esmf:-.false.}
  export ESMF_RUNTIME_PROFILE=ON
  export ESMF_RUNTIME_PROFILE_OUTPUT=SUMMARY
@@ -535,7 +535,7 @@ export FHMIN_GFS=0
 #export FHMIN=1
 #export FHMIN=2
 #export FHMIN=3
- export FHMIN=6
+#export FHMIN=6
 #export FHMIN=9
 #export FHMIN=12
 #export FHMIN=21
@@ -544,6 +544,7 @@ export FHMIN_GFS=0
 #export FHMIN=45
 #export FHMIN=66
 #export FHMIN=72
+ export FHMIN=84
 #export FHMIN=120
 #export FHMIN=132
 #export FHMIN=168
@@ -567,9 +568,9 @@ export FHMIN_GFS=0
 #export restart_interval=864000
 #export restart_interval=432000
 #export restart_interval=86400
-#export restart_interval=43200
+ export restart_interval=43200
 #export restart_interval=21600
- export restart_interval=10800
+#export restart_interval=10800
 #export restart_interval=7200
 #export restart_interval=3600
  export restart_interval_atm=$((restart_interval/3600))
@@ -598,7 +599,7 @@ export FHMIN_GFS=0
 #export FHMAX_GFS_00=01
 #export FHMAX_GFS_00=240
 #export FHMAX_GFS_00=300  # uncomment this line for 45 day run
-#export FHMAX_GFS_00=360
+ export FHMAX_GFS_00=360
 #export FHMAX_GFS_00=480
 #export FHMAX_GFS_00=840
 #export FHMAX_GFS_00=1080 # uncomment this line for 45 day run

@@ -816,6 +816,7 @@ cat > ice_in <<eof
     Cf              = 17.
     basalstress     = .false.
     k1              = 8.
+    ssh_stress      = ${ssh_stress:-'coupled'}
 /
 
 &shortwave_nml
@@ -855,7 +856,7 @@ cat > ice_in <<eof
     ustar_min       = 0.0005
     emissivity      = 0.95
     fbot_xfer_type  = 'constant'
-    update_ocn_f    = FRAZIL_FWSALT
+    update_ocn_f    = ${FRAZIL_FWSALT:-.true.}
     l_mpond_fresh   = .false.
     tfrz_option     = 'linear_salt'
     restart_coszen  = .true.
