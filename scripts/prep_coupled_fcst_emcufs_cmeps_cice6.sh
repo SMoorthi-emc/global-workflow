@@ -679,7 +679,7 @@ export xxxxx=${xxxxx:-"'x'"}
 #export xxxxx=${xxxxx:-"'xxxxx'"}
 
 restart_interval=${restart_interval:-1296000}    # restart write interval in seconds, default 15 days
-dumpfreq="'s'"
+#dumpfreq="'s'"
 dumpfreq_n=$restart_interval                     # restart write interval in seconds
 
 restart_dir=${restart_dir:-\'$ICE_RESTDIR/\'}
@@ -794,6 +794,7 @@ cat > ice_in <<eof
     dSdt_slow_mode    = -5.0e-8
     phi_c_slow_mode   =    0.05
     phi_i_mushy       =    0.85
+    sw_redist         = ${sw_redist:-.true.}
 /
 
 &dynamics_nml
