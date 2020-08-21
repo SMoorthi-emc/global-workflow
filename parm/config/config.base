@@ -29,7 +29,7 @@ elif [ $machine = WCOSS_DELL_P3 ] ; then  # set QSUFFIX=2 for Dell 3.5
 
   export ACCOUNT=GFS-DEV
   export QUEUE=dev$QSUFIX
-  export QUEUE=debug$QSUFIX
+# export QUEUE=debug$QSUFIX
 # export QUEUE_ARCH=dev_transfer
   export QUEUE_ARCH=dev${QSUFIX}_transfer
 
@@ -531,7 +531,7 @@ export FHMIN_GFS=0
 
 #export USE_LAST_RESTART=YES
 #export restart_ext=.false.
- export warm_start=.true.   # for warm_start need to set FHMIN (i.e. starting time)
+#export warm_start=.true.   # for warm_start need to set FHMIN (i.e. starting time)
 #export FHMIN=1
 #export FHMIN=2
 #export FHMIN=3
@@ -544,7 +544,7 @@ export FHMIN_GFS=0
 #export FHMIN=45
 #export FHMIN=66
 #export FHMIN=72
- export FHMIN=84
+#export FHMIN=84
 #export FHMIN=120
 #export FHMIN=132
 #export FHMIN=168
