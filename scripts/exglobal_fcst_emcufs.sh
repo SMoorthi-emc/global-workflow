@@ -647,21 +647,28 @@ $NCP $FIX_AM/global_sfc_emissivity_idx.txt     $DATA/sfc_emissivity_idx.txt
 
 export iccn=${iccn:-0}
 
+## ccn/in climo
+#--------------
+if [ $iccn -eq 1 ] ; then
+ $NLN $FIX_CCN/cam5_4_143_NAAI_monclimo2.nc  $DATA/cam5_4_143_NAAI_monclimo2.nc
+ $NLN $FIX_CCN/cam5_4_143_NPCCN_monclimo2.nc $DATA/cam5_4_143_NPCCN_monclimo2.nc
+fi
+
 ## merra2 aerosol climo
 #----------------------
-export aero_in=${aero_in:-.false.}
-if [ $iccn -eq 1 ] ; then
- for n in 01 02 03 04 05 06 07 08 09 10 11 12; do
-   $NLN $FIX_AER/merra2C.aerclim.2003-2014.m${n}.nc  $DATA/merra2C.aerclim.2003-2014.m${n}.nc
+#export aero_in=${aero_in:-.false.}
+
+export iaer_clm=${iaer_clm:-.false.}
+if [ $iaerclm = .true. ] ; then
+ export MERRA_AER=${MERRA_AER:-merra2C.aerclim.2003-2014}   # default low resolution
+ for n in 01 02 03 04 05 06 07 08 09 10 11 12 ; do
+   $NLN $FIX_AER/$MERRA_AER.m${n}.nc  $DATA/aeroclim.m${n}.nc
  done
 fi
 
 ## ccn/in climo
 #--------------
-if [ $iccn -eq 2 ] ; then
- $NLN $FIX_CCN/cam5_4_143_NAAI_monclimo2.nc  $DATA/cam5_4_143_NAAI_monclimo2.nc
- $NLN $FIX_CCN/cam5_4_143_NPCCN_monclimo2.nc $DATA/cam5_4_143_NPCCN_monclimo2.nc
-#fi
+if [ $iccn -gt 1 -a $iaerclm = .true. ] ; then
 
  $NLN $FIX_LUT/optics_BC.v1_3.dat  $DATA/optics_BC.dat
  $NLN $FIX_LUT/optics_OC.v1_3.dat  $DATA/optics_OC.dat
@@ -1309,7 +1316,8 @@ cat > input.nml << EOF
        fhlwr          = ${fhlwr:-3600.}
        ialb           = ${IALB:-1}
        iems           = ${iems:-1}
-       IAER           = ${IAER:-111}
+       iaer           = ${iaer:-${IAER:-111}}
+       iaerclm        = ${iaerclm:-.false.}
        icliq_sw       = ${icliq_sw:-2}
        iovr_lw        = ${iovr_lw:-3}
        iovr_sw        = ${iovr_sw:-3}

@@ -383,6 +383,7 @@ hord_mt_nh_nonmono=6
 hord_xx_nh_nonmono=6
 vtdm4_nh_nonmono=0.02
 
+#iccn=${iccn:-0}
 
 imp_physics=${imp_physics:-99}
 
@@ -436,8 +437,7 @@ elif [ $imp_physics -eq 10 ] ; then # Morrison-Gettleman (1/2/3)
 #   do_sb_physics=.false.
    fi
 
-   iccn=0
-   aero_in=.false.
+r# aero_in=.false.
    effr_in=.true.
    ccnorm=.true.
   else
@@ -955,7 +955,7 @@ if [ $fprcp -eq 2 ] ; then
  fi
 fi
 iccn=${iccn:-0}
-aero_in=${aero_in:-.false.}
+#aero_in=${aero_in:-.false.}
 O3FORC=${O3FORC:-global_o3prdlos.f77}
 H2OFORC=${H2OFORC:-global_h2o_pltc.f77}
 fhouri=${fhouri:-1.0}
@@ -1014,10 +1014,15 @@ else
  landice=".true."
 fi
 # Radiation options
-IAER=111    #spectral band mapping method for aerosol optical properties
+#IAER=1111   #spectral band mapping method for aerosol optical properties
 iovr_lw=3   #de-correlation length cloud overlap method (Barker, 2008)
 iovr_sw=3   #de-correlation length cloud overlap method (Barker, 2008)
 icliq_sw=2  #cloud optical coeffs from AER's newer version v3.9-v4.0 for hu and stamnes
+#
+AER=${IAER:-111}
+MERRA_AER=${MERRA_AER:-merra2C.aerclim.2003-2014}   # default low resolution
+                                                    # change to merra2 for high resolution
+iaerclm=${iaerclm:-.false.}
 #
 #--------------------------------------------------------------------------
 
