@@ -693,7 +693,15 @@ if [ $ktherm -eq 1 ] ; then export conduc=MU17 ; fi
 # , history_dir    = ${history_dir:-'./history/'}
 # , incond_dir     = './history/'
 
-export BLCKY=$((NX_GLB*NY_GLB/(BLCKX*npe_ice)))
+export processor_shape=${processor_shape:-'slenderX2'}
+if [ $processor_shape = 'slenderX2' ] ; then
+  export BLCKY=$((NY_GLB/2))
+  export BLCKX=$((NX_GLB*2/npe_ice))
+else
+  echo $processor_shape ' not supported'
+  exit 777
+fi
+export max_blocks=-1
 
 cat > ice_in <<eof  
 &setup_nml
@@ -891,8 +899,8 @@ cat > ice_in <<eof
     ny_global         = $NY_GLB
     block_size_x      = $BLCKX
     block_size_y      = $BLCKY
-    max_blocks        = -1
-    processor_shape   = 'slenderX2'
+    max_blocks        = ${max_blocks:-1}
+    processor_shape   = ${processor_shape:-'slenderX2'}
     distribution_type = 'cartesian'
     distribution_wght = 'latitude'
     ew_boundary_type  = 'cyclic'

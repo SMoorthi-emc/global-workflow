@@ -158,9 +158,9 @@ export REALTIME=NO
 
 
  export RUN_CCPP=YES
- export cplflx=.true.
- export CPLD_APP=YES
- export INLINE_POST=YES
+#export cplflx=.true.
+#export CPLD_APP=YES
+#export INLINE_POST=YES
 #export frac_grid=.true.
  export mediator=cmeps
  export CICE=CICE6
@@ -286,6 +286,7 @@ else
  app=ufs-weather-model
  export appdir=fv3_git1230
  export appdir=fv3_feb24
+ export appdir=ufs_weather_minsuk
 #export cplwav=.true.
 #export cplwav2atm=.true.
 #export CPLDWAV=YES
@@ -307,7 +308,7 @@ if [ $machine = HERA ]; then
 #export appdir=ufs_compile2
 fi
 
-# export satmedmf=.true.
+  export satmedmf=.true.
   export satmedmf=${satmedmf:-.false.}
   export DONST=NO
   export DONST=YES
@@ -358,6 +359,10 @@ fi
 #export FCSTEXEC=fv3_ccpprmsd.exe            # RAS, MG3, SHOC
 #export CCPP_SUITE=${CCPP_SUITE:-FV3_GFS_v15plusras}
 #export FCSTEXEC=fv3_ccpprplus.exe           # RAS, MG3, SHOC
+
+# for Minsuk test
+ export CCPP_SUITE=FV3_GFS_2017
+  export FCSTEXEC=fv3_fv3_minsuk.exe
 
  export CCPP_LIB_DIR=${CCPP_LIB_DIR:-$CCPPDIR/lib}
 #export RAS=YES
@@ -537,10 +542,10 @@ export FHMIN_GFS=0
 
 #export USE_LAST_RESTART=YES
 #export restart_ext=.false.
-#export warm_start=.true.   # for warm_start need to set FHMIN (i.e. starting time)
+ export warm_start=.true.   # for warm_start need to set FHMIN (i.e. starting time)
 #export FHMIN=1
 #export FHMIN=2
-#export FHMIN=3
+ export FHMIN=3
 #export FHMIN=6
 #export FHMIN=9
 #export FHMIN=12
@@ -576,7 +581,7 @@ export FHMIN_GFS=0
 #export restart_interval=86400
 #export restart_interval=43200
 #export restart_interval=21600
-#export restart_interval=10800
+ export restart_interval=10800
 #export restart_interval=7200
 #export restart_interval=3600
  export restart_interval_atm=$((restart_interval/3600))
@@ -594,7 +599,7 @@ export FHMIN_GFS=0
 #export FHMAX_GFS_00=15
  export FHMAX_GFS_00=12
 #export FHMAX_GFS_00=9
-#export FHMAX_GFS_00=6
+ export FHMAX_GFS_00=6
 #export FHMAX_GFS_00=3
 #export FHMAX_GFS_00=84
 #export FHMAX_GFS_00=93

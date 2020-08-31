@@ -329,8 +329,18 @@ if [ $CPLDFV3_MOM6_CICE = YES -o $CPLDWAV = YES ] ; then
   if [ $npe_ice -gt 0 ] ; then
    ICE_petlist_bounds=\'"$((npe_atm+npe_ocn+1))' '$((npe_atm+npe_ocn+npe_ice))"\'  #24
   fi
-  if [ $npe_ww3 -gt 0 ] ; then
-   WAV_petlist_bounds=\'"$((npe_atm+npe_ocn+npe_ice+1))' '$((npe_atm+npe_ocn+npe_ice+npe_ww3))"\'
+  if [ $CICE = CICE5 ] ; then
+    if [ $npe_ww3 -gt 0 ] ; then
+     WAV_petlist_bounds=\'"$((npe_atm+npe_ocn+npe_ice+1))' '$((npe_atm+npe_ocn+npe_ice+npe_ww3))"\'
+   fi
+  else
+   if [ $npe_ice -eq $npe_ww3 ] ; then
+     WAV_petlist_bounds=$ICE_petlist_bounds
+   elif [ $npe_ice -gt $npe_ww3 ] ; then
+     WAV_petlist_bounds=\'"$((npe_atm+npe_ocn+npe_ice-npe_ww3+1))' '$((npe_atm+npe_ocn+npe_ice))"\'
+   else
+     WAV_petlist_bounds=\'"$((npe_atm+npe_ocn+1))' '$((npe_atm+npe_ocn+npe_ww3))"\'
+   fi
   fi
 fi
 
@@ -437,7 +447,7 @@ elif [ $imp_physics -eq 10 ] ; then # Morrison-Gettleman (1/2/3)
 #   do_sb_physics=.false.
    fi
 
-r# aero_in=.false.
+#  aero_in=.false.
    effr_in=.true.
    ccnorm=.true.
   else

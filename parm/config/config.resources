@@ -127,6 +127,14 @@ elif [ $step = "fcst" ]; then
       fi
 #     npe_ww3=${npe_ww3:-$((npe_node_fcst*3))}
       npe_ww3=${npe_ww3:-$((npe_node_fcst*3*nth_fcst))}
+      if [ $CICE = CICE6 ] ; then     #  with CICE6 waves uses same pes as CICE6
+#       npe_ww3=0 
+##      export npe_ice=$((npe_ice*3))
+##      export npe_ice=$((npe_ice*4))
+        export npe_ice=90
+        export npe_ww3=$npe_ice
+##      export npe_ice=48
+      fi
     fi
     export npe_ocn=${npe_ocn:-0}
     export npe_ice=${npe_ice:-0}
