@@ -331,7 +331,7 @@ else
 fi
 #export nthreads=${nth_f:-2}
 export nthreads=${NTHREADS_FV3:-${NTHREADS_FCST:-${nth_f:-1}}}
-export OMP_NUM_THREADS=$nthreads
+export OMP_NUM_THREADS=${OMP_NUM_THREADS:-$nthreads}
 export cores_per_node=${cores_per_node:-${npe_node_f:-24}}
 ntiles=${ntiles:-6}
 #

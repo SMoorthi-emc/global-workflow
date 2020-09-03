@@ -115,6 +115,7 @@ elif [ $step = "fcst" ]; then
 #     export WRTTASK_MIN=7
       export WRTTASK_MIN=10
       export WRTTASK_MIN=20
+      export WRTTASK_MIN=14
       if [ $machine == HERA ] ; then
 #       export npe_ocn=200
         export npe_ice=48
@@ -127,24 +128,34 @@ elif [ $step = "fcst" ]; then
       fi
 #     npe_ww3=${npe_ww3:-$((npe_node_fcst*3))}
       npe_ww3=${npe_ww3:-$((npe_node_fcst*3*nth_fcst))}
-      if [ $CICE = CICE6 ] ; then     #  with CICE6 waves uses same pes as CICE6
-#       npe_ww3=0 
+      export ICE_WW3_OVERLAP=${ICE_WW3_OVERLAP:-NO}
+      if [ $CICE = CICE6 -a $ICE_WW3_OVERLAP = YES ] ; then     #  with CICE6 waves uses same pes as CICE6
+        npe_ww3=0 
 ##      export npe_ice=$((npe_ice*3))
 ##      export npe_ice=$((npe_ice*4))
         export npe_ice=90
-        export npe_ww3=$npe_ice
+#       export npe_ww3=$npe_ice
 ##      export npe_ice=48
       fi
     fi
     export npe_ocn=${npe_ocn:-0}
     export npe_ice=${npe_ice:-0}
     export npe_ww3=${npe_ww3:-0}
+    if [ $CICE = CICE5 -o $ICE_WW3_OVERLAP = NO ] ; then     #  with CICE6 waves uses same pes as CICE6
+      npe_ice_ww3=$((npe_ice+npe_ww3))
+    else
+      if [ $npe_ice -gt $npe_ww3 ] ; then
+        npe_ice_ww3=$npe_ice
+      else
+        npe_ice_ww3=$npe_ww3
+      fi
+    fi
 
 #
     if [ $QUILTING = .true. ] ; then
       export WRITE_GROUP=${WRITE_GROUP:-1}
       export WRTTASK_MIN=${WRTTASK_MIN:-$((npe_node_max/2))}
-      ttasks=$((npe_fcst+npe_ocn+npe_ice+npe_ww3))
+      ttasks=$((npe_fcst+npe_ocn+npe_ice_ww3))
       nodes=$((1+(ttasks*nth_fcst)/npe_node_max))
       export WRTTASK_PER_GROUP=$(((nodes*npe_node_fcst-ttasks)/WRITE_GROUP))
       alltasks=$((ttasks+WRTTASK_PER_GROUP*WRITE_GROUP))
@@ -152,10 +163,21 @@ elif [ $step = "fcst" ]; then
 #     while [ $WRTTASK_PER_GROUP -lt $npe_node_fcst -o $WRTTASK_PER_GROUP -lt $WRTTASK_MIN ] ; do
       while [ $WRTTASK_PER_GROUP -lt $WRTTASK_MIN ] ; do
 #     if [ $alltasks -lt $xx -o $WRTTASK_PER_GROUP -lt $npe_node_fcst ] ; then
-        nodes=$((nodes+WRITE_GROUP))
-        export WRTTASK_PER_GROUP=$((WRTTASK_PER_GROUP+npe_node_fcst))
+#       nodes=$((nodes+WRITE_GROUP))
+        if [ $xx -gt $alltasks ] ; then
+          nodes=$((nodes+1))
+        elif [ $xx -eq $alltasks ] ; then
+          nodes=$((nodes+WRITE_GROUP))
+        fi
+        export WRTTASK_PER_GROUP=$(((nodes*npe_node_fcst-ttasks)/WRITE_GROUP))
+        
         alltasks=$((ttasks+WRTTASK_PER_GROUP*WRITE_GROUP))
         xx=$((nodes*npe_node_fcst))
+
+#       if [ $xx -eq $alltasks -a $WRTTASK_PER_GROUP -lt $WRTTASK_MIN ] ; then
+#         nodes=$((nodes+WRITE_GROUP))
+#         export WRTTASK_PER_GROUP=$((WRTTASK_PER_GROUP+npe_node_fcst))
+#       fi
 #       export npe_ocn=$((npe_ocn+xx-alltasks))
       done
     fi

@@ -77,8 +77,8 @@ case $case_in in
 #       export DELTIM=600
         export k_split=2
         export n_split=6
-#       export n_split=8          # 9 month run from march 15 to Oct
-        export n_split=10         # 9 month run requires this from Oct to Jan
+        export n_split=8          # 9 month run from march 15 to Oct
+#       export n_split=10         # 9 month run requires this from Oct to Jan
 #       export n_split=12         # 9 month run requires this from Oct to Jan
 #       export OCNTIM=300
 #       export OCNTIM=450
@@ -92,8 +92,8 @@ case $case_in in
         export ICETIM=$DELTIM
 #       export ICETIM=300
 
-        export layout_x=6         # 64 layers
-#       export layout_x=8
+#       export layout_x=6         # 64 layers
+        export layout_x=8
         export layout_y=8
 #       export layout_y=12
 #       export io_layout_x=2      # restart may not reproduce!
@@ -111,8 +111,9 @@ case $case_in in
         fi
 #       export nth_f=7
         export nth_f=1
-#       export nth_f=2
+        export nth_f=2
         export nth_f=${nth_f:-4}
+        export OMP_NUM_THREADS=$((nth_f*2))
         export npe_node_fcst=$((npe_node_max/nth_f))
         export cdmbgwd="1.0,1.2"           # mountain blocking and gravity wave drag
 #       export cdmbgwd="-1.0,1.2"          # mountain blocking and gravity wave drag
@@ -120,11 +121,14 @@ case $case_in in
 #       export cdmbgwd="1.0,1.2,1.0,2.0"   # mountain blocking and gravity wave drag
 #       export cdmbgwd="1.0,1.2,1.0,0.5"   # mountain blocking and gravity wave drag
         export cdmbgwd="1.1,0.72,1.0,1.0"  # mountain blocking and gravity wave drag
+        export cnvgwd=.false.
 #       export cdmbgwd="-1.0,1.2,0.0,0.0"  # mountain blocking and gravity wave drag
 #       export WRITE_GROUP=1
         export WRITE_GROUP=2
+        export WRITE_GROUP=3
 #       export WRITE_GROUP=3
         export WRITE_GROUP_GFS=2
+        export WRITE_GROUP_GFS=3
         export WRTIOBUF="16M"
         ;;
     C768)

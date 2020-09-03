@@ -29,7 +29,7 @@ elif [ $machine = WCOSS_DELL_P3 ] ; then  # set QSUFFIX=2 for Dell 3.5
 
   export ACCOUNT=GFS-DEV
   export QUEUE=dev$QSUFIX
-  export QUEUE=debug$QSUFIX
+# export QUEUE=debug$QSUFIX
 # export QUEUE_ARCH=dev_transfer
   export QUEUE_ARCH=dev${QSUFIX}_transfer
 
@@ -38,9 +38,9 @@ fi
  export LEVS=128
 #export LEVS=65
 
- export IAER=1111
- export iccn=2
- export iaerclm=.true.
+#export IAER=1111
+#export iccn=2
+#export iaerclm=.true.
 
 # Project to use in mass store:
 HPSS_PROJECT=emc-global
@@ -164,6 +164,7 @@ export REALTIME=NO
 #export frac_grid=.true.
  export mediator=cmeps
  export CICE=CICE6
+ export ICE_WW3_OVERLAP=YES
  export CICE=${CICE:-CICE5}
  export mediator=${mediator:-nems}
 #export NETCDF_TYPE=\"pnetcdf\"
@@ -192,6 +193,9 @@ fi
 #export DumpFields_ICE=true
 
  RUN_CCPP=${RUN_CCPP:-NO}
+ if [ $RUN_CCPP = NO ] ; then IPD='_ipd' ; fi
+#IPD=n
+ IPD=${IPD:-""}
 
 export cplflx=${cplflx:-.false.}
 export CPLD_APP=${CPLD_APP:-NO}
@@ -277,6 +281,7 @@ elif [ $CPLD_APP = YES ] ; then
  export appdir=cfv3_git_July20
 #export appdir=cfv3_git_Aug01
  export appdir=cfv3_git_Aug08
+ export appdir=cfv3_git_Aug12_cice6
 #export appdir=cfv3_git_may19_hera
 #export appdir=cfv3_git_Jun16
 #export cplwav=.true.   # to turn on fv3 and WW3 using coupled exec
@@ -594,7 +599,7 @@ export FHMIN_GFS=0
 #export FHMAX_GFS_00=15
  export FHMAX_GFS_00=12
 #export FHMAX_GFS_00=9
-#export FHMAX_GFS_00=6
+ export FHMAX_GFS_00=6
 #export FHMAX_GFS_00=3
 #export FHMAX_GFS_00=84
 #export FHMAX_GFS_00=93
@@ -608,7 +613,7 @@ export FHMIN_GFS=0
 #export FHMAX_GFS_00=360
 #export FHMAX_GFS_00=480
 #export FHMAX_GFS_00=840
-#export FHMAX_GFS_00=1080 # uncomment this line for 45 day run
+ export FHMAX_GFS_00=1080 # uncomment this line for 45 day run
 #export FHMAX_GFS_00=1440
 #export FHMAX_GFS_00=1800 # uncomment this line for 45 day run
 #export FHMAX_GFS_00=2520 # uncomment this line for 45 day run
@@ -656,7 +661,8 @@ export FHMAX_COLD=1
 # if gaussian_grid, set OUTPUT_FILE for nemsio or netcdf
 export QUILTING=.true.
 export OUTPUT_GRID=gaussian_grid
-export OUTPUT_FILE=nemsio
+export OUTPUT_FILE=netcdf
+export OUTPUT_FILE=${OUTPUT_FILE:-nemsio}
 
 # Microphysics Options: 99-ZhaoCarr, 8-Thompson; 6-WSM6, 10-MG, 11-GFDL
 if [ $satmedmf = .true. ] ; then
@@ -715,7 +721,8 @@ if [ $CPLD_APP = YES ] ; then
 # export FCSTEXEC="NEMS.x"
   export FCSTEXECDIR=${FCSTEXECDIR:-$EXECBASE/$appdir/$app/tests}
 # export model_name=fv3_mom6_cice_nemsland
-  export model_name=fcst_${mediator}_$CICE
+# export model_name=fcst_${mediator}_$CICE
+  export model_name=fcst_${mediator}_${CICE}$IPD
 # export model_name=fcst_${mediator}_${CICE}o
 # export model_name=fv3_mom6_cice_nemsland
 # export model_name=fcst_nems_debug

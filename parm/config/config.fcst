@@ -329,17 +329,19 @@ if [ $CPLDFV3_MOM6_CICE = YES -o $CPLDWAV = YES ] ; then
   if [ $npe_ice -gt 0 ] ; then
    ICE_petlist_bounds=\'"$((npe_atm+npe_ocn+1))' '$((npe_atm+npe_ocn+npe_ice))"\'  #24
   fi
-  if [ $CICE = CICE5 ] ; then
+  if [ $cplwav = .true. ] ; then
+   if [ $CICE = CICE5 ] ; then
     if [ $npe_ww3 -gt 0 ] ; then
      WAV_petlist_bounds=\'"$((npe_atm+npe_ocn+npe_ice+1))' '$((npe_atm+npe_ocn+npe_ice+npe_ww3))"\'
-   fi
-  else
-   if [ $npe_ice -eq $npe_ww3 ] ; then
-     WAV_petlist_bounds=$ICE_petlist_bounds
-   elif [ $npe_ice -gt $npe_ww3 ] ; then
-     WAV_petlist_bounds=\'"$((npe_atm+npe_ocn+npe_ice-npe_ww3+1))' '$((npe_atm+npe_ocn+npe_ice))"\'
+    fi
    else
+    if [ $npe_ww3 -eq 0 ] ; then
+     WAV_petlist_bounds=$ICE_petlist_bounds
+    elif [ $npe_ice -gt $npe_ww3 ] ; then
+     WAV_petlist_bounds=\'"$((npe_atm+npe_ocn+npe_ice-npe_ww3+1))' '$((npe_atm+npe_ocn+npe_ice))"\'
+    else
      WAV_petlist_bounds=\'"$((npe_atm+npe_ocn+1))' '$((npe_atm+npe_ocn+npe_ww3))"\'
+    fi
    fi
   fi
 fi
@@ -997,13 +999,14 @@ n_sponge=$((LEVS/6))
 n_sponge=$((LEVS/3))
  n_sponge=24
 n_sponge=$((LEVS/5))
+n_sponge=$((LEVS/4))
 min_seaice=1.0e-11
 min_seaice=1.0e-6
 #min_seaice=1.0e-3
 min_seaice=${min_seaice:-0.15}
 min_lakeice=${min_lakeice:-0.15}
 frac_grid=${frac_grid:-.false.}
-if [ $frac_grid = .true. ] ; then min_seaice=$min_lakeice ; fi
+if [ $cplflx = .false. ] ; then min_seaice=$min_lakeice ; fi # for uncoupled case use same min sea and lake ice
 sfc_z0_type=${sfc_z0_type:-0}
 #fhswr=$DELTIM
 #fhlwr=$DELTIM
