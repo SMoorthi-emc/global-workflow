@@ -291,6 +291,7 @@ else
  app=ufs-weather-model
  export appdir=fv3_git1230
  export appdir=fv3_feb24
+ export appdir=cfv3_git_Aug12_cice6
 #export cplwav=.true.
 #export cplwav2atm=.true.
 #export CPLDWAV=YES
@@ -354,10 +355,13 @@ fi
  export CCPP_SUITE=${CCPP_SUITE:-FV3_GFS_v15_rasmgshoc}
  if [ $CPLD_APP = NO ] ; then
   export CCPP_SUITE=FV3_GFS_v15_rasmgshoc
+  export CCPP_SUITE=FV3_GFS_2017
   export SCRDIR=$HOMEgfs/scripts
 # export FORECASTSH="$SCRDIR/exglobal_fcst_emcufs.sh_feb02"    # with    UGW
   export FCSTEXECDIR=$EXECBASE/$appdir/$app/tests
   export FCSTEXEC=fv3_ccpprms.exe            # RAS, MG3, SHOC
+  export FCSTEXEC=fv3_ccpprms.exe            # RAS, MG3, SHOC
+  export FCSTEXEC=fcst_fv3_2017.exe
  fi
 #export FCSTEXEC=fv3_ccpprms0.exe            # RAS, MG3, SHOC
 #export FCSTEXEC=fv3_ccpprmsd.exe            # RAS, MG3, SHOC
