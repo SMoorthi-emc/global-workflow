@@ -317,7 +317,7 @@ fi
   export satmedmf=.true.
   export satmedmf=${satmedmf:-.false.}
   export DONST=NO
-# export DONST=YES
+  export DONST=YES
   export DONST=${DONST:-NO}
 
 if [ ${RUN_CCPP:-YES} = YES ] ; then
