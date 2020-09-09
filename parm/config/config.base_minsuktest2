@@ -291,6 +291,8 @@ else
  app=ufs-weather-model
  export appdir=fv3_git1230
  export appdir=fv3_feb24
+ export appdir=ci-with-moorthi
+ export appdir=cfv3_git_Aug12_cice6
 #export cplwav=.true.
 #export cplwav2atm=.true.
 #export CPLDWAV=YES
@@ -315,7 +317,7 @@ fi
   export satmedmf=.true.
   export satmedmf=${satmedmf:-.false.}
   export DONST=NO
-# export DONST=YES
+  export DONST=YES
   export DONST=${DONST:-NO}
 
 if [ ${RUN_CCPP:-YES} = YES ] ; then
@@ -363,6 +365,11 @@ fi
 #export FCSTEXEC=fv3_ccpprmsd.exe            # RAS, MG3, SHOC
 #export CCPP_SUITE=${CCPP_SUITE:-FV3_GFS_v15plusras}
 #export FCSTEXEC=fv3_ccpprplus.exe           # RAS, MG3, SHOC
+
+# for Minsuk test
+  export CCPP_SUITE=FV3_GFS_2017
+# export FCSTEXEC=fv3_minsuk.exe
+  export FCSTEXEC=fv3_2017
 
  export CCPP_LIB_DIR=${CCPP_LIB_DIR:-$CCPPDIR/lib}
 #export RAS=YES
@@ -542,10 +549,10 @@ export FHMIN_GFS=0
 
 #export USE_LAST_RESTART=YES
 #export restart_ext=.false.
-#export warm_start=.true.   # for warm_start need to set FHMIN (i.e. starting time)
+ export warm_start=.true.   # for warm_start need to set FHMIN (i.e. starting time)
 #export FHMIN=1
 #export FHMIN=2
-#export FHMIN=3
+ export FHMIN=3
 #export FHMIN=6
 #export FHMIN=9
 #export FHMIN=12
