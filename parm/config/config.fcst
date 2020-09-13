@@ -1000,6 +1000,7 @@ n_sponge=$((LEVS/3))
  n_sponge=24
 n_sponge=$((LEVS/5))
 n_sponge=$((LEVS/4))
+n_sponge=$((LEVS-2))
 min_seaice=1.0e-11
 min_seaice=1.0e-6
 #min_seaice=1.0e-3

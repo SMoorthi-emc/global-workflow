@@ -362,7 +362,8 @@ OCN_attributes::
   restart_n = $restart_interval
   Restart_Prefix = $Restart_Prefix
   ProfileMemory = ${ProfileMemory:-False}
-  dbug_flag = ${dbug_flag_OCN:-false}
+  dbug_flag = ${dbug_flag_OCN:-0}
+  use_coldstart = ${USE_COLDSTART:-.true.}
 ::
 
 eof

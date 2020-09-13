@@ -144,7 +144,7 @@ fi
 
 #fi
 
- export print_esmf=.true.
+#export print_esmf=.true.
  export print_esmf=${print_esmf:-.false.}
  export ESMF_RUNTIME_PROFILE=ON
  export ESMF_RUNTIME_PROFILE_OUTPUT=SUMMARY
@@ -158,15 +158,17 @@ export REALTIME=NO
 
 
  export RUN_CCPP=YES
-#export cplflx=.true.
-#export CPLD_APP=YES
-#export INLINE_POST=YES
+ export cplflx=.true.
+ export CPLD_APP=YES
+ export INLINE_POST=YES
+#export USE_COLDSTART=.false.
 #export frac_grid=.true.
  export mediator=cmeps
  export CICE=CICE6
  export ICE_WW3_OVERLAP=YES
  export CICE=${CICE:-CICE5}
  export mediator=${mediator:-nems}
+ export USE_COLDSTART=${USE_COLDSTART:-.true.}
 #export NETCDF_TYPE=\"pnetcdf\"
 
 export OCNRES=${OCNRES:-'025'}
@@ -229,7 +231,7 @@ export FIX_LAKE_ORO=$NOSCRUB/oro_lake
 export use_lake_oro=YES
 export use_lake_oro=NO
 
- export NSOUT=1
+#export NSOUT=1
  export NSOUT=${NSOUT:-0}
 
 #export LINK_OCN_FILES=NO
@@ -314,7 +316,7 @@ if [ $machine = HERA ]; then
 #export appdir=ufs_compile2
 fi
 
-  export satmedmf=.true.
+# export satmedmf=.true.
   export satmedmf=${satmedmf:-.false.}
   export DONST=NO
   export DONST=YES
@@ -352,6 +354,7 @@ else
 fi
 if [ $satmedmf = .true. ] ; then
  export CCPP_SUITE=FV3_GFS_2017_satmedmf_coupled
+ export CCPP_SUITE=FV3_GFS_2017_couplednsst
 fi
  export CCPP_SUITE=${CCPP_SUITE:-FV3_GFS_v15_rasmgshoc}
  if [ $CPLD_APP = NO ] ; then
@@ -581,12 +584,12 @@ export FHMIN_GFS=0
  export restart_interval=432000
  export restart_interval=864000
  export restart_interval=1296000
-#export restart_interval=864000
+ export restart_interval=864000
 #export restart_interval=432000
 #export restart_interval=86400
 #export restart_interval=43200
 #export restart_interval=21600
- export restart_interval=10800
+#export restart_interval=10800
 #export restart_interval=7200
 #export restart_interval=3600
  export restart_interval_atm=$((restart_interval/3600))
@@ -604,7 +607,7 @@ export FHMIN_GFS=0
 #export FHMAX_GFS_00=15
 #export FHMAX_GFS_00=12
 #export FHMAX_GFS_00=9
- export FHMAX_GFS_00=6
+#export FHMAX_GFS_00=6
 #export FHMAX_GFS_00=3
 #export FHMAX_GFS_00=84
 #export FHMAX_GFS_00=93
@@ -618,6 +621,7 @@ export FHMIN_GFS=0
 #export FHMAX_GFS_00=360
 #export FHMAX_GFS_00=480
 #export FHMAX_GFS_00=840
+#export FHMAX_GFS_00=720
 #export FHMAX_GFS_00=1080 # uncomment this line for 45 day run
 #export FHMAX_GFS_00=1440
 #export FHMAX_GFS_00=1800 # uncomment this line for 45 day run
@@ -666,7 +670,7 @@ export FHMAX_COLD=1
 # if gaussian_grid, set OUTPUT_FILE for nemsio or netcdf
 export QUILTING=.true.
 export OUTPUT_GRID=gaussian_grid
-#export OUTPUT_FILE=netcdf
+export OUTPUT_FILE=netcdf
 export OUTPUT_FILE=${OUTPUT_FILE:-nemsio}
 
 # Microphysics Options: 99-ZhaoCarr, 8-Thompson; 6-WSM6, 10-MG, 11-GFDL

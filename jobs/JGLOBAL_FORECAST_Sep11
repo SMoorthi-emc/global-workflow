@@ -109,12 +109,12 @@ msg="HAS BEGUN on `hostname`"
 postmsg "$jlogfile" "$msg"
 $LOGSCRIPT
 
+# If coupled, run a cold start for 1 hour
 export CPLDFV3_MOM6_CICE=${CPLDFV3_MOM6_CICE:-NO}
 if [ $CPLDFV3_MOM6_CICE = YES ] ; then
 
-  if [ ${warm_start:-.false.} = .false. -a $USE_COLDSTART = .true. ] ; then # one hour cold start for coupled run
-                                                                            #------------------------------------
-# If coupled, run a cold start for 1 hour
+  if [ ${warm_start:-.false.} = .false. ] ; then # one hour cold start for coupled run
+                                                 #------------------------------------
     export FHMAX=$FHMAX_COLD
     export nsout=0
     . $CPLPREPSH cold
@@ -134,7 +134,7 @@ if [ $CPLDFV3_MOM6_CICE = YES ] ; then
     status=$?
     [[ $status -ne 0 ]] && exit $status
 
-  else                                           # set up coupled warm or one step start
+  else                                           # set up coupled warm start
                                                  #--------------------------
     export FHMAX=$FHMAX_GFS
     export nsout=${NSOUT:-0}
