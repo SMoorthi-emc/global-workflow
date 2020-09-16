@@ -51,7 +51,7 @@ module use -a /usrx/local/nceplibs/dev/NCEPLIBS/modulefiles
 #
  module unload ESMF/7_1_0r
  module use /gpfs/dell2/emc/modeling/noscrub/emc.nemspara/soft/modulefiles
- module load esmf/8.1.0bs27
+ module load esmf/8.1.0bs21
 
 setenv USE_CFP YES
 
