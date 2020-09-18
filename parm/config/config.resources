@@ -98,7 +98,7 @@ elif [ $step = "fcst" ]; then
 
     if [ $CPLDFV3_MOM6_CICE = YES ] ; then
       export npe_ocn=84
-#     export npe_ocn=120
+      export npe_ocn=120
 #     export npe_ocn=240
 #     export npe_ice=24
 ##    export npe_ocn=140
@@ -125,6 +125,7 @@ elif [ $step = "fcst" ]; then
     if [ $CPLDWAV = YES ] ; then
       if [ $machine == HERA ] ; then
         export npe_ww3=40
+#       export npe_ww3=80
       fi
 #     npe_ww3=${npe_ww3:-$((npe_node_fcst*3))}
       npe_ww3=${npe_ww3:-$((npe_node_fcst*3*nth_fcst))}

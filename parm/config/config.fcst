@@ -334,13 +334,20 @@ if [ $CPLDFV3_MOM6_CICE = YES -o $CPLDWAV = YES ] ; then
     if [ $npe_ww3 -gt 0 ] ; then
      WAV_petlist_bounds=\'"$((npe_atm+npe_ocn+npe_ice+1))' '$((npe_atm+npe_ocn+npe_ice+npe_ww3))"\'
     fi
-   else
-    if [ $npe_ww3 -eq 0 ] ; then
-     WAV_petlist_bounds=$ICE_petlist_bounds
-    elif [ $npe_ice -gt $npe_ww3 ] ; then
-     WAV_petlist_bounds=\'"$((npe_atm+npe_ocn+npe_ice-npe_ww3+1))' '$((npe_atm+npe_ocn+npe_ice))"\'
+   fi
+   if [ $CICE = CICE6 ] ; then
+    if [ $ICE_WW3_OVERLAP = NO ] ; then
+      if [ $npe_ww3 -gt 0 ] ; then
+       WAV_petlist_bounds=\'"$((npe_atm+npe_ocn+npe_ice+1))' '$((npe_atm+npe_ocn+npe_ice+npe_ww3))"\'
+      fi
     else
-     WAV_petlist_bounds=\'"$((npe_atm+npe_ocn+1))' '$((npe_atm+npe_ocn+npe_ww3))"\'
+      if [ $npe_ww3 -eq 0 ] ; then
+       WAV_petlist_bounds=$ICE_petlist_bounds
+      elif [ $npe_ice -gt $npe_ww3 ] ; then
+       WAV_petlist_bounds=\'"$((npe_atm+npe_ocn+npe_ice-npe_ww3+1))' '$((npe_atm+npe_ocn+npe_ice))"\'
+      else
+       WAV_petlist_bounds=\'"$((npe_atm+npe_ocn+1))' '$((npe_atm+npe_ocn+npe_ww3))"\'
+      fi
     fi
    fi
   fi

@@ -36,7 +36,7 @@ elif [ $machine = WCOSS_DELL_P3 ] ; then  # set QSUFFIX=2 for Dell 3.5
 fi
 
  export LEVS=128
- export LEVS=65
+#export LEVS=65
 
 #export IAER=1111
 #export iccn=2
@@ -165,7 +165,7 @@ export REALTIME=NO
 #export frac_grid=.true.
  export mediator=cmeps
  export CICE=CICE6
- export ICE_WW3_OVERLAP=YES
+#export ICE_WW3_OVERLAP=YES
  export CICE=${CICE:-CICE5}
  export mediator=${mediator:-nems}
  export USE_COLDSTART=${USE_COLDSTART:-.true.}
@@ -217,7 +217,8 @@ export OCNPOSTsrc=$HOMEgfs/fix/ocean_ice_post
 #
 #For WW3
  export USE_WAVES=True
- export ww3_grid=gwes_30m
+#export ww3_grid=glo_30m
+ export ww3_grid=${ww3_grid:-gwes_30m}
 export FIX_WW3=${FIX_WW3:-$NOSCRUB/WW3_input_data}
 export ww3_grid=${ww3_grid:-'glo_30m'}
 export USE_WAVES=${USE_WAVES:-False}
@@ -262,9 +263,9 @@ if [ $cplflx = .true. ] ; then
 #export cpl=.true.
  export CPLDFV3_MOM6_CICE=YES
  export Restart_Prefix='MOM.res'
-#export cplwav=.true.
-#export cplwav2atm=.true.
-#export CPLDWAV=YES
+ export cplwav=.true.
+ export cplwav2atm=.true.
+ export CPLDWAV=YES
  export IC_FROM=bench1
  if [ $IC_FROM = bench1 ] ; then export USE_IDEAL_AGE_TRACER=True ; fi
  export NUMOM=YES
@@ -554,10 +555,11 @@ export FHMIN_GFS=0
 
 #export USE_LAST_RESTART=YES
 #export restart_ext=.false.
- export warm_start=.true.   # for warm_start need to set FHMIN (i.e. starting time)
+
+#export warm_start=.true.   # for warm_start need to set FHMIN (i.e. starting time)
 #export FHMIN=1
 #export FHMIN=2
- export FHMIN=3
+#export FHMIN=3
 #export FHMIN=6
 #export FHMIN=9
 #export FHMIN=12
