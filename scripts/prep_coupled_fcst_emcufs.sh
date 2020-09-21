@@ -1059,40 +1059,4 @@ if [ $CPLDWAV = YES ] ; then
  fi
 fi
 
-#rty=pe${rtype:-"n"}
-
-# specify restart
-#if [ $inistep = 'restart' ] ; then
-  #rtype="r"
-#fi
-
-#cat >> input.nml <<EOF
-#&nam_stochy
-#  lon_s=768,
-#  lat_s=384,
-#  ntrunc=382,
-#  SKEBNORM=1,
-#  SKEB_NPASS=30,
-#  SKEB_VDOF=5,
-#  SKEB=-999.0,
-#  SKEB_TAU=2.16E4,
-#  SKEB_LSCALE=1000.E3,
-#  SHUM=-999.0,
-#  SHUM_TAU=21600,
-#  SHUM_LSCALE=500000,
-#  SPPT=-999.0,
-#  SPPT_TAU=21600,
-#  SPPT_LSCALE=500000,
-#  SPPT_LOGIT=.TRUE.,
-#  SPPT_SFCLIMIT=.TRUE.,
-#  ISEED_SHUM=1,
-#  ISEED_SKEB=2,
-#  ISEED_SPPT=3,
-#/
-#EOF
-
-# normal exit
-# -----------
-
-#exit 0
 
