@@ -44,13 +44,17 @@ if [[ $inistep = cold ]] ; then
   export history_n=1
   export mediator_read_restart=.false.
 else
-  export start_type=startup
+  export start_type=continue
   export case_name=$MED_RESTDIR/ufs.med
   export history_n=0
   export mediator_read_restart=.true.
+  if [ $USE_COLDSTART = .false. -a $FHMIN -eq 0 ] ; then
+    export start_type=startup
+    export mediator_read_restart=.false.
+< fi
 fi
 
-if [ $inistep = warm ] ; then # using restart file for the cmeps mediator
+if [ $inistep = warm -a $USE_COLDSTART = .true. ] ; then # using restart file for the cmeps mediator
   SDATE=$($NDATE +1 $CDATE)
   PDYS=$(echo $SDATE | cut -c1-8)
   yyyy=$(echo $SDATE | cut -c1-4)
@@ -495,7 +499,6 @@ cat >> nems.configure <<eof
 # Forecast Run Sequence #
 runSeq::
   @$CPL_SLOW
-    MED med_phases_restart_write
     MED med_phases_prep_ocn_accum_avg
     MED -> OCN :remapMethod=redist
     OCN -> WAV
@@ -521,6 +524,7 @@ runSeq::
       MED med_phases_profile
     @
     OCN -> MED :remapMethod=redist
+    MED med_phases_restart_write
   @
 ::
 eof
@@ -564,7 +568,6 @@ cat >> nems.configure <<eof
 # Forecast Run Sequence #
 runSeq::
   @$CPL_SLOW
-    MED med_phases_restart_write
     MED med_phases_prep_ocn_accum_avg
     MED -> OCN :remapMethod=redist
     OCN
@@ -587,6 +590,7 @@ runSeq::
       MED med_phases_profile
     @
     OCN -> MED :remapMethod=redist
+    MED med_phases_restart_write
   @
 ::
 eof
@@ -627,6 +631,7 @@ ALLCOMP_attributes::
       restart_n = ${restart_hr:-1}
       restart_option = nhours
       restart_ymd = -999
+      dbug_flag   = ${cap_dbug_flag:-1}
 ::
 eof
 

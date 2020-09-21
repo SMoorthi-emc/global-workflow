@@ -138,7 +138,9 @@ if [ $CPLDFV3_MOM6_CICE = YES ] ; then
                                                  #--------------------------
     export FHMAX=$FHMAX_GFS
     export nsout=${NSOUT:-0}
-    . $CPLPREPSH restart
+    if [ $USE_COLDSTART = .false. -a $FHMIN -eq 0 ] ; then export restart='warm' ; fi
+    export restart=${restart:-'restart'}
+    . $CPLPREPSH $restart
     status=$?
     [[ $status -ne 0 ]] && exit $status
   fi

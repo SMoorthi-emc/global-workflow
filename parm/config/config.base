@@ -36,7 +36,7 @@ elif [ $machine = WCOSS_DELL_P3 ] ; then  # set QSUFFIX=2 for Dell 3.5
 fi
 
  export LEVS=128
-#export LEVS=65
+ export LEVS=65
 
 #export IAER=1111
 #export iccn=2
@@ -144,7 +144,7 @@ fi
 
 #fi
 
- export print_esmf=.true.
+#export print_esmf=.true.
  export print_esmf=${print_esmf:-.false.}
  export ESMF_RUNTIME_PROFILE=ON
  export ESMF_RUNTIME_PROFILE_OUTPUT=SUMMARY
@@ -160,7 +160,7 @@ export REALTIME=NO
  export RUN_CCPP=YES
  export cplflx=.true.
  export CPLD_APP=YES
-#export INLINE_POST=YES
+ export INLINE_POST=YES
 #export USE_COLDSTART=.false.
 #export frac_grid=.true.
  export mediator=cmeps
@@ -232,7 +232,7 @@ export FIX_LAKE_ORO=$NOSCRUB/oro_lake
 export use_lake_oro=YES
 export use_lake_oro=NO
 
- export NSOUT=1
+#export NSOUT=1
  export NSOUT=${NSOUT:-0}
 
 #export LINK_OCN_FILES=NO
@@ -593,9 +593,9 @@ export FHMIN_GFS=0
  export restart_interval=864000
 #export restart_interval=432000
 #export restart_interval=86400
- export restart_interval=43200
+#export restart_interval=43200
 #export restart_interval=21600
- export restart_interval=10800
+#export restart_interval=10800
 #export restart_interval=7200
 #export restart_interval=3600
  export restart_interval_atm=$((restart_interval/3600))
@@ -613,7 +613,7 @@ export FHMIN_GFS=0
 #export FHMAX_GFS_00=15
 #export FHMAX_GFS_00=12
 #export FHMAX_GFS_00=9
- export FHMAX_GFS_00=6
+#export FHMAX_GFS_00=6
 #export FHMAX_GFS_00=3
 #export FHMAX_GFS_00=84
 #export FHMAX_GFS_00=93
@@ -676,7 +676,7 @@ export FHMAX_COLD=1
 # if gaussian_grid, set OUTPUT_FILE for nemsio or netcdf
 export QUILTING=.true.
 export OUTPUT_GRID=gaussian_grid
-#export OUTPUT_FILE=netcdf
+export OUTPUT_FILE=netcdf
 export OUTPUT_FILE=${OUTPUT_FILE:-nemsio}
 
 # Microphysics Options: 99-ZhaoCarr, 8-Thompson; 6-WSM6, 10-MG, 11-GFDL
