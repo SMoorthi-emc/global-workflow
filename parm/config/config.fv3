@@ -111,7 +111,7 @@ case $case_in in
         fi
 #       export nth_f=7
         export nth_f=1
-#       export nth_f=2
+        export nth_f=2
         export nth_f=${nth_f:-4}
         export OMP_NUM_THREADS=$((nth_f*2))
         export npe_node_fcst=$((npe_node_max/nth_f))

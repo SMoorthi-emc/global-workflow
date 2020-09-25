@@ -36,7 +36,7 @@ elif [ $machine = WCOSS_DELL_P3 ] ; then  # set QSUFFIX=2 for Dell 3.5
 fi
 
  export LEVS=128
- export LEVS=65
+#export LEVS=65
 
 #export IAER=1111
 #export iccn=2
@@ -160,14 +160,27 @@ export REALTIME=NO
  export RUN_CCPP=YES
  export cplflx=.true.
  export CPLD_APP=YES
- export INLINE_POST=YES
-#export USE_COLDSTART=.false.
+#export INLINE_POST=YES
+ export USE_COLDSTART=.false.
 #export frac_grid=.true.
  export mediator=cmeps
  export CICE=CICE6
 #export ICE_WW3_OVERLAP=YES
  export CICE=${CICE:-CICE5}
  export mediator=${mediator:-nems}
+#
+# I/O QUILTING, true--use Write Component; false--use GFDL FMS
+# if quilting=true, choose OUTPUT_GRID as cubed_sphere_grid in netcdf or gaussian_grid
+# if gaussian_grid, set OUTPUT_FILE for nemsio or netcdf
+export QUILTING=.true.
+export OUTPUT_GRID=gaussian_grid
+#export OUTPUT_FILE=netcdf
+
+# uncomment to turn on coupled wave
+#export cplwav=.true.
+#export cplwav2atm=.true.
+#export CPLDWAV=YES
+
  export USE_COLDSTART=${USE_COLDSTART:-.true.}
 #export NETCDF_TYPE=\"pnetcdf\"
 
@@ -263,9 +276,11 @@ if [ $cplflx = .true. ] ; then
 #export cpl=.true.
  export CPLDFV3_MOM6_CICE=YES
  export Restart_Prefix='MOM.res'
- export cplwav=.true.
- export cplwav2atm=.true.
- export CPLDWAV=YES
+
+#export cplwav=.true.
+#export cplwav2atm=.true.
+#export CPLDWAV=YES
+
  export IC_FROM=bench1
  if [ $IC_FROM = bench1 ] ; then export USE_IDEAL_AGE_TRACER=True ; fi
  export NUMOM=YES
@@ -289,9 +304,11 @@ elif [ $CPLD_APP = YES ] ; then
  export appdir=cfv3_git_Sep15_cice6
 #export appdir=cfv3_git_may19_hera
 #export appdir=cfv3_git_Jun16
+
 #export cplwav=.true.   # to turn on fv3 and WW3 using coupled exec
 #export CPLDWAV=YES
 #export cplwav2atm=.true.
+
 else
  app=ufs-weather-model
  app=ufs-s2s-model
@@ -299,6 +316,7 @@ else
  export appdir=fv3_feb24
  export appdir=cfv3_git_Aug12_cice6
  export appdir=cfv3_git_Sep15_cice6
+
 #export cplwav=.true.
 #export cplwav2atm=.true.
 #export CPLDWAV=YES
@@ -500,13 +518,13 @@ fi
 if [ -d $ROTDIR/gfs. ] ; then rm -rf $ROTDIR/gfs. ; fi
 
 # For coupled
-if [ $machine = HERA ] ; then
- export UGCSICSDIR="/scratch2/stmp/Bin.Li/EMC_ugcs_hycom/ugcsics_cfsv2op"
- export UGCSsrc="/scratch2/stmp/Bin.Li/EMC_ugcs"
-elif [ $machine = WCOSS_DELL_P3 ] ; then
- export UGCSICSDIR="$NOSCRUB/UGCS/ugcsics_cfsv2op"
- export UGCSsrc="$NOSCRUB/EMC_ugcs"
-fi
+#if [ $machine = HERA ] ; then
+# export UGCSICSDIR="/scratch2/stmp/Bin.Li/EMC_ugcs_hycom/ugcsics_cfsv2op"
+# export UGCSsrc="/scratch2/stmp/Bin.Li/EMC_ugcs"
+#elif [ $machine = WCOSS_DELL_P3 ] ; then
+# export UGCSICSDIR="$NOSCRUB/UGCS/ugcsics_cfsv2op"
+# export UGCSsrc="$NOSCRUB/EMC_ugcs"
+#fi
 
 # Commonly defined parameters in JJOBS
 export envir=${envir:-prod}
@@ -593,7 +611,7 @@ export FHMIN_GFS=0
  export restart_interval=864000
 #export restart_interval=432000
 #export restart_interval=86400
-#export restart_interval=43200
+ export restart_interval=43200
 #export restart_interval=21600
 #export restart_interval=10800
 #export restart_interval=7200
@@ -674,9 +692,11 @@ export FHMAX_COLD=1
 # I/O QUILTING, true--use Write Component; false--use GFDL FMS
 # if quilting=true, choose OUTPUT_GRID as cubed_sphere_grid in netcdf or gaussian_grid
 # if gaussian_grid, set OUTPUT_FILE for nemsio or netcdf
-export QUILTING=.true.
-export OUTPUT_GRID=gaussian_grid
-export OUTPUT_FILE=netcdf
+#export QUILTING=.true.
+#export OUTPUT_GRID=gaussian_grid
+#export OUTPUT_FILE=netcdf
+export QUILTING=${QUILTING:-.true.}
+export OUTPUT_GRID=${OUTPUT_GRID:-gaussian_grid}
 export OUTPUT_FILE=${OUTPUT_FILE:-nemsio}
 
 # Microphysics Options: 99-ZhaoCarr, 8-Thompson; 6-WSM6, 10-MG, 11-GFDL

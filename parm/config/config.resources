@@ -122,6 +122,7 @@ elif [ $step = "fcst" ]; then
         export WRTTASK_MIN=${WRTTASK_MIN:-10}
       fi
     fi
+    export ICE_WW3_OVERLAP=${ICE_WW3_OVERLAP:-NO}
     if [ $CPLDWAV = YES ] ; then
       if [ $machine == HERA ] ; then
         export npe_ww3=40
@@ -129,7 +130,6 @@ elif [ $step = "fcst" ]; then
       fi
 #     npe_ww3=${npe_ww3:-$((npe_node_fcst*3))}
       npe_ww3=${npe_ww3:-$((npe_node_fcst*3*nth_fcst))}
-      export ICE_WW3_OVERLAP=${ICE_WW3_OVERLAP:-NO}
       if [ $CICE = CICE6 -a $ICE_WW3_OVERLAP = YES ] ; then     #  with CICE6 waves uses same pes as CICE6
         npe_ww3=0 
 ##      export npe_ice=$((npe_ice*3))

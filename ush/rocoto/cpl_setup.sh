@@ -5,7 +5,6 @@ echo "Load modules first"
 #source /usr/Modules/3.2.10/init/sh
 . $MODULESHOME/init/sh 2>/dev/null
 #module load rocoto
-#module load rocoto/20180420-master
 module load rocoto/1.3.2
 module load hpss
 
@@ -18,12 +17,13 @@ IDATE=2018010100
  IDATE=2018090100
 #IDATE=2011100100
 #IDATE=2018011500
- IDATE=2018031500
+#IDATE=2018031500
  CASE=C384
 #IDATE=2017051500
 #CASE=C768
 # $EDATE is the ending date of your run (YYYYMMDDCC) and is the last cycle that will complete
 #EDATE=2016010100
+
 EDATE=$IDATE
 YMD=$(echo $IDATE | cut -c1-8)
 HH=$(echo $IDATE | cut -c9-10)
@@ -32,17 +32,13 @@ HH=$(echo $IDATE | cut -c9-10)
 RES=$(echo $CASE|cut -c 2-)
 
 # $PSLOT is the name of your experiment
- expt=_phyda
+ expt=_phyac
+#expt=_phyxx
 #expt=_phyai    # cmeps run
-#expt=_phyal    # 9 month run
-#expt=_phyad
-#expt=_phyg
-#expt=_phyf
+
 expt=${expt:-''}
 PSLOT=c${RES}$expt
 
-#FROM_HPSS=/scratch4/NCEPDEV/nems/noscrub/Bin.Li/FROM_HPSS
-#FROM_HPSS=/global/noscrub/Jiande.Wang/WF3/FROM_HPSS
 #FROM_HPSS=/gpfs/dell2/emc/modeling/noscrub/Shrinivas.Moorthi/FROM_HPSS
 
 if [ $(echo $CWD | cut -c1-8) = "/scratch" ] ; then
@@ -93,14 +89,9 @@ CONFIGDIR=${CONFIGDIR:-../../parm/config}
 #OCN_DIR=$FROM_HPSS/2016040100/mom6_cfsv2
 
 # Link the existing FV3ICS folder to here, I prefer this directory to be in main directory, but changing in script can cause issues
-#mkdir -p $COMROT
 cd $COMROT
 mkdir -p FV3ICS
-#ln -s ../FV3ICS .
-#ln -s $FROM_HPSS/* ../FV3ICS
-#ln -fs $FROM_HPSS/* ../FV3ICS
-#ln -fs $FROM_HPSS/$IDATE ../FV3ICS/$IDATE
- ln -fs $FROM_HPSS/$IDATE FV3ICS/
+ln -fs $FROM_HPSS/$IDATE FV3ICS/
 
 cd $CWD
 
@@ -109,48 +100,32 @@ GFS_CYC=1
 
 # $EXPDIR is the path to your experiment directory where your configs will be placed and where you will find your workflow monitoring files (i.e. rocoto database and xml file). DO NOT include PSLOT folder at end of path, it will be built for you.
 
-#EXPDIR=/scratch4/NCEPDEV/nems/noscrub/Patrick.Tripp/EXPFV3
-#EXPDIR=/scratch4/NCEPDEV/nems/noscrub/${USER}/benchmark/${YMD}/EXPFV3
-#EXPDIR=/gpfs/dell2/emc/modeling/noscrub/$LOGNAME/CFV3/$IDATE/EXPFV3
-#mkdir -p $EXPDIR
-
 ./setup_expt_fcstonly.py --pslot $PSLOT --configdir $CONFIGDIR --idate $IDATE --edate $EDATE --res $RES --gfs_cyc $GFS_CYC --comrot $COMROT --expdir $EXPDIR
 
 # Edit base.config
-# Change noscrub dirs from global to climate
-# Change account to CFS-T20
+# Change account to CFS-T20?
 
 # Copy ICs : can put in a loop if running multiple cycles
 
-#YMD=`echo $IDATE | cut -c1-8`
-#HH=`echo $IDATE | cut -c9-10`
 mkdir -p $COMROT/$PSLOT/gfs.$YMD/$HH/INPUT
 cd $COMROT/$PSLOT/gfs.$YMD/$HH/INPUT
 
 # Copy the ICs if they exist, otherwise the workflow will generate them from EMC_ugcs ICs
-#BL2018
-#if [ -d $ICSDIR/$IDATE/gfs/C$RES/INPUT ] ; then
-#  cp -p $ICSDIR/$IDATE/gfs/C$RES/INPUT/* .
 
-#BL2018
 if [ -d $FV3DATA ] ; then
-#  cp -p $FV3DATA/* .
   ln -s $FV3DATA/* .
 fi
 
-# Come back to this folder
-cd $CWD
+cd $CWD     # Come back to this folder
 
-#exit
+#exit           # to test
 # Setup workflow
 ./setup_workflow_fcstonly.py --expdir $EXPDIR/$PSLOT
 
-#exit
-# Copy rocoto_viewer.py to EXPDIR
- cp rocoto_viewer.py $EXPDIR/$PSLOT
+#exit           # to test
+ cp rocoto_viewer.py $EXPDIR/$PSLOT # Copy rocoto_viewer.py to EXPDIR
 #
-#exit
+#exit           # to test
  cd $EXPDIR/$PSLOT
-#module load rocoto/1.2.4
  rocotorun -d $PSLOT.db -w $PSLOT.xml
-#rocotorun -v 10 -d $PSLOT.db -w $PSLOT.xml
+#rocotorun -v 10 -d $PSLOT.db -w $PSLOT.xml    # for verbose of rocotorun
