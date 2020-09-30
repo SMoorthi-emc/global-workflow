@@ -52,11 +52,10 @@ export ESMF_RUNTIME_COMPLIANCECHECK=${ESMF_RUNTIME_COMPLIANCECHECK:-'OFF:depth=4
 
 export cplflx=${cplflx:-${CPLFLX:-.false.}}
 export cpl=${cpl:-${CPL:-.false.}}
-export mediator=${mediator:-nems}
+export mediator=${mediator:-cmeps}
 
 # experiment name, horizontal and vertical resolutions
 #-----------------------------------------------------
-export PSLOT=${PSLOT:-fv3gfs}
 export CASE=${CASE:-C768}
 export LEVS=${LEVS:-127}
 export res=$(echo $CASE |cut -c 2-5)
@@ -67,17 +66,15 @@ export layout_y=${layout_y:-$((layout_x*2))}
 # Cycling and forecast hour specific parameters
 #----------------------------------------------
 export CDATE=${CDATE:-2019010100}      # current forecast date
-CDUMP=${CDUMP:-gdas}
+export CDUMP=${CDUMP:-gdas}
 export FHMAX=${FHMAX:-240}             # max hours to forecast
 export FHOUT=${FHOUT:-6.0}             # output interval
 export FHZER=${FHZER:-$FHOUT}          # interval over which to reset accumulating arrays
-export FHMAX_HF=${FHMAX_HF:-0.0}       # max hour for high frquency output
+export FHMAX_HF=${FHMAX_HF:-0}         # max hour for high frquency output
 export FHOUT_HF=${FHOUT_HF:-1}         # output interval for high frequency output
 export FHMIN=${FHMIN:-0}               # starting hour
 export FHROT=${FHROT:-$FHMIN}
 export FHCYC=${FHCYC:-0.0}             # interval to update boundary conditions
-export FHMAX_HF=${FHMAX_HF:-0}
-export FHOUT_HF=${FHOUT_HF:-1}
 export NSOUT=${NSOUT:-${nsout:--1}}
 if [ $FHMAX_HF -gt 0 -a $FHOUT_HF -gt 0 ] ; then
  export fdiag=${fdiag:-$FHOUT_HF}
@@ -91,26 +88,15 @@ cyc=$(echo $CDATE | cut -c9-10)
 
 # Directories
 #------------
-export hpsn=${hpsn:-3}
-export PTMP=${PTMP:-/gpfs/hps$hpsn/ptmp}
-export STMP=${STMP:-/gpfs/hps$hpsn/stmp}
 
 pwd=$(pwd)
+export NWPROD=${NWPROD:-${NWROOT:-$pwd}}
+export HOMEgfs=${HOMEgfs:-$NWPROD}
+export FIX_DIR=${FIX_DIR:-$HOMEgfs/fix}
+export FIX_AM=${FIX_AM:-$FIX_DIR/fix_am}
+export FIX_FV3=${FIX_FV3:-${FIXfv3:-$FIX_DIR/fix_fv3_gmted2010}}
 
-#export HOMEgfs=${HOMEgfs:-$NWPROD}
-#export FIX_DIR=${FIX_DIR:-$HOMEgfs/fix}
-#export FIX_FV3=${FIX_FV3:-${FIXfv3:-$FIX_DIR/fix_fv3_gmted2010}}
-#export FIX_AM=${FIX_AM:-$FIX_DIR/fix_am}
-#export FIX_AER=${FIX_AER:-$FIX_DIR/fix_aer}
-#export FIX_CCN=${FIX_CCN:-$FIX_DIR/fix_ccn}
-#export CO2DIR=${CO2DIR:-$FIX_AM/fix_co2_proj}
-#export PARM_DIR=${PARM_DIR:-$HOMEgfs/parm/parm_fv3diag}
-#export PARM_POST=${PARM_POST:-$HOMEgfs/parm/post}
-
-export DATA=${DATA:-$STMP/$LOGNAME/pr${PSLOT}${CASE}_$CDATE}  #temporary running directory
-#export ROTDIR=${ROTDIR:-$PTMP/$LOGNAME/$PSLOT}              #rorating archive directory
-#export IC_DIR=${IC_DIR:-/gpfs/hps/emc/global/noscrub/$LOGNAME/FV3IC/ICs}
-
+DATA=${DATA:-$pwd/ufstmp$$}    # temporary running directory
 ROTDIR=${ROTDIR:-$pwd}         # rotating archive directory
 ICSDIR=${ICSDIR:-$pwd}         # cold start initial conditions
 DMPDIR=${DMPDIR:-$pwd}         # global dumps for seaice, snow and sst analysis
@@ -161,59 +147,7 @@ elif [ $machine = GAEA ] ; then
   export MPICH_PTL_OTHER_EVENTS=${MPICH_PTL_OTHER_EVENTS:-100000}
   export MPMD_PROC=${MPMD_PROC:-NO}
   export MKL_NUM_THREADS=${MKL_NUM_THREADS:-1}
-elif [ $machine = WCOSS ] ; then
-    ulimit -s unlimited
-    export MKL_CBWR=${MKL_CBWR:-AVX}          # Needed for bit reproducibility with mkl
-    export MKL_NUM_THREADS=${MKL_NUM_THREADS:-1}
-    export SAVE_ALL_TASKS=${SAVE_ALL_TASKS:-no}
-    export PROFILE_BY_CALL_SITE=${PROFILE_BY_CALL_SITE:-no}
-#   export LD_PRELOAD=/u/James.A.Abeles/bw/mpitrace/shared/libmpitrace.so
 
-    . /usrx/local/Modules/3.2.10/init/ksh
-
-    module unload NetCDF HDF5
-    module load NetCDF/4.2/serial HDF5/1.8.9/serial
-    module unload esmf
-#   module use /nems/save/Patrick.Tripp/modulefiles
-#   module load esmf/7.0.0
-    module unload ESMF
-    module load ESMF/700
-
-  if [ ${LOADICS:-YES} = YES ] ; then
-#   module unload ics
-#   export ICS_VERSION=${ICS_VERSION:-16.0.3}
-#   export ICS_VERSION=${ICS_VERSION:-15.0.3}
-#   module load ics/$ICS_VERSION
-
-#   module unload ibmpe
-#   module load ibmpe/1.3.0.12
-    
-    if [ ${USEBULKXFER:-NO} = YES ] ; then
-      module unload ibmpe
-      module load ibmpe/1.3.0.8p
-      export MP_USE_BULK_XFER=yes
-#     export MP_EAGER_LIMIT=64K
-      export MP_BULK_MIN_MSG_SIZE=512K
-#     export MP_BULK_MIN_MSG_SIZE=64K
-      export MP_RC_USE_LMC=yes
-    fi
-  fi
-  export MP_EAGER_LIMIT=${MP_EAGER_LIMIT:-64K}
-  export FORT_BUFFERED=${FORT_BUFFERED:-true}
-  export MP_EUIDEVICE=${MP_EUIDEVICE:-min}
-  export MP_EUILIB=${MP_EUILIB:-us}
-# export MP_TASK_AFFINITY=${MP_TASK_AFFINITY:-"cpu:$NTHREADS"}
-  export MPICH_ALLTOALL_THROTTLE=${MPICH_ALLTOALL_THROTTLE:-0}
-  export MP_SINGLE_THREAD=${MP_SINGLE_THREAD:-yes}
-  export VPROF_PROFILE=${VPROF_PROFILE:-no}
-  export MP_COREFILE_FORMAT=${MP_COREFILE_FORMAT:-lite}
-  export KMP_AFFINITY=${KMP_AFFINITY:-disabled}
-
-# export MP_USE_TOKEN_FLOW_ CONTROL=${MP_USE_TOKEN_FLOW_ CONTROL:-yes}
-# export MP_S_ENABLE_ERR_PRINT=yes
-  NS_GLOPARA=${NS_GLOPARA:-/global/noscrub/emc.glopara}
-# export FIX_FV3=${FIX_FV3:-$NS_GLOPARA/svn/fv3gfs/fix_fv3}
-  export FIX_DIR=${FIX_DIR:-/global/noscrub/Shrinivas.Moorthi/NextG2/global_shared.v15.0.0/fix}
 elif [ $machine = WCOSS_C -a  ${LOADIOBUF:-YES} = YES ] ; then
   . $MODULESHOME/init/sh 2>/dev/null
   export PRGENV=${PRGENV:-intel}
@@ -221,13 +155,8 @@ elif [ $machine = WCOSS_C -a  ${LOADIOBUF:-YES} = YES ] ; then
 
   module unload prod_util iobuf PrgEnv-$PRGENV craype-$HUGEPAGES 2>/dev/null
   module   load prod_util iobuf PrgEnv-$PRGENV craype-$HUGEPAGES 2>/dev/null
-# module unload cray-netcdf
-# module load cray-netcdf
-# module  use /usrx/local/dev/modulefiles
-# module  load ESMF-intel-haswell/7_0_0 2>/dev/null
   module unload ESMF-intel-sandybridge/6_3_0rp1
   module use /gpfs/hps3/emc/nems/noscrub/emc.nemspara/soft/modulefiles
-# module load esmf/7.1.0bs34 2>/dev/null
   module load esmf/8.0.0 2>/dev/null
 
 # export IOBUF_PARAMS=${IOBUF_PARAMS:-'*:size=8M'}
@@ -245,8 +174,6 @@ elif [ $machine = WCOSS_C -a  ${LOADIOBUF:-YES} = YES ] ; then
 
 elif [ $machine = WCOSS_DELL_P3 ] ; then
     ulimit -s unlimited
-#   export MKL_CBWR=${MKL_CBWR:-AVX}          # Needed for bit reproducibility with mkl
-#   export MKL_NUM_THREADS=${MKL_NUM_THREADS:-1}
     export SAVE_ALL_TASKS=${SAVE_ALL_TASKS:-no}
     export PROFILE_BY_CALL_SITE=${PROFILE_BY_CALL_SITE:-no}
 
@@ -268,16 +195,18 @@ elif [ $machine = WCOSS_DELL_P3 ] ; then
   module list
 fi
 
-export HOMEgfs=${HOMEgfs:-$NWPROD}
-export FIX_DIR=${FIX_DIR:-$HOMEgfs/fix}
-export FIX_FV3=${FIX_FV3:-${FIXfv3:-$FIX_DIR/fix_fv3_gmted2010}}
-export FIX_AM=${FIX_AM:-$FIX_DIR/fix_am}
 export FIX_AER=${FIX_AER:-$FIX_DIR/fix_aer}
 export FIX_CCN=${FIX_CCN:-$FIX_DIR/fix_ccn}
 export FIX_LUT=${FIX_LUT:-$FIX_DIR/fix_lut}
 export CO2DIR=${CO2DIR:-$FIX_AM/fix_co2_proj}
 export PARM_DIR=${PARM_DIR:-$HOMEgfs/parm/parm_fv3diag}
 export PARM_POST=${PARM_POST:-$POSTDIR/parm}
+
+if [ $CDUMP = gfs ] ; then
+  export adjust_dry_mass=.false.
+else
+  export adjust_dry_mass=${adjust_dry_mass:-.true.}
+fi
 
 # Utilities
 #NCP=${NCP:-"/bin/cp -p"}
@@ -290,12 +219,21 @@ ERRSCRIPT=${ERRSCRIPT:-'eval [[ $err = 0 ]]'}
 NDATE=${NDATE:-$NWPROD/util/exec/ndate}
 NHOUR=${NHOUR:-$NWPROD/util/exec/nhour}
 
-#export ymd=$(echo $CDATE |cut -c 1-8)
-#export cyc=$(echo $CDATE |cut -c 9-10)
-#export NAME="${ymd}.${cyc}Z"
+# Other options
+# -------------
+MEMBER=${MEMBER:--1}               # -1: control, 0: ensemble mean, >0: ensemble member $MEMBER
+ENS_NUM=${ENS_NUM:-1}              # Single executable runs multiple members (e.g. GEFS)
+PREFIX_ATMINC=${PREFIX_ATMINC:-""} # allow ensemble to use recentered increment
 
-# options to use quilting in NEMS-FV3
-#------------------------------------
+# IAU options
+# -----------
+DOIAU=${DOIAU:-NO}
+IAUFHRS=${IAUFHRS:-0}
+IAU_DELTHRS=${IAU_DELTHRS:-0}
+IAU_OFFSET=${IAU_OFFSET:-0}
+
+# options to use quilting in UFS
+#-------------------------------
 export QUILTING=${QUILTING:-.true.}
 export WRITE_GROUP=${WRITE_GROUP:-1}
 export WRTTASK_PER_GROUP=${WRTTASK_PER_GROUP:-6}
@@ -310,17 +248,12 @@ export WRITE_FSYNCFLAG=${WRITE_FSYNCFLAG:-.true.}
 #-------------------------------------------------------
 #-------------------------------------------------------
 export TYPE=${TYPE:-nh}                  # choices:  nh, hydro
-export MODE=${MODE:-64bit}               # choices:  32bit, 64bit
-export COMP=${COMP:-prod}                # choices:  debug, repro, prod
-export MEMO=${MEMO:-""}
 export MONO=${MONO:-non-mono}            # choices:  mono, non-mono
-export warm_start=${warm_start:-.false.}
 
-export FCSTEXECDIR=${FCSTEXECDIR:-${NEMS_FV3GFS:-$HOMEgfs/sorc/fv3gfs.fd/NEMS}/exe}
+export FCSTEXECDIR=${FCSTEXECDIR:-$HOMEgfs/sorc/fv3gfs.fd/NEMS/exe}
 export FCSTEXEC=${FCSTEXEC:-NEMS.x}
 $NCP  $FCSTEXECDIR/$FCSTEXEC $DATA/.                                                   
 
-export cores_per_node=${cores_per_node:-${max_core:-24}}
 export HYPT=${HYPT:-off}             # choices:  on, off  (controls hyperthreading)
 if [ $HYPT = on ] ; then
    export hyperthread=.true.
@@ -332,7 +265,7 @@ fi
 #export nthreads=${nth_f:-2}
 export nthreads=${NTHREADS_FV3:-${NTHREADS_FCST:-${nth_f:-1}}}
 export OMP_NUM_THREADS=${OMP_NUM_THREADS:-$nthreads}
-export cores_per_node=${cores_per_node:-${npe_node_f:-24}}
+export cores_per_node=${cores_per_node:-${npe_node_f:-28}}
 ntiles=${ntiles:-6}
 #
 export WRITE_GROUP=${WRITE_GROUP:-0}
@@ -369,42 +302,49 @@ if [ $CDUMP = gfs -a $restart_interval -gt 0 -a $FHMAX -gt $restart_interval -a 
     CDATE_RST=$($NDATE $FHMIN $CDATE)
     RUNCONTINUE=YES
   elif [ ${RERUN_FCST:-NO} = NO ]  ; then
-    CDATE_RST=$CDATE
-    SDATE=$($NDATE +$FHMAX $CDATE)
-    EDATE=$($NDATE +$restart_interval $CDATE)
-    while [ $SDATE -gt $EDATE ] ; do
-      PDYS=$(echo $SDATE | cut -c1-8)
-      cycs=$(echo $SDATE | cut -c9-10)
-      flag1=$ATM_RESTDIR/${PDYS}.${cycs}0000.coupler.res
-      flag2=$ATM_RESTDIR/coupler.res
-      if [ -s $flag1 ] ; then
-        mv $flag1 ${flag1}.old
-        if [ -s $flag2 ] ; then mv $flag2 ${flag2}.old ; fi
-        RUNCONTINUE=YES
-        CDATE_RST=$($NDATE -$restart_interval $SDATE)
-        break
+    reverse=$(echo "${restart_interval_atm[@]} " | tac -s ' ')
+    for xfh in $reverse ; do
+      if [ $xfh -eq restart_interval ] ; then
+        CDATE_RST=$CDATE
+        SDATE=$($NDATE +$FHMAX $CDATE)
+        EDATE=$($NDATE +$restart_interval $CDATE)
+        while [ $SDATE -gt $EDATE ] ; do
+          PDYS=$(echo $SDATE | cut -c1-8)
+          cycs=$(echo $SDATE | cut -c9-10)
+          flag1=$ATM_RESTDIR/${PDYS}.${cycs}0000.coupler.res
+          flag2=$ATM_RESTDIR/coupler.res
+          if [ -s $flag1 ] ; then
+            mv $flag1 ${flag1}.old
+            if [ -s $flag2 ] ; then mv $flag2 ${flag2}.old ; fi
+            RUNCONTINUE=YES
+            CDATE_RST=$($NDATE -$restart_interval $SDATE)
+            break
+          fi
+          SDATE=$($NDATE -$restart_interval $SDATE)
+        done
+        FHMIN=$($NHOUR $CDATE_RST $CDATE)
+        FHROT=$FHMIN
+      else
+        yfh=$((xfh-(IAU_OFFSET/2)))
+        SDATE=$($NDATE +$yfh $CDATE)
+        PDYS=$(echo $SDATE | cut -c1-8)
+        cycs=$(echo $SDATE | cut -c9-10)
+        flag1=$ATM_RESTDIR/${PDYS}.${cycs}0000.coupler.res
+        flag2=$ATM_RESTDIR/coupler.res
+        if [ -s $flag1 ]; then
+            CDATE_RST=$SDATE
+            [[ $RUNCONTINUE = YES ]] && break
+            mv $flag1 ${flag1}.old
+            if [ -s $flag2 ]; then mv $flag2 ${flag2}.old ;fi
+            RUNCONTINUE=YES
+            [[ $xfh = $restart_interval ]] && RUNCONTINUE=NO
+        fi
       fi
-      SDATE=$($NDATE -$restart_interval $SDATE)
     done
-    FHMIN=$($NHOUR $CDATE_RST $CDATE)
-    FHROT=$FHMIN
   fi
 fi
 
-
 rCDUMP=${rCDUMP:-$CDUMP}
-
-# Other options
-# -------------
-MEMBER=${MEMBER:--1}   # -1: control, 0: ensemble mean, >0: ensemble member $MEMBER
-ENS_NUM=${ENS_NUM:-1}  # Single executable runs multiple members (e.g. GEFS)
-
-# IAU options
-# -----------
-DOIAU=${DOIAU:-NO}
-IAUFHRS=${IAUFHRS:-0}
-IAU_DELTHRS=${IAU_DELTHRS:-0}
-IAU_OFFSET=${IAU_OFFSET:-0}
 
 # member directory
 # ----------------
@@ -434,6 +374,7 @@ if [[ $DOIAU = YES ]] ; then
   scyc=$(echo $sCDATE | cut -c9-10)
   tPDY=$gPDY
   tcyc=$gcyc
+  fhrot=${IAU_FHROT:--3}
 else
   sCDATE=$CDATE
   sPDY=$PDY
@@ -445,6 +386,7 @@ fi
 #-------------------
 # initial conditions
 # ------------------
+export warm_start=${warm_start:-.false.}
 read_increment=${read_increment:-.false.}
 
 # Determine if this is a warm start or cold start
@@ -514,9 +456,9 @@ EOF
       for i in $(echo $IAUFHRS | sed "s/,/ /g" | rev); do
         incfhr=$(printf %03i $i)
         if [ $incfhr = "006" ] ; then
-          increment_file=$memdir/${CDUMP}.t${cyc}z.atminc.nc
+          increment_file=$memdir/${CDUMP}.t${cyc}z.${PREFIX_ATMINC}atminc.nc
         else
-          increment_file=$memdir/${CDUMP}.t${cyc}z.atmi${incfhr}.nc
+          increment_file=$memdir/${CDUMP}.t${cyc}z.${PREFIX_ATMINC}atmi${incfhr}.nc
         fi
         if [ ! -f $increment_file ] ; then
           echo "ERROR: DOIAU = $DOIAU, but missing increment file for fhr $incfhr at $increment_file"
@@ -621,7 +563,6 @@ else
  ORO_DIR=${FIX_LAKE_ORO:-$FIX_FV3}
 fi
 
-n=1
 for n in $(seq 1 $ntiles) ; do
  $NCP $FIX_FV3/$CASE/${CASE}_grid.tile${n}.nc     $DATA/INPUT/${CASE}_grid.tile${n}.nc
  $NCP $ORO_DIR/$CASE/${CASE}_oro_data.tile${n}.nc $DATA/INPUT/oro_data.tile${n}.nc
@@ -640,9 +581,9 @@ export IAER=${IAER:-111}
 export ICO2=${ICO2:-2}
 
 O3FORC=${O3FORC:-ozprdlos_2015_new_sbuvO3_tclm15_nuchem.f77}
-$NCP $FIX_AM/global_solarconstant_noaa_an.txt  $DATA/solarconstant_noaa_an.txt
 $NCP $FIX_AM/${O3FORC:-global_o3prdlos.f77}    $DATA/global_o3prdlos.f77
 $NCP $FIX_AM/${H2OFORC:-global_h2o_pltc.f77}   $DATA/global_h2oprdlos.f77
+$NCP $FIX_AM/global_solarconstant_noaa_an.txt  $DATA/solarconstant_noaa_an.txt
 $NCP $FIX_AM/global_sfc_emissivity_idx.txt     $DATA/sfc_emissivity_idx.txt
 
 export iccn=${iccn:-0}
@@ -727,6 +668,10 @@ if [ $CCPPDIR != none ] ; then
  $NCP $CCPPDIR/suites/suite_$CCPP_SUITE.xml $DATA/ccpp_suite.xml
 fi
 ######################  WW3 #########################################
+#
+#           May need to update here to be compatible with GFSv16
+#           ----------------------------------------------------
+#####################################################################
 export cplwav=${cplwav:-${CPLWAV:-.false.}}
 if [ $cplwav = .true. ] ; then
  export ww3_grid=${ww3_grid:-'glo_30m'}
@@ -746,6 +691,7 @@ if [ $cplwav = .true. ] ; then
  rm $DATA/ww3_multi.inp0        $DATA/ww3_multi.inp1   $DATA/ww3_multi.inp2
 fi
 
+# spectral truncation and regular grid resolution based on FV3 resolution
 # -----------------------------------------------------------------------
 JCAP_CASE=$((2*res-2))
 LONB_CASE=$((4*res))
@@ -768,7 +714,7 @@ FNALBC2=${FNALBC2:-"$FIX_AM/global_albedo4.1x1.grb"}
 FNAISC=${FNAISC:-"$FIX_AM/CFSR.SEAICE.1982.2012.monthly.clim.grb"}
 FNTG3C=${FNTG3C:-"$FIX_AM/global_tg3clim.2.6x1.5.grb"}
 FNVEGC=${FNVEGC:-"$FIX_AM/global_vegfrac.0.144.decpercent.grb"}
-FNMSKH=${FNMSKH:-"$FIX_AM/seaice_newland.grb"}
+FNMSKH=${FNMSKH:-"$FIX_AM/global_slmask.t1534.3072.1536.grb"}
 FNVMNC=${FNVMNC:-"$FIX_AM/global_shdmin.0.144x0.144.grb"}
 FNVMXC=${FNVMXC:-"$FIX_AM/global_shdmax.0.144x0.144.grb"}
 FNSLPC=${FNSLPC:-"$FIX_AM/global_slope.1x1.grb"}
@@ -1066,7 +1012,7 @@ elif [ $cplwav = .true. -a ! -f nems.configure ] ; then
 runSeq::
   @$ww3_coupling_interval_sec
     ATM -> WAV
-    WAV -> ATM :srcMaskValues=1
+    ATM -> WAV :SrcTermProcessing=0:TermOrder=SrcSeq
     WAV
     ATM
   @
@@ -1223,7 +1169,7 @@ cat > input.nml << EOF
        fv_debug    = ${fv_debug:-.false.}
        range_warn  = ${range_warn:-.false.}
        reset_eta   = ${reset_eta:-.false.}
-       n_sponge    = ${n_sponge:-$(((npz+1)/8))}
+       n_sponge    = ${n_sponge:-$(((npz+1)/6))}
        nudge_qv    = ${nudge_qv:-.false.}
        nudge_dz    = ${nudge_dz:-".false."}
        tau         = ${tau:-10.0}
@@ -1270,6 +1216,7 @@ cat > input.nml << EOF
        hord_dp             = ${hord_dp:--5}
        hord_tr             = ${hord_tr:--8}
        adjust_dry_mass     = ${adjust_dry_mass:-.false.}
+       dry_mass            = ${dry_mass:-98320.0}
        consv_te            = ${consv_te:-0.0}
        consv_am            = ${consv_am:-.false.}
        do_sat_adj          = ${do_sat_adj:-.false.}
@@ -1340,7 +1287,7 @@ cat > input.nml << EOF
        cnvcld         = ${cnvcld:-.true.}
        imfshalcnv     = ${imfshalcnv:-2}
        imfdeepcnv     = ${imfdeepcnv:-2}
-       cdmbgwd        = ${cdmbgwd:-2.0, 0.25}
+       cdmbgwd        = ${cdmbgwd:-3.5, 0.25}
        sup            = ${sup:-1.0}
        prslrd0        = ${prslrd0:-0.0}
        ral_ts         = ${ral_ts:-0.0}
@@ -1488,7 +1435,7 @@ cat >> input.nml << EOF
        fast_sat_adj   = ${fast_sat_adj:-.true.}
        tau_i2s        = ${tau_i2s:-1000.0}
        tau_l2r        = ${tau_l2r:-900.0}
-       tau_l2v        = ${tau_l2v:-300.}
+       tau_l2v        = ${tau_l2v:-225}
        tau_v2l        = ${tau_v2l:-150.}
        tau_g2v        = ${tau_g2v:-900.}
        rthresh        = ${rthresh:-10.e-6}  ! This is a key parameter for cloud water
@@ -1882,13 +1829,50 @@ if [ $ERR -eq 0 -a $SEND = YES -a $cpl = .false. -a $LINK_RESTDIR = NO ] ; then
 
   elif [ $CDUMP = gdas ] ; then
 
-    # time-stamp exists at restart_interval time, just copy
-    RDATE=$($NDATE +$restart_interval $CDATE)
-    rPDY=$(echo $RDATE | cut -c1-8)
-    rcyc=$(echo $RDATE | cut -c9-10)
-    for file in ${rPDY}.${rcyc}0000.* ; do
-      $NCP $file $memdir/RESTART/$file
+    for rst_int in $restart_interval_atm ; do
+     if [ $rst_int -ge 0 ] ; then
+       RDATE=$($NDATE +$rst_int $CDATE)
+       rPDY=$(echo $RDATE | cut -c1-8)
+       rcyc=$(echo $RDATE | cut -c9-10)
+       for file in $(ls ${rPDY}.${rcyc}0000.*) ; do
+         $NCP $file $memdir/RESTART/$file
+       done
+#-------------------------------------------------------------------------
+#      if [ $cplwav = .true. ] ; then
+#        WRDIR=$COMOUTWW3/${COMPONENTRSTwave}.${PDY}/${cyc}/restart
+#        mkdir -p ${WRDIR}
+#        for wavGRD in $waveGRD ; do
+#        # Copy wave IC for the next cycle
+#          $NCP $DATA/${rPDY}.${rcyc}0000.restart.${wavGRD} ${WRDIR}
+#        done
+#      fi
+#-------------------------------------------------------------------------
+     fi
     done
+#
+    if [ $DOIAU = YES ] || [ $DOIAU_coldstart = YES ] ; then
+      # if IAU is on, save restart at start of IAU window
+      rst_iau=$(( ${IAU_OFFSET} - (${IAU_DELTHRS}/2) ))
+      if [ $rst_iau -lt 0 ] ;then
+         rst_iau=$(( (${IAU_DELTHRS}) - ${IAU_OFFSET} ))
+      fi
+      RDATE=$($NDATE +$rst_iau $CDATE)
+      rPDY=$(echo $RDATE | cut -c1-8)
+      rcyc=$(echo $RDATE | cut -c9-10)
+      for file in $(ls ${rPDY}.${rcyc}0000.*) ; do
+         $NCP $file $memdir/RESTART/$file
+      done
+#-------------------------------------------------------------------------
+#     if [ $cplwav = .true. ] ; then
+#       WRDIR=$COMOUTWW3/${COMPONENTRSTwave}.${PDY}/${cyc}/restart/
+#       mkdir -p ${WRDIR}
+#       for wavGRD in $waveGRD ; do
+#       # Copy wave IC for the next cycle
+#          $NCP $DATA/${rPDY}.${rcyc}0000.restart.${wavGRD} ${WRDIR}
+#       done
+#     fi
+#-------------------------------------------------------------------------
+    fi
 
   fi
 

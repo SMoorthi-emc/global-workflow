@@ -157,15 +157,19 @@ export DO_AWIPS=NO
 export REALTIME=NO
 
 
- export RUN_CCPP=YES
- export cplflx=.true.
- export CPLD_APP=YES
-#export INLINE_POST=YES
- export USE_COLDSTART=.false.
-#export frac_grid=.true.
- export mediator=cmeps
- export CICE=CICE6
-#export ICE_WW3_OVERLAP=YES
+# some available switches
+# -----------------------
+ export RUN_CCPP=YES                # turn on ccpp physics
+ export HYPT=on                     # turn on hyper threading
+ export cplflx=.true.               # turn on cupule model 
+ export CPLD_APP=YES                # use coupled app
+ export INLINE_POST=YES             # turn on inline post
+ export USE_COLDSTART=.false.       # comment this line to turn on cold start step
+#export frac_grid=.true.            # uncomment to turn on fractional grid
+ export mediator=cmeps              # comment this line for nems mediator
+ export CICE=CICE6                  # comment this line to rutn on CIC5
+#export ICE_WW3_OVERLAP=YES         # uncomment this line to overlap ww3 and cice pes (with CICE6 only)
+
  export CICE=${CICE:-CICE5}
  export mediator=${mediator:-nems}
 #
@@ -574,13 +578,13 @@ export FHMIN_GFS=0
 #export USE_LAST_RESTART=YES
 #export restart_ext=.false.
 
-#export warm_start=.true.   # for warm_start need to set FHMIN (i.e. starting time)
+ export warm_start=.true.   # for warm_start need to set FHMIN (i.e. starting time)
 #export FHMIN=1
 #export FHMIN=2
 #export FHMIN=3
 #export FHMIN=6
 #export FHMIN=9
-#export FHMIN=12
+ export FHMIN=12
 #export FHMIN=21
 #export FHMIN=36
 #export FHMIN=24

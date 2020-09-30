@@ -6,22 +6,16 @@
 echo "BEGIN: config.fcst"
 
 set -a
-machine=${machine:-WCOSS_C}
+machine=${machine:-WCOSS_DELL_P3}
 #KEEPDATA=YES
 
 ###########################################################################
-if [ $machine = WCOSS ] ; then
- launcher=${launcher:-mpirun.lsf}
-elif [ $machine = WCOSS_C ] ; then
+if [ $machine = WCOSS_C ] ; then
  launcher=${launcher:-aprun}
 #launcher=${launcher:-/opt/cray/alps/5.2.4-2.0502.9822.32.1.ari/bin/stuff/aprun}
 elif [ $machine = WCOSS_DELL_P3 ] ; then
  launcher=${launcher:-"mpirun -n"}
-elif [ $machine = THEIA ] ; then
- launcher=${launcher:-mpirun}
-elif [ $machine = GAEA ] ; then
- launcher=${launcher:-srun}
-elif [ $machine = HERA ] ; then
+elif [ $machine = GAEA -o $machine = HERA -o $machine = orion ] ; then
  launcher=${launcher:-srun}
 else
  echo ' machine not supported'
@@ -33,9 +27,7 @@ QUILTING=${QUILTING:-.false.}
 output_1st_tstep_rst=${output_1st_tstep_rst:-.false.}
 if [ $QUILTING = .true. ] ; then
  WRITE_GROUP=${WRITE_GROUP:-3}
- WRTTASK_PER_GROUP=${WRTTASK_PER_GROUP:-24}
-#WRITE_GROUP=${WRITE_GROUP:-1}
-#WRTTASK_PER_GROUP=${WRTTASK_PER_GROUP:-6}
+ WRTTASK_PER_GROUP=${WRTTASK_PER_GROUP:-28}
  NUM_FILES=${NUM_FILES:-2}
 # FILENAME_BASE=${FILENAME_BASE:-'dyn phy'}
 # FILENAME_BASE=${FILENAME_BASE:-\'"gfs.t${cycn}z.atm' 'gfs.t${cycn}z.sfc"\'}
@@ -49,20 +41,16 @@ else
  WRTTASK_PER_GROUP=0
 fi
 SCRDIR=${SCRDIR:-$HOMEgfs/scripts}
-FORECASTSH=${FORECASTSH:-$SCRDIR/exglobal_fcst_fv3.sh}
-#FORECASTSH=${FORECASTSH:-$SCRDIR/exglobal_fcst_fv3gfs.sh.ecf}
-FCSTEXECDIR=${FCSTEXECDIR:-$HOMEgfs/sorc/fv3gfs.fd/BUILD/bin}
+FORECASTSH=${FORECASTSH:-$SCRDIR/exglobal_fcst_emcufs.sh}
+FCSTEXECDIR=${FCSTEXECDIR:-$HOMEgfs/sorc/fv3gfs.fd/NEMS/exe}
 PTMP=${PTMP:-/gpfs/hps/ptmp}
 IC_DIR=${IC_DIR:-${ICDIR:-$PTMP/$LOGNAME/FV3IC/ICs}}
 ncep_plevels=${ncep_plevels:-.true.}
-MONO=""
-MONO=${MONO:-non-mono}
 NSP=2
 NSP=${NSP:-1}
 if [ $LEVS -le 65 ] ; then
  n_sponge=24
 else
-#n_sponge=32
  n_sponge=$((LEVS-NSP))
 fi
 
@@ -104,9 +92,6 @@ atmos_model_nml=${atmos_model_nml:-''}
 # cdmbgwd=1.5,1.0
 #fi
 
-#n_sponge=48
-#n_sponge=10
-#n_sponge=24
 #nord=1           # 0 - 2nd, 1 - 4th, 2 - 6th and 3 - 8th order
 #nord_tr=1
  nord=2           # 0 - 2nd, 1 - 4th, 2 - 6th and 3 - 8th order
@@ -123,10 +108,6 @@ atmos_model_nml=${atmos_model_nml:-''}
 #d4_bg=0.2
 #trdm2=2.0e-4
 #nord=2
-#n_sponge=16
-#n_sponge=0
-#n_sponge=8
-#fv_sg_adj=200
 #fv_sg_adj=225
 #fv_sg_adj=450
 #fv_sg_adj=600
@@ -202,8 +183,6 @@ FHSTRT=6                            # restart from a given hour if USE_RESTART=Y
 warm_start=${warm_start:-.false.}
 
 if [ $warm_start = .true. ] ; then
-# RESTARTFILE=${RESTARTFILE:-$COMRES/fv3res_$FHMIN$CDATE.$CDUMP.tar}
-# RESTARTDIR=${RESTARTDIR:-${ATM_RESTDIR:-$ROTDIR/ATM_RESTDIR}/fv3res_$FHMIN.$CDATE}
   RESTARTDIR=${RESTARTDIR:-${ATM_RESTDIR:-$ROTDIR/ATM_RESTDIR}}
 fi
 #PREFILE=${CDATE}0000.
@@ -243,17 +222,12 @@ fi
 #FORECASTSH="$HOMEgfs/scripts/exglobal_fcst_nemsfv3ugw.sh"   # with    UGW
 #FORECASTSH="$HOMEgfs/scripts/exglobal_fcst_nemsfv3_res.sh"   # with    UGW
 
-# FCSTEXECDIR="$HOMEfv3gfs/NEMS/exe"
-#FCSTEXECDIR="$HOMEgfs/exec"
-# FCSTEXEC="fv3_gfs_nh.prod.32bit.x"
-#FCSTEXEC="nems_fv3_mom6_cice5.x"
-#FCSTEXEC="nems_fv3_mom6_cice5.xn"
-#FCSTEXEC="nems_fv3_mom6_cice5.xn2"
-FCSTEXEC=${FCSTEXEC:-"nems_fv3_mom6_cice5.xn2"}
+FCSTEXEC=${FCSTEXEC:-"nems_fv3_mom6_cice6"}
 
 CPLPREPSH=${CPLPREPSH:-$HOMEgfs/scripts/prep_coupled_fcst.sh}
 
 npes=$((layout_x*layout_y*6))
+
 #tasks=$npes                         # number of PEs for 1st segment
 #nth_f=2                             # number of threads for AM forecast
 #nth_f=3                             # number of threads for AM forecast
@@ -265,6 +239,7 @@ npes=$((layout_x*layout_y*6))
 #if [ $CASE = C96 ] ; then nth_f=1 ; fi
 #if [ $CASE = C96 ] ; then nth_f=2 ; fi
 #if [ $machine = WCOSS_DELL_P3 ] ; then  nth_f=2 ; fi
+
 pe_node=${pe_node:-$npe_node_fcst}
 npe_node_f=$pe_node                 # number of pes per node for AM forecast
 #task_per_node=$((npe_node_f/nth_f))
@@ -367,6 +342,7 @@ fi
 # Model configuration
 TYPE="nh"
 MONO="non-mono"
+MONO=${MONO:-non-mono}
 
 fv_sg_adj=${fv_sg_adj:-${DELTIM:-300}}
 # Use stratosphere h2o physics
@@ -437,11 +413,6 @@ elif [ $imp_physics -eq 10 ] ; then # Morrison-Gettleman (1/2/3)
 #  fprcp=2                         # to turn on MG3 from NCAR
    fprcp=${MGVER:-2}               # to turn on MG3 from NCAR
 #  fprcp=-1                        # to turn on rain-snow (MG2) using Anning's code
-#  mg_qcmin="1.0e-9,1.0e-7"
-#  mg_qcmin="1.0e-9,2.0e-7"
-#  mg_qcmin="1.0e-9,1.0e-6"
-#  mg_qcmin="1.0e-9,2.0e-6"        # use this for Moorthi tests
-#  mg_qcmin="1.0e-9,1.0e-9"
    mg_qcmin="1.0e-8,1.0e-8"
 #  mg_qcmin="1.0e-10,1.0e-10"
 #  mg_alf=1.5
@@ -465,21 +436,21 @@ elif [ $imp_physics -eq 10 ] ; then # Morrison-Gettleman (1/2/3)
   fi
 elif [ $imp_physics -eq 11 ] ; then # GFDL
   ncld=5
-# FVER=_gfdl
-# FVER_diag=_gfdl
   FVER=_ncld$ncld
-# FVER_diag=_ncld$ncld
   lgfdlmprad=.true.
   effr_in=.true.
-# FIELD_TABLE="$HOMEgfs/parm/parm_fv3diag/field_table_gfdl"
-# nwat=6
   dnats=1
   cal_pre=.false.
   do_sat_adj=.true.
+  reiflag=2
 # random_clds=.false.
 
   hord_mt_nh_nonmono=5
   hord_xx_nh_nonmono=5
+  vtdm4_nh_nonmono=0.02
+  nord=2
+  dddmp=0.1
+  d4_bg=0.12
 
   tau_l2r=300.0
 # tau_l2r=600.0
@@ -522,9 +493,15 @@ if [[ $CDUMP == gdas ]] ; then # GDAS cycle specific parameters
   fi
 
 # Write restart files at next assimilation time
-  restart_interval=6
+  restart_interval_atm=${restart_interval_atm:-6}
 
-#elif [[ "$CDUMP" == "gfs" ]] ; then # GFS cycle specific parameters
+# For IAU, write restarts at beginning of window also
+  if [ $DOIAU = YES ] ; then
+    restart_interval_atm="6 9"
+    if [[ $SDATE = $CDATE ]] ; then export restart_interval_atm="3 6"; fi
+  fi
+
+elif [[ $CDUMP == gfs ]] ; then # GFS cycle specific parameters
 
 # Write more variables to output
 #    if [ $QUILTING = ".true." -a $OUTPUT_GRID = "gaussian_grid" ]; then
@@ -536,6 +513,23 @@ if [[ $CDUMP == gdas ]] ; then # GDAS cycle specific parameters
 #    if [ $cpl = ".true." ] ; then
 #      DIAG_TABLE="$HOMEgfs/parm/parm_fv3diag/diag_table_cpl"
 #    fi
+
+# -----------------------------------------------------------------------------
+    # Write gfs restart files to rerun fcst from any break point
+  restart_interval_gfs=${restart_interval_gfs:-$(echo ${restart_interval_atm:-0} |cut -d " " -f 1)}
+  if [ $restart_interval_gfs -le 0 ] ; then
+    restart_interval_atm=0
+  elif [ ${DOIAU:-NO} == YES ] ; then
+    rst_list=""
+    IAU_OFFSET=${IAU_OFFSET:-0}
+    xfh=$((restart_interval_gfs+(IAU_OFFSET/2)))
+    while [ $xfh -le $FHMAX_GFS ] ; do
+      rst_list="$rst_list $xfh"
+      xfh=$((xfh+restart_interval_gfs))
+    done
+    restart_interval_atm="$rst_list"
+  fi
+# -----------------------------------------------------------------------------
 fi
 
 # Regrid tiles to global Gaussian grid in NEMSIO
@@ -673,21 +667,6 @@ if [ $ras = .true. -a $cscnv = .true. ] ; then
  exit 999
 fi
 
-#nsout=1
-
-#n_split=8
-#k_split=2
-#k_split=3
-#n_split=4
-#n_split=6
-#if [ $CASE = C1152 ] ; then
-# n_split=8
-#fi
-#n_split=8    # first vlab 768127 test
-#n_split=10
-#n_split=12
-#fhouri=2.0
-
  k_split=${k_split:-1}
  n_split=${n_split:-4}
 
@@ -699,7 +678,7 @@ fi
 #
 #
 
- tau=5.0            # GFDL Rayleigh friction
+ tau=5.0             # GFDL Rayleigh friction
                      # ----------------------
 #tau=10.0
 #tau=2.0
@@ -712,6 +691,14 @@ if [ $ral_ts -gt 0 ] ; then
  tau=10000
  rf_cutoff=1.0
  prslrd0=500.0
+fi
+#
+# Sponge layer settings for L127
+if [ $LEVS -gt 65 -a $CDUMP = gdas ] ; then
+  tau=5.0
+  rf_cutoff=1.0e3
+  d2_bg_k1=0.20
+  d2_bg_k2=0.0
 fi
 #
 #tau=1.0 ;  rf_cutoff=1000 ; d2_bg_k1=0.25  ; d2_bg_k2=0 # from Jeff W.
@@ -740,9 +727,6 @@ if [ $ncld -eq 2 -a $imp_physics -eq 10 ] ; then
 #                                   -----
  if [ $do_shoc = .true. ] ; then
    FVER="_mgtke"
-#  n_sponge=$((LEVS-NSP))
-#  n_sponge=$((LEVS-1))
-#  n_sponge=$(((LEVS-1)/4))
    ctei_rm='0.60,0.23'
    if [ $ras = .true. ] ; then
 #   psauras="6.0d-4,3.0d-4"
@@ -881,12 +865,10 @@ else
 #   psautco=${psautco:-"6.0d-4,3.0d-4"}
 #   prautco=${prautco:-"6.0d-4,3.0d-4"}
     crtrh='1.00,1.00,1.00'
-    n_sponge=$((LEVS-NSP))
     ctei_rm='0.60,0.23'
    elif [ $cscnv = .true. -o $ras = .true. ] ; then
     psautco=${psautco:-"6.0d-4,3.0d-4"}
     prautco=${prautco:-"6.0d-4,3.0d-4"}
-    n_sponge=$((LEVS-NSP))
   fi
  elif [ $ncld -eq 5 -a $imp_physics -eq 11 ] ; then
   FVER=_ncld${ncld}$FVER
@@ -980,6 +962,7 @@ H2OFORC=${H2OFORC:-global_h2o_pltc.f77}
 fhouri=${fhouri:-1.0}
 fac_n_spl=${fac_n_spl:-1.5}
 lheatstrg=${lheatstrg:-.true.}
+
 #if [ lheatstrg = .true. ] ; then
 # gfs_physics_nml="$gfs_physics_nml 'lheatstrg = .true.'"
 #fi
@@ -987,6 +970,7 @@ lheatstrg=${lheatstrg:-.true.}
 #   to output as netcdf files on six tiles
 #output_grid=cubed_sphere_grid
 #output_file=netcdf
+
 OUTPUT_GRID=${OUTPUT_GRID:-gaussian_grid}
 OUTPUT_FILE=${OUTPUT_FILE:-nemsio}
 
@@ -994,20 +978,21 @@ OUTPUT_FILE=${OUTPUT_FILE:-nemsio}
  do_ugwp=.false.      # if this is false original orographic GWD along with non stationary GWD used
                       # comment this line to use Valery's version of gWD and mountain blocking
                       # if true, Valery's version used for orographic GWD used
- do_tofd=.false.
+do_tofd=.false.
 do_ugwp=${do_ugwp:-.true.}
 do_tofd=${do_tofd:-.true.}
 
 #if [ $LEVS -le 65 ] ; then launch_level=25 ; fi
 #launch_level=${launch_level:-50}
 launch_level=${launch_level:-$((LEVS*3/7))}
-n_sponge=10
+
 n_sponge=$((LEVS/6))
 n_sponge=$((LEVS/3))
- n_sponge=24
+#n_sponge=24
 n_sponge=$((LEVS/5))
 n_sponge=$((LEVS/4))
-n_sponge=$((LEVS-2))
+#n_sponge=$((LEVS-2))
+
 min_seaice=1.0e-11
 min_seaice=1.0e-6
 #min_seaice=1.0e-3
@@ -1035,17 +1020,55 @@ else
  landice=".true."
 fi
 # Radiation options
-#IAER=1111   #spectral band mapping method for aerosol optical properties
+#IAER=1111  #spectral band mapping method for aerosol optical properties
 iovr_lw=3   #de-correlation length cloud overlap method (Barker, 2008)
 iovr_sw=3   #de-correlation length cloud overlap method (Barker, 2008)
 icliq_sw=2  #cloud optical coeffs from AER's newer version v3.9-v4.0 for hu and stamnes
 #
-AER=${IAER:-111}
+IAER=${IAER:-111}
 MERRA_AER=${MERRA_AER:-merra2C.aerclim.2003-2014}   # default low resolution
                                                     # change to merra2 for high resolution
 iaerclm=${iaerclm:-.false.}
 #
 #--------------------------------------------------------------------------
+#         Uncomment below to compress restart
+#---------------------------------------------------------------------
+
+# ideflate: netcdf zlib lossless compression (0-9): 0 no compression
+# nbits: netcdf lossy compression level (0-32): 0 lossless
+
+#ideflate=1
+#nbits=14
+#ishuffle=0
+# compression for RESTART files written by FMS
+#shuffle=1
+#deflate_level=1
+
+#OUTPUT_FILETYPES=$OUTPUT_FILE
+#if [[ $OUTPUT_FILE == netcdf ]]; then
+#  ichunk2d=0 ; jchunk2d=0
+#  ichunk3d=0 ; jchunk3d=0 ;  kchunk3d=0
+#  RESTILE=`echo $CASE |cut -c 2-`
+#  if [[ $machine == WCOSS_DELL_P3 ]] ; then
+#    if [ $RESTILE -ge 768 ]; then
+#      OUTPUT_FILETYPES=" 'netcdf_parallel' 'netcdf_parallel' "
+#      ichunk3d=$((4*RESTILE))
+#      jchunk3d=$((2*RESTILE))
+#      kchunk3d=1
+#    else
+#      OUTPUT_FILETYPES=" 'netcdf_parallel' 'netcdf' "
+#    fi
+#  fi
+#  if [[ $machine == HERA ]] ; then
+#    OUTPUT_FILETYPES=" 'netcdf_parallel' 'netcdf_parallel' "
+#    if [ $RESTILE -le 192 ] ; then
+#       OUTPUT_FILETYPES=" 'netcdf_parallel' 'netcdf' "
+#    fi
+#  fi
+#fi
+
+
+#---------------------------------------------------------------------
 
 
 

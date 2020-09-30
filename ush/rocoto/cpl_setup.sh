@@ -32,14 +32,15 @@ HH=$(echo $IDATE | cut -c9-10)
 RES=$(echo $CASE|cut -c 2-)
 
 # $PSLOT is the name of your experiment
- expt=_phyac
+ expt=_phyaf
 #expt=_phyxx
 #expt=_phyai    # cmeps run
 
 expt=${expt:-''}
 PSLOT=c${RES}$expt
 
-#FROM_HPSS=/gpfs/dell2/emc/modeling/noscrub/Shrinivas.Moorthi/FROM_HPSS
+# $COMROT is the path to your experiment output directory. DO NOT include PSLOT folder at end of path, it’ll be built for you.
+# $EXPDIR is the path to your experiment directory where your configs will be placed and where you will find your workflow monitoring files (i.e. rocoto database and xml file). DO NOT include PSLOT folder at end of path, it will be built for you.
 
 if [ $(echo $CWD | cut -c1-8) = "/scratch" ] ; then
  NOSCRUB=/scratch1/NCEPDEV/global
@@ -63,30 +64,10 @@ mkdir -p $EXPDIR
 
 FV3DATA=$FROM_HPSS/$IDATE/gfs/$CASE/INPUT
 
-# ./setup_expt_fcstonly.py --pslot $PSLOT --configdir $CONFIGDIR --idate $IDATE --edate $EDATE --res $RES --gfs_cyc $GFS_CYC --comrot $COMROT --expdir $EXPDIR
-
-# $COMROT is the path to your experiment output directory. DO NOT include PSLOT folder at end of path, it’ll be built for you.
-#COMROT=/scratch4/NCEPDEV/nems/noscrub/Patrick.Tripp/COMFV3
-#COMROT=/scratch4/NCEPDEV/nems/noscrub/Bin.Li/benchmark/COMFV3
-#COMROT=/scratch4/NCEPDEV/nems/noscrub/${USER}/benchmark/${YMD}/COMFV3
-#COMROT=/gpfs/dell2/ptmp/$LOGNAME/CFV3/$IDATE
-#mkdir -p $COMROT
-
 # $CONFIGDIR is the path to the /config folder under the copy of the system you're using (i.e. ../parm/config/)
-#CONFIGDIR=/scratch4/NCEPDEV/nems/noscrub/Patrick.Tripp/new.fv3gfs/parm/config
-#CONFIGDIR=/scratch4/NCEPDEV/stmp4/Bin.Li/fv3gfs3_benchmark/parm/config
-#CONFIGDIR=/gpfs/dell2/emc/modeling/noscrub/Shrinivas.Moorthi/cfv3_wrkflo/fv3gfs_benchmark/parm/config
+
 CONFIGDIR=${CONFIGDIR:-../../parm/config}
 
-# do not export ICSDIR, causes error in py script
-#BL2018
-#ICSDIR=$COMROT/FV3ICS
-#
-#FROM_HPSS=/scratch4/NCEPDEV/nems/noscrub/Bin.Li/FROM_HPSS
-#FV3DATA=$FROM_HPSS/2016040100/gfs/C384/INPUT
-#ICSDIR=$FV3DATA
-#ICE_DIR=$FROM_HPSS/2016040100/cice5_cfsv2
-#OCN_DIR=$FROM_HPSS/2016040100/mom6_cfsv2
 
 # Link the existing FV3ICS folder to here, I prefer this directory to be in main directory, but changing in script can cause issues
 cd $COMROT
@@ -98,19 +79,16 @@ cd $CWD
 # $GFS_CYC is the forecast frequency (0 = none, 1 = 00z only [default], 2 = 00z & 12z, 4 = all cycles)
 GFS_CYC=1
 
-# $EXPDIR is the path to your experiment directory where your configs will be placed and where you will find your workflow monitoring files (i.e. rocoto database and xml file). DO NOT include PSLOT folder at end of path, it will be built for you.
-
 ./setup_expt_fcstonly.py --pslot $PSLOT --configdir $CONFIGDIR --idate $IDATE --edate $EDATE --res $RES --gfs_cyc $GFS_CYC --comrot $COMROT --expdir $EXPDIR
 
-# Edit base.config
-# Change account to CFS-T20?
+# Edit base.config and use appropriate account e.g. fv3-cpu
 
 # Copy ICs : can put in a loop if running multiple cycles
 
 mkdir -p $COMROT/$PSLOT/gfs.$YMD/$HH/INPUT
 cd $COMROT/$PSLOT/gfs.$YMD/$HH/INPUT
 
-# Copy the ICs if they exist, otherwise the workflow will generate them from EMC_ugcs ICs
+# link the ICs if they exist, otherwise the workflow will generate them from EMC_ugcs ICs
 
 if [ -d $FV3DATA ] ; then
   ln -s $FV3DATA/* .
@@ -119,8 +97,8 @@ fi
 cd $CWD     # Come back to this folder
 
 #exit           # to test
-# Setup workflow
-./setup_workflow_fcstonly.py --expdir $EXPDIR/$PSLOT
+
+./setup_workflow_fcstonly.py --expdir $EXPDIR/$PSLOT    # Setup workflow
 
 #exit           # to test
  cp rocoto_viewer.py $EXPDIR/$PSLOT # Copy rocoto_viewer.py to EXPDIR
