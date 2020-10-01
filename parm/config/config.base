@@ -29,7 +29,7 @@ elif [ $machine = WCOSS_DELL_P3 ] ; then  # set QSUFFIX=2 for Dell 3.5
 
   export ACCOUNT=GFS-DEV
   export QUEUE=dev$QSUFIX
-  export QUEUE=debug$QSUFIX
+# export QUEUE=debug$QSUFIX
 # export QUEUE_ARCH=dev_transfer
   export QUEUE_ARCH=dev${QSUFIX}_transfer
 
@@ -176,9 +176,9 @@ export REALTIME=NO
 # I/O QUILTING, true--use Write Component; false--use GFDL FMS
 # if quilting=true, choose OUTPUT_GRID as cubed_sphere_grid in netcdf or gaussian_grid
 # if gaussian_grid, set OUTPUT_FILE for nemsio or netcdf
-export QUILTING=.true.
-export OUTPUT_GRID=gaussian_grid
-#export OUTPUT_FILE=netcdf
+ export QUILTING=.true.
+ export OUTPUT_GRID=gaussian_grid
+ export OUTPUT_FILE=netcdf
 
 # uncomment to turn on coupled wave
 #export cplwav=.true.
@@ -584,7 +584,7 @@ export FHMIN_GFS=0
 #export FHMIN=3
 #export FHMIN=6
 #export FHMIN=9
- export FHMIN=12
+#export FHMIN=12
 #export FHMIN=21
 #export FHMIN=36
 #export FHMIN=24
@@ -598,7 +598,8 @@ export FHMIN_GFS=0
 #export FHMIN=216
 #export FHMIN=288
 #export FHMIN=360
-#export FHMIN=720
+#export FHMIN=480
+ export FHMIN=720
 #export FHMIN=1056
 #export FHMIN=1080
 #export FHMIN=1440
@@ -615,7 +616,7 @@ export FHMIN_GFS=0
  export restart_interval=864000
 #export restart_interval=432000
 #export restart_interval=86400
- export restart_interval=43200
+#export restart_interval=43200
 #export restart_interval=21600
 #export restart_interval=10800
 #export restart_interval=7200
@@ -651,7 +652,7 @@ export FHMIN_GFS=0
 #export FHMAX_GFS_00=840
 #export FHMAX_GFS_00=720
 #export FHMAX_GFS_00=1080 # uncomment this line for 45 day run
-#export FHMAX_GFS_00=1440
+ export FHMAX_GFS_00=1440
 #export FHMAX_GFS_00=1800 # uncomment this line for 45 day run
 #export FHMAX_GFS_00=2520 # uncomment this line for 45 day run
 #export FHMAX_GFS_00=1920 # uncomment this line for 45 day run
