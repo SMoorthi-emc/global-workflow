@@ -12,28 +12,9 @@ export machine="@MACHINE@"
 export RUN_ENVIR=emc
 
 # Account, queue, etc.
-if [ $machine = HERA ] ; then
-  export ACCOUNT=fv3-cpu
-  export QUEUE=batch
-# export QUEUE=debug
-  export QUEUE_ARCH=service
-
-elif [ $machine = WCOSS_C ] ; then
-  export ACCOUNT=GFS-DEV
-  export QUEUE=dev
-# export QUEUE=debug
-  export QUEUE_ARCH=dev_transfer
-elif [ $machine = WCOSS_DELL_P3 ] ; then  # set QSUFFIX=2 for Dell 3.5
-# QSUFIX=2
-  export QSUFIX=${QSUFIX:-''}
-
-  export ACCOUNT=GFS-DEV
-  export QUEUE=dev$QSUFIX
-# export QUEUE=debug$QSUFIX
-# export QUEUE_ARCH=dev_transfer
-  export QUEUE_ARCH=dev${QSUFIX}_transfer
-
-fi
+export ACCOUNT="@ACCOUNT@"
+export QUEUE="@QUEUE@"
+export QUEUE_ARCH="@QUEUE_ARCH@"
 
  export LEVS=128
 #export LEVS=65
@@ -58,74 +39,19 @@ export SCRgfs=$HOMEgfs/scripts
 ########################################################################
 
 # GLOBAL static environment parameters
-if [ $machine = HERA ]; then
+export NWPROD="@NWPROD@"
+export DMPDIR="@DMPDIR@"
+export RTMFIX=$CRTM_FIX
 
-  export NWPROD="/scratch1/NCEPDEV/global/save/glopara/nwpara"
-  export DMPDIR="/scratch1/NCEPDEV/global/noscrub/dump"
-  export RTMFIX="/scratch1/NCEPDEV/da/save/Michael.Lueken/nwprod/lib/crtm/2.2.3/fix_update"
+# USER specific paths
+export HOMEDIR="@HOMEDIR@"
+export STMP="@STMP@"
+export PTMP="@PTMP@"
+export NOSCRUB="@NOSCRUB@"
 
-  # USER specific paths
-  export HOMEDIR="/scratch1/NCEPDEV/nems/save/$USER"
-  export STMP="/scratch1/NCEPDEV/stmp2/$USER"
-  export PTMP="/scratch1/NCEPDEV/stmp4/$USER"
-# export NOSCRUB="/scratch1/NCEPDEV/nems/noscrub/$USER"
-  export NOSCRUB=/scratch1/NCEPDEV/global/$LOGNAME/noscrub
-  export EXECBASE=/scratch1/NCEPDEV/global/$LOGNAME/save
-
-  # Base directories for various builds
-  export BASE_GIT="/scratch1/NCEPDEV/global/save/glopara/git"
-  export BASE_SVN="/scratch1/NCEPDEV/global/save/glopara/svn"
-
-elif [ $machine = WCOSS_C ] ; then
-
-  export NWPROD="/gpfs/hps/nco/ops/nwprod"
-  if [ -d /gpfs/tp1 ] ; then
-    export SITE=LUNA
-    export DMPDIR="/gpfs/tp1/emc/globaldump"
-  elif [ -d /gpfs/gp1 ] ; then
-    export SITE=SURGE
-    export DMPDIR="/gpfs/gp1/emc/globaldump"
-  fi
-  export RTMFIX=$CRTM_FIX
-
-  # USER specific paths
-  export NOSCRUB="/gpfs/hps3/emc/global/noscrub/$USER"
-  export HOMEDIR=$NOSCRUB
-  export STMP="/gpfs/hps2/stmp/$USER"
-  export PTMP="/gpfs/hps2/ptmp/$USER"
-  export EXECBASE=$NOSCRUB
-
-  # Base directories for various builds
-  export BASE_GIT="/gpfs/hps3/emc/global/noscrub/emc.glopara/git"
-  export BASE_SVN="/gpfs/hps3/emc/global/noscrub/emc.glopara/svn"
-
-elif [ $machine = WCOSS_DELL_P3 ] ; then
-
-  export NWPROD="/gpfs/dell1/nco/ops/nwprod"
-  if [ -d /gpfs/tp1 ] ; then
-    export SITE=MARS
-    export DMPDIR="/gpfs/tp1/emc/globaldump"
-  elif [ -d /gpfs/gp1 ] ; then
-    export SITE=VENUS
-    export DMPDIR="/gpfs/gp1/emc/globaldump"
-  fi
-  export RTMFIX=$CRTM_FIX
-
-  # USER specific paths
-  export NOSCRUB="/gpfs/dell2/emc/modeling/noscrub/$USER"
-  export SAVE="/gpfs/dell2/emc/modeling/save/$USER"
-  export HOMEDIR=$NOSCRUB
-  export STMP="/gpfs/dell2/stmp/$USER"
-  export PTMP="/gpfs/dell2/ptmp/$USER"
-  export EXECBASE=$NOSCRUB
-# export EXECBASE=$SAVE
-
-  # Base directories for various builds
-  export BASE_GIT="/gpfs/dell2/emc/modeling/noscrub/emc.glopara/git"
-  export BASE_SVN="/gpfs/dell2/emc/modeling/noscrub/emc.glopara/git"  # USER specific paths
-
-fi
-
+# Base directories for various builds
+export BASE_GIT="@BASE_GIT@"
+#
 
 # Utilities needed in the scripts (mostly post)
 #if [ $machine = HERA ] ; then
@@ -149,9 +75,10 @@ fi
  export ESMF_RUNTIME_PROFILE=ON
  export ESMF_RUNTIME_PROFILE_OUTPUT=SUMMARY
 # Toggle to turn on/off GFS downstream processing.
-export DO_BUFRSND=NO
-export DO_GEMPAK=NO
-export DO_AWIPS=NO
+export DO_BUFRSND=YES    # BUFR sounding products
+export DO_GEMPAK=NO      # GEMPAK products
+export DO_AWIPS=NO       # AWIPS products
+export WAFSF=NO          # WAFS products
 
 # NO for retrospective parallel; YES for real-time parallel
 export REALTIME=NO
@@ -490,6 +417,10 @@ export SDATE=@SDATE@
 export EDATE=@EDATE@
 export assim_freq=6
 export PSLOT="@PSLOT@"
+export CDUMP="@CDUMP@"
+export FHCYC="@FHCYC@"
+export FHMIN="@FHMIN@"
+export warm_start="@WARM_START@"   # for warm_start need to set FHMIN (i.e. starting time)
 export EXPDIR="@EXPDIR@/$PSLOT"
 export ROTDIR="@ROTDIR@/$PSLOT"
 export RUNDIR="$STMP/RUNDIRS/$PSLOT"
@@ -556,7 +487,13 @@ export CASE="@CASECTL@"
 export CASE_ENKF="@CASEENS@"
 
 # Surface cycle update frequency
-export FHCYC_GFS=24
+if [ "$CDUMP" == gdas ] ; then
+   export FHCYC=1
+   export FTSFS=10
+elif [ "$CDUMP" == gfs ] ; then
+   export FHCYC=${FHCYC:-24}
+fi
+export FHCYC_GFS=${FHCYC_GFS:-${FHCYC:-24}}
 #export FHCYC_GFS=12
 #export FHCYC_GFS=6
 #export FHCYC=6
@@ -565,7 +502,7 @@ export FHCYC_GFS=24
 #export FHCYC=0
 
 # Output frequency of the forecast model (for cycling)
-export FHMIN=0
+export FHMIN=${FHMIN:-0}
 export FHMAX=9
 export FHOUT=6
 
@@ -573,12 +510,12 @@ export FHOUT=6
 export gfs_cyc=@gfs_cyc@ # 0: no GFS cycle, 1: 00Z only, 2: 00Z and 12Z only, 4: all 4 cycles.
 
 # GFS output and frequency
-export FHMIN_GFS=0
+export FHMIN_GFS=${FHMIN_GFS:-${FHMIN:-0}}
 
 #export USE_LAST_RESTART=YES
 #export restart_ext=.false.
 
- export warm_start=.true.   # for warm_start need to set FHMIN (i.e. starting time)
+#export warm_start=.true.   # for warm_start need to set FHMIN (i.e. starting time)
 #export FHMIN=1
 #export FHMIN=2
 #export FHMIN=3
@@ -599,7 +536,7 @@ export FHMIN_GFS=0
 #export FHMIN=288
 #export FHMIN=360
 #export FHMIN=480
- export FHMIN=720
+#export FHMIN=720
 #export FHMIN=1056
 #export FHMIN=1080
 #export FHMIN=1440
