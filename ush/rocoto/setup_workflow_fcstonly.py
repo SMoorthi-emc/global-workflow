@@ -41,6 +41,9 @@ def main():
     parser = ArgumentParser(description='Setup XML workflow and CRONTAB for a forecast only experiment.', formatter_class=ArgumentDefaultsHelpFormatter)
     parser.add_argument('--expdir',help='full path to experiment directory containing config files', type=str, required=False, default=os.environ['PWD'])
     parser.add_argument('--cdump',help='cycle to run forecasts', type=str, choices=['gdas', 'gfs'], default='gfs', required=False)
+    parser.add_argument('--fhmin',help='starting forecast hour', type=str, default='0', required=False)
+    parser.add_argument('--warm_start',help='warm start of forecasts', type=str, choices=['.false.', '.true.'], default='.false.', required=False)
+    parser.add_argument('--fhcyc',help='urface cycling interval', type=str, default='24', required=False)
 
     args = parser.parse_args()
 
@@ -57,6 +60,9 @@ def main():
     dict_configs = wfu.source_configs(configs, taskplan)
 
     dict_configs['base']['CDUMP'] = args.cdump
+    dict_configs['base']['FHMIN'] = args.fhmin
+    dict_configs['base']['RARM_START'] = args.warm_start
+    dict_configs['base']['FHCYC'] = args.fhcyc
 
     # First create workflow XML
     create_xml(dict_configs)
@@ -110,7 +116,7 @@ def get_definitions(base):
     strings.append('\t<!ENTITY CASE       "%s">\n' % base['CASE'])
     strings.append('\t<!ENTITY FHMIN      "%s">\n' % base['FHMIN'])
     strings.append('\t<!ENTITY FHCYC      "%s">\n' % base['FHCYC'])
-    strings.append('\t<!ENTITY WARM_START "%s">\n' % base['WARM_START'])
+#   strings.append('\t<!ENTITY WARM_START  "%s">\n' % base['WARM_START'])
     strings.append('\n')
     strings.append('\t<!-- Experiment parameters such as starting, ending dates -->\n')
     strings.append('\t<!ENTITY SDATE    "%s">\n' % base['SDATE'].strftime('%Y%m%d%H%M'))
@@ -163,14 +169,20 @@ def get_resources(dict_configs, cdump='gdas'):
     strings.append('\t<!-- BEGIN: Resource requirements for the workflow -->\n')
     strings.append('\n')
 
-    machine = dict_configs['base']['machine']
+    base = dict_configs['base']
+    machine = base.get('machine', wfu.detectMachine())
+    reservation = base.get('RESERVATION', 'NONE').upper()
     scheduler = wfu.get_scheduler(machine)
+
+#   machine = dict_configs['base']['machine']
+#   scheduler = wfu.get_scheduler(machine)
 
     for task in taskplan:
 
         cfg = dict_configs[task]
 
-        wtimestr, resstr, queuestr, memstr, natstr = wfu.get_resources(machine, cfg, task, cdump=cdump)
+#       wtimestr, resstr, queuestr, memstr, natstr = wfu.get_resources(machine, cfg, task, cdump=cdump)
+        wtimestr, resstr, queuestr, memstr, natstr = wfu.get_resources(machine, cfg, task, reservation, cdump=cdump)
 
         taskstr = '%s_%s' % (task.upper(), cdump.upper())
 

@@ -5,10 +5,13 @@ echo "Load modules first"
 #source /usr/Modules/3.2.10/init/sh
 . $MODULESHOME/init/sh 2>/dev/null
 #module load rocoto
-module load rocoto/1.3.2
+#module load rocoto/1.3.2
+ module load ruby/2.5.1
+ module load python/2.7.14
+ module load rocoto/1.3.0rc2
 module load hpss
 
-CWD=$(pwd)
+CWD=${ROCODIR:-$(pwd)}
 # $IDATE is the initial start date of your run (first cycle CDATE, YYYYMMDDCC)
 #IDATE=$1
 IDATE=2016010100
@@ -17,7 +20,7 @@ IDATE=2018010100
  IDATE=2018090100
 #IDATE=2011100100
 #IDATE=2018011500
-#IDATE=2018031500
+ IDATE=2018031500
  CASE=C384
 #IDATE=2017051500
 #CASE=C768
@@ -33,11 +36,23 @@ RES=$(echo $CASE|cut -c 2-)
 
 # $PSLOT is the name of your experiment
  expt=_phyac
-#expt=_phyxx
+ expt=_phyx2
 #expt=_phyai    # cmeps run
 
 expt=${expt:-''}
 PSLOT=c${RES}$expt
+CDUMP=gfs
+
+
+#FHMIN=24
+#WARM_START=.true.
+FHMIN=${1:-$FHMIN}
+WARM_START=${2:-$WARM_START}
+
+FHMIN=${FHMIN:-0}
+WARM_START=${WARM_START:-.false.}
+FHCYC=${FHCYC:-24}
+
 
 # $COMROT is the path to your experiment output directory. DO NOT include PSLOT folder at end of path, it’ll be built for you.
 # $EXPDIR is the path to your experiment directory where your configs will be placed and where you will find your workflow monitoring files (i.e. rocoto database and xml file). DO NOT include PSLOT folder at end of path, it will be built for you.
@@ -70,16 +85,18 @@ CONFIGDIR=${CONFIGDIR:-../../parm/config}
 
 
 # Link the existing FV3ICS folder to here, I prefer this directory to be in main directory, but changing in script can cause issues
-cd $COMROT
-mkdir -p FV3ICS
-ln -fs $FROM_HPSS/$IDATE FV3ICS/
+if [ $FHMIN -eq 0 ] ; then
+  cd $COMROT
+  mkdir -p FV3ICS
+  ln -fs $FROM_HPSS/$IDATE FV3ICS/
+fi
 
 cd $CWD
 
 # $GFS_CYC is the forecast frequency (0 = none, 1 = 00z only [default], 2 = 00z & 12z, 4 = all cycles)
 GFS_CYC=1
 
-./setup_expt_fcstonly.py --pslot $PSLOT --configdir $CONFIGDIR --idate $IDATE --edate $EDATE --res $RES --gfs_cyc $GFS_CYC --comrot $COMROT --expdir $EXPDIR
+./setup_expt_fcstonly.py --pslot $PSLOT --configdir $CONFIGDIR --idate $IDATE --edate $EDATE --res $RES --gfs_cyc $GFS_CYC --comrot $COMROT --expdir $EXPDIR --fhmin $FHMIN --warm_start $WARM_START --fhcyc $FHCYC --cdump $CDUMP
 
 # Edit base.config and use appropriate account e.g. fv3-cpu
 
@@ -90,8 +107,10 @@ cd $COMROT/$PSLOT/gfs.$YMD/$HH/INPUT
 
 # link the ICs if they exist, otherwise the workflow will generate them from EMC_ugcs ICs
 
-if [ -d $FV3DATA ] ; then
-  ln -s $FV3DATA/* .
+if [ $FHMIN -eq 0 ] ; then
+  if [ -d $FV3DATA ] ; then
+    ln -s $FV3DATA/* .
+  fi
 fi
 
 cd $CWD     # Come back to this folder

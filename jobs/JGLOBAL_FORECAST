@@ -138,7 +138,11 @@ if [ $CPLDFV3_MOM6_CICE = YES ] ; then
                                                  #--------------------------
     export FHMAX=$FHMAX_GFS
     export nsout=${NSOUT:-0}
-    if [ $USE_COLDSTART = .false. -a $FHMIN -eq 0 ] ; then export restart='warm' ; fi
+    if [ $USE_COLDSTART = .false. -a $FHMIN -eq 0 ] ; then
+      export restart=warm
+    elif [ $FHMIN -gt 0 ] ; then
+      export restart=restart
+    fi
     export restart=${restart:-'restart'}
     . $CPLPREPSH $restart
     status=$?
@@ -152,6 +156,9 @@ fi
 # -------------------------------------------
 
 export FHCYC=${FHCYC_GFS:-24}
+if [ $CDUMP = "gfs" ] ; then
+ if [ $FHMAX -gt $((FHMIN+FH_CHUNK)) ] ; then export FHMAX=$((FHMIN+FH_CHUNK)) ; fi
+fi
 
 #${FORECASTSH:-$SCRgfs/exglobal_fcst_nemsfv3gfs.sh.ecf}
 ${FORECASTSH:-$SCRgfs/exglobal_fcst_emcufs.sh}
@@ -178,13 +185,25 @@ postmsg "$jlogfile" "$msg"
 # Remove the Temporary working directory
 ##########################################
 #BL2018
-cd $DATAROOT/fcst/history
+cd $DATAROOT/fcst
 cat > run_is_done << EOF
 FV3_MOM6_CICE5 run is done
 EOF
 #BL2018
+
+if [ $CDUMP = "gfs" ] ; then
+ if [ $FHMAX -lt $FHMAX_GFS ] ; then
+   export FHMIN=$FHMAX
+   export warm_start=.true.
+   . $MODULESHOME/init/sh 2>/dev/null
+   export ROCODIR=$HOMEgfs/ush/rocoto
+   ${SUB:-$ROCODIR/sub_wcoss_d} -e FHMIN=$FHMIN,WARM_START=$warm_start,ROCODIR=$ROCODIR -a $ACCOUNT -q debug -p 1/1/N -r 3072/1/1 -t 00:05:00 -j fv3gfs -o $ROTDIR/logs/$CDATE/gfsfcst_${FHMIN}_log $ROCODIR/cpl_setup.sh
+#  ./cpl_setup.sh $FHMIN $warm_start
+   echo "submittied next segment from hour " $FHMIN 
+ fi
+fi
+
 cd $DATAROOT
 [[ $KEEPDATA = "NO" ]] && rm -rf $DATA
-
 date
 exit 0

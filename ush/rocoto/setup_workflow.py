@@ -235,17 +235,21 @@ def get_gdasgfs_resources(dict_configs, cdump='gdas'):
 
         cfg = dict_configs[task]
 
-        wtimestr, resstr, queuestr, memstr, natstr = wfu.get_resources(machine, cfg, task, cdump=cdump)
+        wtimestr, resstr, queuestr, memstr, natstr = wfu.get_resources(machine, cfg, task, reservation, cdump=cdump)
         taskstr = '%s_%s' % (task.upper(), cdump.upper())
 
         strings = []
         strings.append('\t<!ENTITY QUEUE_%s     "%s">\n' % (taskstr, queuestr))
+        if scheduler in ['slurm'] and task in ['arch']:
+            strings.append('\t<!ENTITY PARTITION_%s "&PARTITION_ARCH;">\n' % taskstr )
         strings.append('\t<!ENTITY WALLTIME_%s  "%s">\n' % (taskstr, wtimestr))
         strings.append('\t<!ENTITY RESOURCES_%s "%s">\n' % (taskstr, resstr))
-        strings.append('\t<!ENTITY MEMORY_%s    "%s">\n' % (taskstr, memstr))
+        if len(memstr) != 0:
+            strings.append('\t<!ENTITY MEMORY_%s    "%s">\n' % (taskstr, memstr))
         strings.append('\t<!ENTITY NATIVE_%s    "%s">\n' % (taskstr, natstr))
 
         dict_resources['%s%s' % (cdump, task)] = ''.join(strings)
+
 
     return dict_resources
 
