@@ -170,28 +170,28 @@ Create COMROT experiment directory structure'''
     elif machine == 'WCOSS_C':
       base_git = '/gpfs/hps3/emc/global/noscrub/emc.glopara/git'
       base_svn = '/gpfs/hps3/emc/global/noscrub/emc.glopara/svn'
-      dmpdir = '/gpfs/dell3/emc/global/dump'
-      nwprod = '/gpfs/hps/nco/ops/nwprod'
-      homedir = '/gpfs/hps3/emc/global/noscrub/$USER'
-      stmp = '/gpfs/hps2/stmp/$USER'
-      ptmp = '/gpfs/hps2/ptmp/$USER'
-      noscrub = '/gpfs/hps3/emc/global/noscrub/$USER'
+      dmpdir   = '/gpfs/dell3/emc/global/dump'
+      nwprod   = '/gpfs/hps/nco/ops/nwprod'
+      homedir  = '/gpfs/hps3/emc/global/noscrub/$USER'
+      stmp     = '/gpfs/hps2/stmp/$USER'
+      ptmp     = '/gpfs/hps2/ptmp/$USER'
+      noscrub  = '/gpfs/hps3/emc/global/noscrub/$USER'
       execbase = '/gpfs/hps3/emc/global/noscrub/$USER'
-      account = 'GFS-DEV'
-      queue = 'dev'
+      account  = 'GFS-DEV'
+      queue    = 'dev'
       queue_arch = 'dev_transfer'
     elif machine == 'HERA':
       base_git = '/scratch1/NCEPDEV/global/save/glopara/git'
       base_svn = '/scratch1/NCEPDEV/global/save/glopara/svn'
-      dmpdir = '/scratch1/NCEPDEV/global/glopara/dump'
-      nwprod = '/scratch1/NCEPDEV/global/glopara/nwpara'
-      homedir = '/scratch1/NCEPDEV/global/$USER'
-      stmp = '/scratch1/NCEPDEV/stmp2/$USER'
-      ptmp = '/scratch1/NCEPDEV/stmp4/$USER'
-      noscrub = '/scratch1/NCEPDEV/global/$USER'
+      dmpdir   = '/scratch1/NCEPDEV/global/glopara/dump'
+      nwprod   = '/scratch1/NCEPDEV/global/glopara/nwpara'
+      homedir  = '/scratch1/NCEPDEV/global/$USER'
+      stmp     = '/scratch1/NCEPDEV/stmp2/$USER'
+      ptmp     = '/scratch1/NCEPDEV/stmp4/$USER'
+      noscrub  = '/scratch1/NCEPDEV/global/$USER'
       execbase = '/scratch1/NCEPDEV/global/$USER/save'
-      account = 'fv3-cpu'
-      queue = 'batch'
+      account  = 'fv3-cpu'
+      queue    = 'batch'
       queue_arch = 'service'
 
     print (" comrot=",comrot)
@@ -202,6 +202,7 @@ Create COMROT experiment directory structure'''
         print
         print 'COMROT already exists in %s' % comrot
         print
+        create_comrot = False
         if int(fhmin) == 0:
             overwrite_comrot = raw_input('Do you wish to over-write COMROT [y/N]: ')
             create_comrot = True if overwrite_comrot in ['y', 'yes', 'Y', 'YES'] else False
