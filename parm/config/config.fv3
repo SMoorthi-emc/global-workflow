@@ -111,7 +111,7 @@ case $case_in in
         fi
 #       export nth_f=7
         export nth_f=1
-        export nth_f=2
+#       export nth_f=2
         export nth_f=${nth_f:-4}
         export HYPT=${HYPT:-off}
         if [ $HYPT = on ] ; then

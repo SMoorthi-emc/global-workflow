@@ -555,7 +555,7 @@ export FH_CHUNK=${FH_CHUNK:-12}
  export restart_interval_atm=$((restart_interval/3600))
 
  export FHMAX_GFS_00=48
- export FHMAX_GFS_00=72
+#export FHMAX_GFS_00=72
 #export FHMAX_GFS_00=240
 #export FHMAX_GFS_00=120
 #export FHMAX_GFS_00=72

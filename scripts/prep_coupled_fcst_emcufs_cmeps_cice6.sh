@@ -102,11 +102,13 @@ elif [ $inistep = restart ] ; then # using restart files for MOM6 and CICE here,
       $NCP ${ocnf}-00-00_3.nc MOM.res_3.nc
     else
 #  First copy the last restart files for future use
+#  ------------------------------------------------
       $NCP $OCN_RESTDIR/MOM.res.nc   ${ocnf}-00-00.nc
       $NCP $OCN_RESTDIR/MOM.res_1.nc ${ocnf}-00-00_1.nc
       $NCP $OCN_RESTDIR/MOM.res_2.nc ${ocnf}-00-00_2.nc
       $NCP $OCN_RESTDIR/MOM.res_3.nc ${ocnf}-00-00_3.nc
 #  Now copy the restart files to INPUT directory under RUNDIR
+#  ----------------------------------------------------------
       $NCP $OCN_RESTDIR/MOM.res*.nc .
     fi
     export input_filename="'r'"
@@ -130,8 +132,8 @@ elif [ $inistep = restart ] ; then # using restart files for MOM6 and CICE here,
   fi
 
   if [ $CPLDWAV = YES ] ; then
-# for Wave (WW3)    (to be done)
-# -----------------
+# for Wave (WW3)
+# --------------
     cd $DATA
     WW3_RESTDIR=${WW3_RESTDIR:-$ROTDIR/WW3_RESTDIR}
     if [ -s $WW3_RESTDIR ] ; then
@@ -210,13 +212,6 @@ export WIND_STAGGER="A"              # default = "C"
 # -------------------------------
 $NCP $FIXgrid/$CASE/* .
 
-#cp -p diag_table ..
-#cp -p data_table ..
-#cp -p MOM_input ..
-#cp -p MOM_override ..
-#cp -p MOM_memory.h ..
-#cp -p MOM_layout ..
-#cp -p MOM_saltrestore ..
 
 cd $DATA
  
@@ -232,6 +227,7 @@ export CPL_SLOW=${CPL_SLOW:-$DT_THERM}
 export CPL_FAST=${CPL_FAST:-$ICETIM}
 
 # Setup nems.configure
+# --------------------
 DumpFields_MED=${DumpFields_MED:-false}
 DumpFields_ATM=${DumpFields_ATM:-false}
 DumpFields_OCN=${DumpFields_OCN:-false}

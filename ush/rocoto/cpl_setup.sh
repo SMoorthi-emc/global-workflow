@@ -36,16 +36,13 @@ RES=$(echo $CASE|cut -c 2-)
 
 # $PSLOT is the name of your experiment
  expt=_phyac
- expt=_phyx2
+ expt=_phyx3
 #expt=_phyai    # cmeps run
 
 expt=${expt:-''}
 PSLOT=c${RES}$expt
 CDUMP=gfs
 
-
-#FHMIN=24
-#WARM_START=.true.
 FHMIN=${1:-$FHMIN}
 WARM_START=${2:-$WARM_START}
 
@@ -54,8 +51,8 @@ WARM_START=${WARM_START:-.false.}
 FHCYC=${FHCYC:-24}
 
 
-# $COMROT is the path to your experiment output directory. DO NOT include PSLOT folder at end of path, it’ll be built for you.
-# $EXPDIR is the path to your experiment directory where your configs will be placed and where you will find your workflow monitoring files (i.e. rocoto database and xml file). DO NOT include PSLOT folder at end of path, it will be built for you.
+# $COMROT is the path to the experiment output directory. DO NOT include PSLOT folder at end of path, it’ll be built.
+# $EXPDIR is the path to the experiment directory where config and workflow monitoring (rocoto database and xml) files are placed. Do not include PSLOT folder at end of path, it will be built.
 
 if [ $(echo $CWD | cut -c1-8) = "/scratch" ] ; then
  NOSCRUB=/scratch1/NCEPDEV/global
@@ -79,12 +76,12 @@ mkdir -p $EXPDIR
 
 FV3DATA=$FROM_HPSS/$IDATE/gfs/$CASE/INPUT
 
-# $CONFIGDIR is the path to the /config folder under the copy of the system you're using (i.e. ../parm/config/)
+# $CONFIGDIR is the location of config files (e.g. ../parm/config/)
 
 CONFIGDIR=${CONFIGDIR:-../../parm/config}
 
 
-# Link the existing FV3ICS folder to here, I prefer this directory to be in main directory, but changing in script can cause issues
+# Link the existing FV3ICS directory to the initial condition directory
 if [ $FHMIN -eq 0 ] ; then
   cd $COMROT
   mkdir -p FV3ICS
@@ -98,7 +95,7 @@ GFS_CYC=1
 
 ./setup_expt_fcstonly.py --pslot $PSLOT --configdir $CONFIGDIR --idate $IDATE --edate $EDATE --res $RES --gfs_cyc $GFS_CYC --comrot $COMROT --expdir $EXPDIR --fhmin $FHMIN --warm_start $WARM_START --fhcyc $FHCYC --cdump $CDUMP
 
-# Edit base.config and use appropriate account e.g. fv3-cpu
+# Appropriate account e.g. fv3-cpu (hera) GFS-DEV (wcoss)
 
 # Copy ICs : can put in a loop if running multiple cycles
 

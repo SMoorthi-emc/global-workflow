@@ -110,11 +110,6 @@ if [ $machine = HERA ] ; then
   . $MODULESHOME/init/sh 2>/dev/null
   module list
 
-# if [[ "${LOADICS:-YES}" == YES ]] ; then
-#     . /apps/lmod/5.8/init/ksh
-#     module load intel/14.0.2
-#     module load impi/4.1.3.048
-# fi
   NS_GLOPARA=${NS_GLOPARA:-/scratch1/NCEPDEV/global/glopara}
   export FIX_DIR=${FIX_DIR:-$NS_GLOPARA/fix}
 elif [ $machine = GAEA ] ; then
