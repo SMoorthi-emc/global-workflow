@@ -102,8 +102,10 @@ else
 fi
 
 
-###############################################################
+##############################################
 # Run relevant exglobal script
+##############################################
+
 env
 msg="HAS BEGUN on `hostname`"
 postmsg "$jlogfile" "$msg"
@@ -114,7 +116,8 @@ if [ $CPLDFV3_MOM6_CICE = YES ] ; then
 
   if [ ${warm_start:-.false.} = .false. -a $USE_COLDSTART = .true. ] ; then # one hour cold start for coupled run
                                                                             #------------------------------------
-# If coupled, run a cold start for 1 hour
+# coupled run with two step a cold start - make cold start run to $FHMAX_COLD (= 1 hour)
+# --------------------------------------------------------------------------------------
     export FHMAX=$FHMAX_COLD
     export nsout=0
     . $CPLPREPSH cold
@@ -134,13 +137,13 @@ if [ $CPLDFV3_MOM6_CICE = YES ] ; then
     status=$?
     [[ $status -ne 0 ]] && exit $status
 
-  else                                           # set up coupled warm or one step start
-                                                 #--------------------------
+  else                                           # set up coupled warm or one step start or restaart run
+                                                 #------------------------------------------------------
     export FHMAX=$FHMAX_GFS
     export nsout=${NSOUT:-0}
-    if [ $USE_COLDSTART = .false. -a $FHMIN -eq 0 ] ; then
+    if [ $USE_COLDSTART = .false. -a $FHMIN -eq 0 ] ; then  # warm start (one step or second step of two step)
       export restart=warm
-    elif [ $FHMIN -gt 0 ] ; then
+    elif [ $FHMIN -gt 0 ] ; then                            # continue run from a restart at FHMIN > 0.0
       export restart=restart
     fi
     export restart=${restart:-'restart'}
@@ -152,10 +155,11 @@ else
   export nsout=${NSOUT:-0}
 fi
 
-#  run global forecast - coupled or uncoupled
-# -------------------------------------------
+#  run global forecast - coupled or uncoupled (warm or restart)
+# -------------------------------------------------------------
 
 export FHCYC=${FHCYC_GFS:-24}
+export FH_CHUNK=${FH_CHUNK:-$FHMAX}
 if [ $CDUMP = "gfs" ] ; then
  if [ $FHMAX -gt $((FHMIN+FH_CHUNK)) ] ; then export FHMAX=$((FHMIN+FH_CHUNK)) ; fi
 fi

@@ -150,6 +150,9 @@ elif [ $machine = WCOSS_C -a  ${LOADIOBUF:-YES} = YES ] ; then
 
   module unload prod_util iobuf PrgEnv-$PRGENV craype-$HUGEPAGES 2>/dev/null
   module   load prod_util iobuf PrgEnv-$PRGENV craype-$HUGEPAGES 2>/dev/null
+  module unload ESMF-intel-sandybridge/6_3_0rp1
+  module use /gpfs/hps3/emc/nems/noscrub/emc.nemspara/soft/modulefiles
+  module load esmf/8.0.0 2>/dev/null
 
 # export IOBUF_PARAMS=${IOBUF_PARAMS:-'*:size=8M'}
   export WRTIOBUF=${WRTIOBUF:-"4M"}
@@ -165,9 +168,9 @@ elif [ $machine = WCOSS_C -a  ${LOADIOBUF:-YES} = YES ] ; then
   export MKL_NUM_THREADS=${MKL_NUM_THREADS:-1}
 
 elif [ $machine = WCOSS_DELL_P3 ] ; then
-  ulimit -s unlimited
-  export SAVE_ALL_TASKS=${SAVE_ALL_TASKS:-no}
-  export PROFILE_BY_CALL_SITE=${PROFILE_BY_CALL_SITE:-no}
+    ulimit -s unlimited
+    export SAVE_ALL_TASKS=${SAVE_ALL_TASKS:-no}
+    export PROFILE_BY_CALL_SITE=${PROFILE_BY_CALL_SITE:-no}
 
   . ${MODULESHOME:-/usrx/local/prod/lmod/lmod}/init/sh  2>> /dev/null
 
@@ -1868,6 +1871,29 @@ if [ $ERR -eq 0 -a $SEND = YES -a $cpl = .false. -a $LINK_RESTDIR = NO ] ; then
 
   fi
 
+#if [ $QUILTING = .true. ] ; then
+#  for type in atm sfc ; do
+#    $NCP $DATA/*$type*f*.tile*.nc $ROTDIR/
+##   $NCP $DATA/*$type*f*.nemsio   $ROTDIR/
+#  done
+#else
+#  sdate=$(echo $CDATE | cut -c1-8)
+#  if [ $REMAP_GRID = latlon ] ; then
+#    export file_list=${file_list:-'atmos_4xdaily atmos_static grid_spec nggps2d nggps3d fv3_history fv3_history2d'}
+#    export PREFILE=${PREFILE:-${CDATE}0000.}
+#  else
+#    export file_list=${file_list:-'fv3_history fv3_history2d'}
+#  fi
+#  export PREFILE=${PREFILE:-""}
+#  for type in $file_list ; do
+#    for n in $(seq 1 $ntiles) ; do
+##    $NCP $DATA/${CDATE}0000.$type.tile${n}.nc $ROTDIR/.
+##    $NCP $DATA/$sdate.$type.tile$n.nc $ROTDIR/${CDATE}0000.$type.tile$n.nc
+#     $NCP $DATA/$sdate.$type.tile$n.nc $ROTDIR/${PREFILE}$type.tile$n.nc
+#    done
+#  done
+#fi
+
 fi
 
 if [ ${KEEPREST:-NO} = YES -a $FHMAX -gt ${FHMAX_COLD:-1} ] ; then
@@ -1883,13 +1909,36 @@ if [ ${KEEPREST:-NO} = YES -a $FHMAX -gt ${FHMAX_COLD:-1} ] ; then
     for file in $(ls mediator*) ; do
       $NCP $file $MED_RESTDIR/${rPDY}-${rcyc}0000_$file
     done
- fi
-fi
-#
-#
-if [ $CDUMP = gfs ] ; then
 
-   # Add time-stamp to restart files at FHMAX
+#  restart_hr=$((restart_interval/3600))
+#  export FHMIN=$((FHMIN+0))
+#  fhr=$((10#$FHMIN+10#$restart_hr))
+#  while [ $fhr -le $FHMAX ] ; do
+#    XDATE=$($NDATE +$fhr $CDATE)
+#    PDYX=$(echo $XDATE | cut -c1-8)
+#    cycx=$(echo $XDATE | cut -c9-10)
+#    pres=${PDYX}-${cycx}0000_
+
+#  $NCP  mediator_*restart*.nc mediator_scalars_restart.txt $MED_RESTDIR/
+#  $NCP *mediator_*restart*.nc *mediator_scalars_restart.txt $MED_RESTDIR/
+
+# OCN_RESTDIR=${OCN_RESTDIR:-$ROTDIR/gfs.$PDY/$cyc/OCN_RESTART}
+# mkdir -p OCN_RESTDIR
+# cd $DATA/MOM6_RESTART
+# $NCP MOM.res*.nc *mom6*.nc $OCN_RESTDIR/
+
+#  ICE_RESTDIR=${ICE_RESTDIR:-$ROTDIR/gfs.$PDY/$cyc/ICE_RESTART}
+#  mkdir -p $ICE_RESTDIR
+#  cd $DATA/restart
+# ls -ltr *
+#  $NCP * $ICE_RESTDIR/
+  fi
+ fi
+#
+#
+ if [ $CDUMP = gfs ] ; then
+
+    # Add time-stamp to restart files at FHMAX
    cd $ATM_RESTDIR
    RDATE=$($NDATE +$FHMAX $CDATE)
    rPDY=$(echo $RDATE | cut -c1-8)
@@ -1897,8 +1946,9 @@ if [ $CDUMP = gfs ] ; then
    for file in $(ls * | grep -v 0000.) ; do
      $NMV $file ${rPDY}.${rcyc}0000.$file
    done
-fi
+ fi
 #
+#cd ../..
 
 # Clean up before leaving
 echo $(pwd)

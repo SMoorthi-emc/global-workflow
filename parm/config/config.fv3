@@ -31,8 +31,8 @@ case $case_in in
         export nth_f=1
         export cdmbgwd="0.071,2.1,1.0,1.0"  # mountain blocking, ogwd, cgwd, cgwd src scaling
         export WRITE_GROUP=1
-        export WRITE_GROUP_GFS=1
-        export WRTTASK_PER_GROUP=28
+        export WRITE_GROUP_GFS=$WRITE_GROUP
+#       export WRTTASK_PER_GROUP=28
         export WRTIOBUF="4M"
         ;;
     C96)
@@ -48,9 +48,9 @@ case $case_in in
         export nth_f=1
         export cdmbgwd="0.14,1.8,1.0,1.0"  # mountain blocking, ogwd, cgwd, cgwd src scaling
         export WRITE_GROUP=1
-        export WRITE_GROUP_GFS=1
-       #export WRTTASK_PER_GROUP=24
-        export WRTTASK_PER_GROUP=28
+        export WRITE_GROUP_GFS=$WRITE_GROUP
+#       export WRTTASK_PER_GROUP=24
+#       export WRTTASK_PER_GROUP=28
         export WRTIOBUF="4M"
         ;;
     C192)
@@ -62,9 +62,10 @@ case $case_in in
         export npe_node_fcst=14
         export nth_f=2
         export cdmbgwd="0.23,1.5,1.0,1.0"  # mountain blocking, ogwd, cgwd, cgwd src scaling
+        export cnvgwd=.false.
         export WRITE_GROUP=2
-        export WRITE_GROUP_GFS=2
-        export WRTTASK_PER_GROUP=14
+        export WRITE_GROUP_GFS=$WRITE_GROUP
+#       export WRTTASK_PER_GROUP=14
         export WRTIOBUF="8M"
         ;;
     C384)
@@ -72,7 +73,6 @@ case $case_in in
 #       export DELTIM=225
 #       export DELTIM=180
 #       export DELTIM=120
-#       export DELTIM=90
         export DELTIM=450
 #       export DELTIM=600
         export k_split=2
@@ -92,10 +92,13 @@ case $case_in in
         export ICETIM=$DELTIM
 #       export ICETIM=300
 
-        export layout_x=6         # 64 layers
-#       export layout_x=8
+                                  # 64  layers
+        export layout_x=6
         export layout_y=8
-        export layout_y=12
+                                  # 127 layers
+#       export layout_x=8
+#       export layout_y=12
+
 #       export io_layout_x=2      # restart may not reproduce!
 #       export io_layout_y=2      # restart may not reproduce!
         export io_layout_x=${io_layout_x:-1}
@@ -111,7 +114,7 @@ case $case_in in
         fi
 #       export nth_f=7
         export nth_f=1
-#       export nth_f=2
+        export nth_f=2
         export nth_f=${nth_f:-4}
         export HYPT=${HYPT:-off}
         if [ $HYPT = on ] ; then
@@ -136,6 +139,7 @@ case $case_in in
         export WRTIOBUF="16M"
         ;;
     C768)
+#       export DELTIM=450
         export DELTIM=300
         export DELTIM=225
         export DELTIM=150
@@ -149,26 +153,16 @@ case $case_in in
 #       export n_split=8
 #       export n_split=10
 #       export n_split=12
-#       export DELTIM=450
-#       export DELTIM=450
 #       export OCNTIM=300
 #       export OCNTIM=450
         export OCNTIM=900
 #       export OCNTIM=1800
 
-        export ICETIM=$DELTIM
-        export ICETIM=450
-#       export ICETIM=360
 #       export DT_THERM=1800
         export DT_THERM=$((OCNTIM*2))
         export ICETIM=$DELTIM
 
 #
-#       export DELTIM=225
-#       export OCNTIM=900
-#       export ICETIM=$DELTIM
-#       export DT_THERM=1800
-
 #       export layout_x=8
 #       export layout_y=8
         export layout_x=12
@@ -197,11 +191,18 @@ case $case_in in
 #       export nth_f=1
         export nth_f=2
         export nth_f=${nth_f:-4}
+        export HYPT=${HYPT:-off}
+        if [ $HYPT = on ] ; then
+          export OMP_NUM_THREADS=$((nth_f*2))
+        else
+          export OMP_NUM_THREADS=$nth_f
+        fi
         export npe_node_fcst=$((npe_node_max/nth_f))
         export cdmbgwd="4.0,0.15,1.0,1.0"  # mountain blocking and gravity wave drag
-        export WRITE_GROUP=2
-        export WRTTASK_MIN=40
-        export WRITE_GROUP_GFS=3
+        export cnvgwd=.false.
+        export WRITE_GROUP=3
+#       export WRTTASK_MIN=40
+        export WRITE_GROUP_GFS=$WRITE_GROUP
 #       export WRITE_GROUP=3
 #       export WRTTASK_PER_GROUP=60
         export WRTIOBUF="32M"
@@ -218,11 +219,22 @@ case $case_in in
         export OCNTIM=900
         export DT_THERM=$((OCNTIM*2))
         export ICETIM=$DELTIM
+        export io_layout_x=${io_layout_x:-1}
+        export io_layout_y=${io_layout_y:-1}
         export nth_f=4
+        export nth_f=${nth_f:-4}
+        export HYPT=${HYPT:-off}
+        if [ $HYPT = on ] ; then
+          export OMP_NUM_THREADS=$((nth_f*2))
+        else
+          export OMP_NUM_THREADS=$nth_f
+        fi
+        export npe_node_fcst=$((npe_node_max/nth_f))
         export cdmbgwd="4.0,0.10,1.0,1.0"  # mountain blocking, ogwd, cgwd, cgwd src scaling
+        export cnvgwd=.false.
         export WRITE_GROUP=3
-        export WRTTASK_MIN=40
-        export WRITE_GROUP_GFS=4
+#       export WRTTASK_MIN=40
+        export WRITE_GROUP_GFS=$WRITE_GROUP
 #       export WRTTASK_PER_GROUP=7
         export WRTIOBUF="48M"
         ;;

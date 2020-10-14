@@ -179,6 +179,7 @@ Create COMROT experiment directory structure'''
       execbase = '/gpfs/hps3/emc/global/noscrub/$USER'
       account  = 'GFS-DEV'
       queue    = 'dev'
+#     queue    = 'debug'
       queue_arch = 'dev_transfer'
     elif machine == 'HERA':
       base_git = '/scratch1/NCEPDEV/global/save/glopara/git'

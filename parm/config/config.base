@@ -106,7 +106,7 @@ export REALTIME=NO
 # if gaussian_grid, set OUTPUT_FILE for nemsio or netcdf
  export QUILTING=.true.
  export OUTPUT_GRID=gaussian_grid
- export OUTPUT_FILE=netcdf
+#export OUTPUT_FILE=netcdf
 
 # uncomment to turn on coupled wave
 #export cplwav=.true.
@@ -140,9 +140,15 @@ fi
 #export DumpFields_ICE=true
 
  RUN_CCPP=${RUN_CCPP:-NO}
- if [ $RUN_CCPP = NO ] ; then IPD='_ipd' ; fi
-#IPD=n
+ if [ $RUN_CCPP = NO ] ; then IPD='_ipdr' ; fi
+ if [ $RUN_CCPP = NO ] ; then IPD='_ipdr' ; fi
+#IPD=r
+ IPD=n
  IPD=${IPD:-""}
+
+#appdate=Aug12
+ appdate=Sep15                   # latest version
+appdate=${appdate:-Oct10}        # version prior to the above
 
 export cplflx=${cplflx:-.false.}
 export CPLD_APP=${CPLD_APP:-NO}
@@ -198,8 +204,7 @@ if [ $cplflx = .true. ] ; then
 #export appdir=cfv3_git_Aug01
  export appdir=cfv3_git_Aug08
  if [ $CICE = CICE6 ] ; then
-   export appdir=cfv3_git_Aug12_cice6
-   export appdir=cfv3_git_Sep15_cice6
+   export appdir=cfv3_git_${appdate}_cice6
  fi
 #export appdir=s2s_orig
 #export appdir=cfv3_git_may19_hera
@@ -232,8 +237,7 @@ elif [ $CPLD_APP = YES ] ; then
  export appdir=cfv3_git_July20
 #export appdir=cfv3_git_Aug01
  export appdir=cfv3_git_Aug08
- export appdir=cfv3_git_Aug12_cice6
- export appdir=cfv3_git_Sep15_cice6
+ export appdir=cfv3_git_${appdate}_cice6
 #export appdir=cfv3_git_may19_hera
 #export appdir=cfv3_git_Jun16
 
@@ -246,8 +250,7 @@ else
  app=ufs-s2s-model
  export appdir=fv3_git1230
  export appdir=fv3_feb24
- export appdir=cfv3_git_Aug12_cice6
- export appdir=cfv3_git_Sep15_cice6
+ export appdir=cfv3_git_${appdate}_cice6
 
 #export cplwav=.true.
 #export cplwav2atm=.true.
@@ -264,8 +267,7 @@ if [ $machine = HERA ]; then
  export appdir=cfv3_git_may19
  export appdir=cfv3_git_Aug11
  if [ $CICE = CICE6 ] ; then
-   export appdir=cfv3_git_Aug12_cice6
-   export appdir=cfv3_git_Sep15_cice6
+   export appdir=cfv3_git_${appdate}_cice6
  fi
 #export appdir=ufs_compile
 #export appdir=ufs_compile2
@@ -514,7 +516,7 @@ export FHMIN_GFS=${FHMIN_GFS:-${FHMIN:-0}}
 #export restart_ext=.false.
 
 export warm_start=${warm_start:-.true.}   # for warm_start need to set FHMIN (i.e. starting time)
-export FH_CHUNK=${FH_CHUNK:-12}
+export FH_CHUNK=${FH_CHUNK:-240}
 #export FHMIN=1
 #export FHMIN=2
 #export FHMIN=3
@@ -547,7 +549,7 @@ export FH_CHUNK=${FH_CHUNK:-12}
  export restart_interval=864000
 #export restart_interval=432000
 #export restart_interval=86400
- export restart_interval=43200
+#export restart_interval=43200
 #export restart_interval=21600
 #export restart_interval=10800
 #export restart_interval=7200
@@ -562,7 +564,7 @@ export FH_CHUNK=${FH_CHUNK:-12}
 #export FHMAX_GFS_00=96
 #export FHMAX_GFS_00=36
 #export FHMAX_GFS_00=27
-#export FHMAX_GFS_00=24
+ export FHMAX_GFS_00=24
 #export FHMAX_GFS_00=15
 #export FHMAX_GFS_00=12
 #export FHMAX_GFS_00=9
@@ -630,7 +632,7 @@ export FHMAX_COLD=1
 # if gaussian_grid, set OUTPUT_FILE for nemsio or netcdf
 #export QUILTING=.true.
 #export OUTPUT_GRID=gaussian_grid
-#export OUTPUT_FILE=netcdf
+ export OUTPUT_FILE=netcdf
 export QUILTING=${QUILTING:-.true.}
 export OUTPUT_GRID=${OUTPUT_GRID:-gaussian_grid}
 export OUTPUT_FILE=${OUTPUT_FILE:-nemsio}

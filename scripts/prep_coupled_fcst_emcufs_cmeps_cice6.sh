@@ -69,7 +69,7 @@ if [ $inistep = warm -a $USE_COLDSTART = .true. ] ; then # using restart file fo
 #   echo "$MED_RESTDIR/$RFILE" > $DATA/rpointer.cpl
 
 elif [ $inistep = restart ] ; then # using restart files for MOM6 and CICE here, FV3 will set in exglobal script
-                                 # ---------------------------------------------------------------------------
+                                   # ---------------------------------------------------------------------------
   export warm_start=.true.
 
   SDATE=$($NDATE +$FHMIN $CDATE)
