@@ -112,6 +112,9 @@ postmsg "$jlogfile" "$msg"
 $LOGSCRIPT
 
 export CPLDFV3_MOM6_CICE=${CPLDFV3_MOM6_CICE:-NO}
+export USE_COLDSTART=${USE_COLDSTART:-.false.}
+export FHCYC=${FHCYC_GFS:-24}
+
 if [ $CPLDFV3_MOM6_CICE = YES ] ; then
 
   if [ ${warm_start:-.false.} = .false. -a $USE_COLDSTART = .true. ] ; then # one hour cold start for coupled run
@@ -124,7 +127,7 @@ if [ $CPLDFV3_MOM6_CICE = YES ] ; then
     status=$?
     [[ $status -ne 0 ]] && exit $status
 
-    export FHCYC=0
+#   export FHCYC=0
 #   ${FORECASTSH:-$SCRgfs/exglobal_fcst_nemsfv3gfs.sh.ecf}
     ${FORECASTSH:-$SCRgfs/exglobal_fcst_emcufs.sh}
     status=$?
@@ -158,7 +161,7 @@ fi
 #  run global forecast - coupled or uncoupled (warm or restart)
 # -------------------------------------------------------------
 
-export FHCYC=${FHCYC_GFS:-24}
+#export FHCYC=${FHCYC_GFS:-24}
 export FH_CHUNK=${FH_CHUNK:-$FHMAX}
 if [ $CDUMP = "gfs" ] ; then
  if [ $FHMAX -gt $((FHMIN+FH_CHUNK)) ] ; then export FHMAX=$((FHMIN+FH_CHUNK)) ; fi

@@ -67,6 +67,7 @@ if [ $inistep = warm -a $USE_COLDSTART = .true. ] ; then # using restart file fo
     RFILE=${case_name}.cold.cpl.r.${yyyy}-${mm}-${dd}-$(printf %05i $secs).nc
     echo "$RFILE" > $DATA/rpointer.cpl
 #   echo "$MED_RESTDIR/$RFILE" > $DATA/rpointer.cpl
+  export USE_COLDSTART=.false.
 
 elif [ $inistep = restart ] ; then # using restart files for MOM6 and CICE here, FV3 will set in exglobal script
                                    # ---------------------------------------------------------------------------
@@ -363,7 +364,6 @@ OCN_attributes::
   Restart_Prefix = $Restart_Prefix
   ProfileMemory = ${ProfileMemory:-False}
   dbug_flag = ${dbug_flag_OCN:-0}
-  use_coldstart = ${USE_COLDSTART:-.true.}
 ::
 
 eof
@@ -644,8 +644,9 @@ ALLCOMP_attributes::
       case_name = ${case_name:-$MED_RESTDIR/ufs.s2s.cold}
       restart_n = ${restart_hr:-1}
       restart_option = nhours
-      restart_ymd = -999
-      dbug_flag   = ${cap_dbug_flag:-1}
+      restart_ymd   = -999
+      dbug_flag     = ${cap_dbug_flag:-1}
+      use_coldstart = ${USE_COLDSTART:-.false.}
 ::
 eof
 
