@@ -203,7 +203,7 @@ if [ $CDUMP = "gfs" ] ; then
    export FHMIN=$FHMAX
    export warm_start=.true.
    export ROCODIR=$HOMEgfs/ush/rocoto
-   ${SUB:-$ROCODIR/sub_wcoss_d} -e FHMIN=$FHMIN,WARM_START=$warm_start,ROCODIR=$ROCODIR -a $ACCOUNT -q debug -p 1/1/N -r 3072/1/1 -t 00:05:00 -j fv3gfs -o $ROTDIR/logs/$CDATE/gfsfcst_${FHMIN}_log $ROCODIR/cpl_setup.sh
+   ${SUBCMD:-$ROCODIR/sub_wcoss_d} -e FHMIN=$FHMIN,WARM_START=$warm_start,ROCODIR=$ROCODIR -a $ACCOUNT -q debug -p 1/1/N -r 3072/1/1 -t 00:05:00 -j fv3gfs -o $ROTDIR/logs/$CDATE/gfsfcst_${FHMIN}_log $ROCODIR/cpl_setup.sh
 #  ./cpl_setup.sh $FHMIN $warm_start
    echo "submittied next segment from hour " $FHMIN 
  fi

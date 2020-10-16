@@ -760,4 +760,12 @@ export ARCH_FCSTICFREQ=1   # Archive frequency in days for gdas and gfs forecast
 export DONST=${DONST:-YES}
 export nst_anl=${nst_anl:-.true.}
 
+if [ $machine = WCOSS_DELL_P3 ] ; then
+  export SUBCMD=${SUBCMD:-$HOMEgfs/ush/rocoto/sub_wcoss_d}
+elif [ $machine = HERA ] ; then
+  export SUBCMD=${SUBCMD:-$HOMEgfs/ush/rocoto/sub_hera}
+elif [ $machine = WCOSS_C ] ; then
+  export SUBCMD=${SUBCMD:-$HOMEgfs/ush/rocoto/sub_wcoss_c}
+fi
+
 echo "END: config.base"

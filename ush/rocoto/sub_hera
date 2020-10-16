@@ -88,14 +88,20 @@ output=${output:-$jobname.out}
 myuser=$LOGNAME
 myhost=$(hostname)
 
-DATA=${DATA:-/$STMP/$LOGNAME}
-mkdir -p $DATA
+DATA=${DATA:-${STMP:-/scratch1/NCEPDEV/global/$LOGNAME}}
+
+if [ -s $DATA ] ; then
+  MKDATA=NO
+else
+  mkdir -p $DATA
+  MKDATA=YES
+fi
 
 queue=${queue:-batch}
 timew=${timew:-01:20:00}
 task_node=${procs:-12}
 envars=$envars
-outdir=${outdir:-$rundir}
+outdir=${outdir:-${rundir:-$RUNDIR}}
 #Options
 ###PBS -l partition=c1ms,size=0528,walltime=01:20:00
 ##PBS -l partition=$queue,size=$size,walltime=$timew
@@ -108,18 +114,20 @@ cfile=$DATA/sub$$
 echo "#!/bin/ksh --login"                      >> $cfile
 echo "#SBATCH -A $account"                     >> $cfile
 echo "#SBATCH -J $jobname"                     >> $cfile
-echo "#SBATCH -C $queue"                       >> $cfile
-echo "#SBATCH --export=$envars"                >> $cfile
-echo "#SBATCH -D $rundir"                      >> $cfile
+echo "#SBATCH -q $queue"                       >> $cfile
+echo "#SBATCH --export=,$envars"               >> $cfile
+#echo "#SBATCH -D $rundir"                     >> $cfile
 #echo "#SBATCH -C bigmem"                      >> $cfile
 #if [ $ppreq = SH ] ; then
 # echo "#PBS -l vmem=${rmem}M"                 >> $cfile
 #fi
 echo "#SBATCH --ntasks=$procs"                 >> $cfile
-echo "#SBATCH -time $timew"                    >> $cfile
-echo "#SBATCH --o $ourdir/%x.o%j"              >> $cfile
+echo "#SBATCH --time $timew"                   >> $cfile
+echo "#SBATCH -o $output"                      >> $cfile
+#echo "#SBATCH -o $outdir/%x.o%j"              >> $cfile
 echo "module load slurm"                       >> $cfile
 echo "module load intel impi"                  >> $cfile
+echo "$exec"                                   >> $cfile
 #echo "/bin/ksh --login -x $exec $args"        >> $cfile
 
 # "#SBATCH --nodes=1 --ntasks-per-node=1:--nodes=2--ntasks-per-node=12:---"
@@ -139,7 +147,8 @@ fi
 #   some useful commands in slurm
 #   squeue -u $USER ; scancel 1234 ; scontrol show -d job 1234
 
-sbatch=${sbatch:-???/apps/torque/default/bin/sbatch}
+#sbatch=${sbatch:-???/apps/torque/default/bin/sbatch}
+sbatch=${sbatch:-/apps/slurm/default/bin/sbatch}
 
 ofile=$DATA/subout$$
 >$ofile
@@ -152,5 +161,6 @@ if [[ -w $SUBLOG ]];then
   date +"%Y%m%d%H%M%S : $subcmd : $jobn" >>$SUBLOG
 fi
 rm $cfile $ofile
+echo 'MKDATA =' $MKDATA
 [[ $MKDATA = YES ]] && rmdir $DATA
 exit $rc
