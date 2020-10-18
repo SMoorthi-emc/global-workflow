@@ -111,7 +111,8 @@ outdir=${outdir:-${rundir:-$RUNDIR}}
 export TZ="America/New_York"
 cfile=$DATA/sub$$
 > $cfile
-echo "#!/bin/ksh --login"                      >> $cfile
+echo "#!/bin/ksh"                              >> $cfile
+#echo "#!/bin/ksh --login"                     >> $cfile
 echo "#SBATCH -A $account"                     >> $cfile
 echo "#SBATCH -J $jobname"                     >> $cfile
 echo "#SBATCH -q $queue"                       >> $cfile
