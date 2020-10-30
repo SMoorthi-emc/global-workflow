@@ -287,16 +287,20 @@ fi
 #--------------------------------------------------------------------
 # determine if restart IC exists to continue from a previous forecast
 #--------------------------------------------------------------------
+RERUN_FCST=${RERUN_FCST:-NO}
 RUNCONTINUE=NO
 filecount=$(find $ATM_RESTDIR -type f | wc -l)
 if [ $CDUMP = gfs -a $restart_interval -gt 0 -a $FHMAX -gt $restart_interval -a $filecount -gt 10 ] ; then
   if [ $FHMIN -gt 0  -a $FHMIN -lt $FHMAX ] ; then
     CDATE_RST=$($NDATE $FHMIN $CDATE)
     RUNCONTINUE=YES
+  elif [ $FHMIN -ge $FHMAX  -a $RERUN_FCST = NO ] ; then
+    echo 'FHMIN ' $FHMIN ' >= FHMAX ' $FHMAX
+    exit
   elif [ ${RERUN_FCST:-NO} = NO ]  ; then
     reverse=$(echo "${restart_interval_atm[@]} " | tac -s ' ')
     for xfh in $reverse ; do
-      if [ $xfh -eq restart_interval ] ; then
+      if [ $xfh -eq $restart_interval ] ; then
         CDATE_RST=$CDATE
         SDATE=$($NDATE +$FHMAX $CDATE)
         EDATE=$($NDATE +$restart_interval $CDATE)

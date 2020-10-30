@@ -618,6 +618,11 @@ if [ $inistep = warm -o $inistep = restart ] ; then
   restart_hr=$((restart_interval/3600))
 fi
 
+if [ $NSOUT -gt 0 ] ; then
+ history_n=1
+ history_option=nsteps
+fi
+
 # CMEPS variables
 export frac_grid=${frac_grid:-.false.}
 if [ $frac_grid = .true. ] ; then export coupling_mode="nems_frac" ; fi
@@ -631,7 +636,7 @@ MED_attributes::
       ICE_model = $ICE_model
       OCN_model = $OCN_model
       history_n = ${history_n:-1}
-      history_option = nhours
+      history_option = ${history_option:-nhours}
       history_ymd = -999
       coupling_mode = ${coupling_mode:-nems_orig}
 ::

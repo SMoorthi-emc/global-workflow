@@ -189,11 +189,11 @@ Create COMROT experiment directory structure'''
       homedir  = '/scratch1/NCEPDEV/global/$USER'
       stmp     = '/scratch1/NCEPDEV/stmp2/$USER'
       ptmp     = '/scratch1/NCEPDEV/stmp4/$USER'
-      noscrub  = '/scratch1/NCEPDEV/global/$USER'
+      noscrub  = '/scratch1/NCEPDEV/global/$USER/noscrub'
       execbase = '/scratch1/NCEPDEV/global/$USER/save'
       account  = 'fv3-cpu'
       queue    = 'batch'
-#     queue    = 'debug'
+      queue    = 'debug'
       queue_arch = 'service'
 
     print (" comrot=",comrot)

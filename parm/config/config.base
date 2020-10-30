@@ -17,7 +17,7 @@ export QUEUE="@QUEUE@"
 export QUEUE_ARCH="@QUEUE_ARCH@"
 
  export LEVS=128
-#export LEVS=65
+ export LEVS=65
 
 #export IAER=1111
 #export iccn=2
@@ -71,7 +71,7 @@ export BASE_GIT="@BASE_GIT@"
 
 #fi
 
-#export print_esmf=.true.
+ export print_esmf=.true.
  export print_esmf=${print_esmf:-.false.}
  export ESMF_RUNTIME_PROFILE=ON
  export ESMF_RUNTIME_PROFILE_OUTPUT=SUMMARY
@@ -87,11 +87,11 @@ export REALTIME=NO
 
 # some available switches
 # -----------------------
- export RUN_CCPP=YES                # turn on ccpp physics
- export HYPT=on                     # turn on hyper threading
- export cplflx=.true.               # turn on cupule model 
+#export RUN_CCPP=YES                # turn on ccpp physics
+#export HYPT=on                     # turn on hyper threading
+#export cplflx=.true.               # turn on cupule model 
  export CPLD_APP=YES                # use coupled app
- export INLINE_POST=YES             # turn on inline post
+#export INLINE_POST=YES             # turn on inline post
 #export USE_COLDSTART=.true.        # uncomment this line to turn on cold start step
 #export frac_grid=.true.            # uncomment to turn on fractional grid
  export mediator=cmeps              # comment this line for nems mediator
@@ -105,7 +105,7 @@ export REALTIME=NO
 # if quilting=true, choose OUTPUT_GRID as cubed_sphere_grid in netcdf or gaussian_grid
 # if gaussian_grid, set OUTPUT_FILE for nemsio or netcdf
  export QUILTING=.true.
- export OUTPUT_GRID=gaussian_grid
+#export OUTPUT_GRID=gaussian_grid
 #export OUTPUT_FILE=netcdf
 
 # uncomment to turn on coupled wave
@@ -140,8 +140,8 @@ fi
 #export DumpFields_ICE=true
 
  RUN_CCPP=${RUN_CCPP:-NO}
- if [ $RUN_CCPP = NO ] ; then IPD='_ipdr' ; fi
- if [ $RUN_CCPP = NO ] ; then IPD='_ipdr' ; fi
+ if [ $RUN_CCPP = NO ] ; then IPD='_ipd' ; fi
+#if [ $RUN_CCPP = NO ] ; then IPD='_ipdr' ; fi
 #IPD=r
 #IPD=n
  IPD=${IPD:-""}
@@ -181,9 +181,9 @@ export MOM6_RIVER_RUNOF=${MOM6_RIVER_RUNOF:-False}
 #g0nosc=/gpfs/dell2/emc/modeling/noscrub
 export FIX_LAKE_ORO=$NOSCRUB/oro_lake
 export use_lake_oro=YES
-export use_lake_oro=NO
+#export use_lake_oro=NO
 
-#export NSOUT=1
+ export NSOUT=1
  export NSOUT=${NSOUT:-0}
 
 #export LINK_OCN_FILES=NO
@@ -275,71 +275,84 @@ fi
 
 # export satmedmf=.true.
   export satmedmf=${satmedmf:-.false.}
-  export DONST=NO
+
+# export DONST=NO
   export DONST=YES
   export DONST=${DONST:-NO}
 
+# export v17ras=YES
+  export v17ras=${v17ras:-NO}
+
+# export v17rasnoshal=YES
+  export v17rasnoshal=${v17rasnoshal:-NO}
+
 if [ ${RUN_CCPP:-YES} = YES ] ; then
- export nn=${nn:-""}
- export CCPPDIR=$EXECBASE/$appdir/${app}$nn/FV3/ccpp
-#ICSDIR=$g0nosc/Shrinivas.Moorthi/FV3IC/ICs
+  export nn=${nn:-""}
+  export CCPPDIR=$EXECBASE/$appdir/${app}$nn/FV3/ccpp
+# ICSDIR=$g0nosc/Shrinivas.Moorthi/FV3IC/ICs
 
 
-#export CCPP_SUITE=FV3_GFS_v15
-#export FCSTEXEC=fv3_ccpp.exe
-#export CCPP_SUITE=FV3_GFS_v15_ras
-#export FCSTEXEC=fv3_ccppr.exe
-#export FCSTEXEC=fv3_ccpp15r.exe
-#export CCPP_SUITE=${CCPP_SUITE:-FV3_GFS_v15plus}
-#export FCSTEXEC=fv3_ccpps.exe
+# export CCPP_SUITE=FV3_GFS_v15
+# export FCSTEXEC=fv3_ccpp.exe
+# export CCPP_SUITE=FV3_GFS_v15_ras
+# export FCSTEXEC=fv3_ccppr.exe
+# export FCSTEXEC=fv3_ccpp15r.exe
+# export CCPP_SUITE=${CCPP_SUITE:-FV3_GFS_v15plus}
+# export FCSTEXEC=fv3_ccpps.exe
 
-#export CCPP_SUITE=${CCPP_SUITE:-FV3_GFS_v15plusras}
-#export FCSTEXEC=fv3_ccppr.exe
+# export CCPP_SUITE=${CCPP_SUITE:-FV3_GFS_v15plusras}
+# export FCSTEXEC=fv3_ccppr.exe
 
-#export CCPP_SUITE=${CCPP_SUITE:-FV3_GFS_v16rasmg}
-#export FCSTEXEC=fv3_ccpprmd.exe
-#export FCSTEXEC=fv3_ccpprm.exe              # RAS, MG3
+# export CCPP_SUITE=${CCPP_SUITE:-FV3_GFS_v16rasmg}
+# export FCSTEXEC=fv3_ccpprmd.exe
+# export FCSTEXEC=fv3_ccpprm.exe              # RAS, MG3
 
-#export CCPP_SUITE=${CCPP_SUITE:-FV3_GFS_v16rasmgshoc}
-#export CCPP_SUITE=${CCPP_SUITE:-FV3_GFS_rasmgshoc}
-#export FCSTEXEC=fv3_ccpprms0.exe             # RAS, MG3, SHOC
+# export CCPP_SUITE=${CCPP_SUITE:-FV3_GFS_v16rasmgshoc}
+# export CCPP_SUITE=${CCPP_SUITE:-FV3_GFS_rasmgshoc}
+# export FCSTEXEC=fv3_ccpprms0.exe             # RAS, MG3, SHOC
 
-if [ $DONST = NO ] ; then
- export CCPP_SUITE=FV3_GFS_cpld_rasmgshoc
-else
- export CCPP_SUITE=FV3_GFS_cpld_rasmgshocnsst
-fi
-if [ $satmedmf = .true. ] ; then
- export CCPP_SUITE=FV3_GFS_2017_satmedmf_coupled
- export CCPP_SUITE=FV3_GFS_2017_couplednsst
-fi
- export CCPP_SUITE=${CCPP_SUITE:-FV3_GFS_v15_rasmgshoc}
- if [ $CPLD_APP = NO ] ; then
-  export CCPP_SUITE=FV3_GFS_v15_rasmgshoc
-  export CCPP_SUITE=FV3_GFS_2017
-  export SCRDIR=$HOMEgfs/scripts
-# export FORECASTSH="$SCRDIR/exglobal_fcst_emcufs.sh_feb02"    # with    UGW
-  export FCSTEXECDIR=$EXECBASE/$appdir/$app/tests
-  export FCSTEXEC=fv3_ccpprms.exe            # RAS, MG3, SHOC
-  export FCSTEXEC=fv3_ccpprms.exe            # RAS, MG3, SHOC
-  export FCSTEXEC=fcst_fv3_2017.exe
- fi
-#export FCSTEXEC=fv3_ccpprms0.exe            # RAS, MG3, SHOC
-#export FCSTEXEC=fv3_ccpprmsd.exe            # RAS, MG3, SHOC
-#export CCPP_SUITE=${CCPP_SUITE:-FV3_GFS_v15plusras}
-#export FCSTEXEC=fv3_ccpprplus.exe           # RAS, MG3, SHOC
+  if [ $DONST = NO ] ; then
+   export CCPP_SUITE=FV3_GFS_cpld_rasmgshoc
+  else
+   export CCPP_SUITE=FV3_GFS_cpld_rasmgshocnsst
+  fi
+  if [ $satmedmf = .true. ] ; then
+    if [ $v17ras = YES ] ; then
+      export CCPP_SUITE=FV3_GFS_v17_cpldnsstras
+    elif [ $v17rasnoshal = YES ] ; then
+      export CCPP_SUITE=FV3_GFS_v17_cpldnsstrasnoshal
+    else
+#     export CCPP_SUITE=FV3_GFS_2017_satmedmf_coupled
+      export CCPP_SUITE=FV3_GFS_2017_couplednsst
+    fi
+  fi
+  export CCPP_SUITE=${CCPP_SUITE:-FV3_GFS_v15_rasmgshoc}
+  if [ $CPLD_APP = NO ] ; then
+   export CCPP_SUITE=FV3_GFS_v15_rasmgshoc
+   export CCPP_SUITE=FV3_GFS_2017
+   export SCRDIR=$HOMEgfs/scripts
+#  export FORECASTSH="$SCRDIR/exglobal_fcst_emcufs.sh_feb02"    # with    UGW
+   export FCSTEXECDIR=$EXECBASE/$appdir/$app/tests
+   export FCSTEXEC=fv3_ccpprms.exe            # RAS, MG3, SHOC
+   export FCSTEXEC=fv3_ccpprms.exe            # RAS, MG3, SHOC
+   export FCSTEXEC=fcst_fv3_2017.exe
+  fi
+# export FCSTEXEC=fv3_ccpprms0.exe            # RAS, MG3, SHOC
+# export FCSTEXEC=fv3_ccpprmsd.exe            # RAS, MG3, SHOC
+# export CCPP_SUITE=${CCPP_SUITE:-FV3_GFS_v15plusras}
+# export FCSTEXEC=fv3_ccpprplus.exe           # RAS, MG3, SHOC
 
- export CCPP_LIB_DIR=${CCPP_LIB_DIR:-$CCPPDIR/lib}
-#export RAS=YES
- if [ $CCPP_SUITE = FV3_GFS_v15 ]           ; then export isatmedmf=0 ; fi
- if [ $CCPP_SUITE = FV3_GFS_v15_ras ]       ; then export isatmedmf=0 ; fi
- if [ $CCPP_SUITE = FV3_GFS_v15plus ]       ; then export isatmedmf=0 ; fi
- if [ $CCPP_SUITE = FV3_GFS_v15plusras ]    ; then export isatmedmf=0 ; fi
- if [ $CCPP_SUITE = FV3_GFS_v16rasmg ]      ; then export isatmedmf=0 ; fi
- if [ $CCPP_SUITE = FV3_GFS_rasmgshoc ]     ; then export isatmedmf=0 ; fi
- if [ $CCPP_SUITE = FV3_GFS_v15_rasmgshoc ] ; then export isatmedmf=0 ; fi
- if [ $CCPP_SUITE = FV3_GFS_v16rasmgshoc ]  ; then export isatmedmf=0 ; fi
- if [ $CCPP_SUITE = FV3_GFS_cpld_rasmgshoc ]  ; then export isatmedmf=0 ; fi
+  export CCPP_LIB_DIR=${CCPP_LIB_DIR:-$CCPPDIR/lib}
+# export RAS=YES
+  if [ $CCPP_SUITE = FV3_GFS_v15 ]            ; then export isatmedmf=0 ; fi
+  if [ $CCPP_SUITE = FV3_GFS_v15_ras ]        ; then export isatmedmf=0 ; fi
+  if [ $CCPP_SUITE = FV3_GFS_v15plus ]        ; then export isatmedmf=0 ; fi
+  if [ $CCPP_SUITE = FV3_GFS_v15plusras ]     ; then export isatmedmf=0 ; fi
+  if [ $CCPP_SUITE = FV3_GFS_v16rasmg ]       ; then export isatmedmf=0 ; fi
+  if [ $CCPP_SUITE = FV3_GFS_rasmgshoc ]      ; then export isatmedmf=0 ; fi
+  if [ $CCPP_SUITE = FV3_GFS_v15_rasmgshoc ]  ; then export isatmedmf=0 ; fi
+  if [ $CCPP_SUITE = FV3_GFS_v16rasmgshoc ]   ; then export isatmedmf=0 ; fi
+  if [ $CCPP_SUITE = FV3_GFS_cpld_rasmgshoc ] ; then export isatmedmf=0 ; fi
 
 fi
 
@@ -554,7 +567,7 @@ export FH_CHUNK=${FH_CHUNK:-240}
 #export restart_interval=432000
 #export restart_interval=86400
 #export restart_interval=43200
-#export restart_interval=21600
+ export restart_interval=21600
 #export restart_interval=10800
 #export restart_interval=7200
 #export restart_interval=3600
@@ -568,9 +581,10 @@ export FH_CHUNK=${FH_CHUNK:-240}
 #export FHMAX_GFS_00=96
 #export FHMAX_GFS_00=36
 #export FHMAX_GFS_00=27
- export FHMAX_GFS_00=24
+ export FHMAX_GFS_00=26
+#export FHMAX_GFS_00=24
 #export FHMAX_GFS_00=15
- export FHMAX_GFS_00=12
+#export FHMAX_GFS_00=12
 #export FHMAX_GFS_00=9
 #export FHMAX_GFS_00=6
 #export FHMAX_GFS_00=3
@@ -588,7 +602,7 @@ export FH_CHUNK=${FH_CHUNK:-240}
 #export FHMAX_GFS_00=840
 #export FHMAX_GFS_00=720
 #export FHMAX_GFS_00=1080 # uncomment this line for 45 day run
- export FHMAX_GFS_00=1440
+#export FHMAX_GFS_00=1440
 #export FHMAX_GFS_00=1800 # uncomment this line for 45 day run
 #export FHMAX_GFS_00=2520 # uncomment this line for 45 day run
 #export FHMAX_GFS_00=1920 # uncomment this line for 45 day run
@@ -610,7 +624,7 @@ export FH_CHUNK=${FH_CHUNK:-240}
 
  export FHOUT_GFS=3
 #export FHOUT_GFS=6
-#export FHOUT_GFS=1
+ export FHOUT_GFS=1
 #export FHOUT_GFS=0.125
  export FHOUT=$FHOUT_GFS
  export FHOUT_O=6            # ocan history output frequency
@@ -636,33 +650,45 @@ export FHMAX_COLD=1
 # if gaussian_grid, set OUTPUT_FILE for nemsio or netcdf
 #export QUILTING=.true.
 #export OUTPUT_GRID=gaussian_grid
- export OUTPUT_FILE=netcdf
+#export OUTPUT_GRID=cubed_sphere_grid
+#export OUTPUT_FILE=netcdf
 export QUILTING=${QUILTING:-.true.}
 export OUTPUT_GRID=${OUTPUT_GRID:-gaussian_grid}
 export OUTPUT_FILE=${OUTPUT_FILE:-nemsio}
 
 # Microphysics Options: 99-ZhaoCarr, 8-Thompson; 6-WSM6, 10-MG, 11-GFDL
 if [ $satmedmf = .true. ] ; then
- export imp_physics=99
- export RAS=NO
- export SHOC=NO
- export CSAW=NO
- export isatmedmf=0
- export oz_phys=.true.
- export oz_phys_2015=.false.
+  if [ $v17ras = YES -o $v17rasnoshal = YES ] ; then
+    export imp_physics=11
+    export RAS=YES
+    export SHOC=NO
+    export CSAW=NO
+    export MGVER=-1
+    export isatmedmf=1
+    export oz_phys=.flse.
+    export oz_phys_2015=.true.
+  else
+    export imp_physics=99
+    export RAS=NO
+    export SHOC=NO
+    export CSAW=NO
+    export isatmedmf=0
+    export oz_phys=.true.
+    export oz_phys_2015=.false.
+  fi
 else
- export imp_physics=10
- export MGVER=2
-#export imp_physics=99
-#export imp_physics=11
-#export MGVER=-1
- export RAS=YES
- export SHOC=YES
-#export CSAW=YES
+  export imp_physics=10
+  export MGVER=2
+# export imp_physics=99
+# export imp_physics=11
+# export MGVER=-1
+  export RAS=YES
+  export SHOC=YES
+# export CSAW=YES
 
-#export RAS=NO
-#export SHOC=NO
-#export CSAW=NO
+# export RAS=NO
+# export SHOC=NO
+# export CSAW=NO
 fi
 #export do_ugwp=.false.
 

@@ -584,7 +584,7 @@ NC2NEMSIOSH="$HOMEgfs/ush/fv3gfs_nc2nemsio.sh"
   O3FORC=ozprdlos_2015_new_sbuvO3_tclm15_nuchem.f77 # to use new ozone forcing
  fi
 
- hord_tr=13    # has 2dx filter for tracer
+#hord_tr=13    # has 2dx filter for tracer
 
  RAS=${RAS:-NO}
  CSAW=${CSAW:-NO}
@@ -714,6 +714,7 @@ if [ $ras = .true. ] ; then
 #hord_vt=5
 #hord_tm=5
 #hord_dp=-5
+#hord_tr=-8
 fi
 FVER=""
 if [ $do_shoc = .true. ] ; then
@@ -991,7 +992,9 @@ n_sponge=$((LEVS/3))
 #n_sponge=24
 n_sponge=$((LEVS/5))
 n_sponge=$((LEVS/4))
+if [ $levs -gt 65 ] ; then
  n_sponge=$((LEVS-2))
+fi
 
 min_seaice=1.0e-11
 min_seaice=1.0e-6
@@ -999,7 +1002,7 @@ min_seaice=1.0e-6
 min_seaice=${min_seaice:-0.15}
 min_lakeice=${min_lakeice:-0.15}
 frac_grid=${frac_grid:-.false.}
-if [ $cplflx = .false. ] ; then min_seaice=$min_lakeice ; fi # for uncoupled case use same min sea and lake ice
+#if [ $cplflx = .false. ] ; then min_seaice=$min_lakeice ; fi # for uncoupled case use same min sea and lake ice
 sfc_z0_type=${sfc_z0_type:-0}
 #fhswr=$DELTIM
 #fhlwr=$DELTIM
