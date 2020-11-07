@@ -70,14 +70,15 @@ case $case_in in
         ;;
     C384)
         export DELTIM=300
+#       export DELTIM=240
 #       export DELTIM=225
 #       export DELTIM=180
 #       export DELTIM=120
-        export DELTIM=450
+#       export DELTIM=450
 #       export DELTIM=600
         export k_split=2
         export n_split=6
-        export n_split=8          # 9 month run from march 15 to Oct
+#       export n_split=8          # 9 month run from march 15 to Oct
 #       export n_split=10         # 9 month run requires this from Oct to Jan
 #       export n_split=12         # 9 month run requires this from Oct to Jan
 #       export OCNTIM=300
@@ -94,13 +95,14 @@ case $case_in in
 
                                   # 64  layers
         export layout_x=6
-        export layout_y=8
+        export layout_y=6
+#       export layout_y=8
                                   # 127 layers
 #       export layout_x=8
 #       export layout_y=12
 
-#       export io_layout_x=2      # restart may not reproduce!
-#       export io_layout_y=2      # restart may not reproduce!
+        export io_layout_x=2      # restart may not reproduce!
+        export io_layout_y=2      # restart may not reproduce!
         export io_layout_x=${io_layout_x:-1}
         export io_layout_y=${io_layout_y:-1}
         if [ $machine == WCOSS_DELL_P3 ] ; then
@@ -133,7 +135,7 @@ case $case_in in
 #       export cdmbgwd="-1.0,1.2,0.0,0.0"  # mountain blocking and gravity wave drag
 #       export WRITE_GROUP=1
         export WRITE_GROUP=2
-        export WRITE_GROUP=3
+#       export WRITE_GROUP=3
 #       export WRITE_GROUP=4
         export WRITE_GROUP_GFS=$WRITE_GROUP
         export WRTIOBUF="16M"

@@ -17,8 +17,9 @@ export QUEUE="@QUEUE@"
 export QUEUE_ARCH="@QUEUE_ARCH@"
 
  export LEVS=128
- export LEVS=65
+#export LEVS=65
 
+ export IAER=5111
 #export IAER=1111
 #export iccn=2
 #export iaerclm=.true.
@@ -93,7 +94,7 @@ export REALTIME=NO
  export CPLD_APP=YES                # use coupled app
 #export INLINE_POST=YES             # turn on inline post
 #export USE_COLDSTART=.true.        # uncomment this line to turn on cold start step
-#export frac_grid=.true.            # uncomment to turn on fractional grid
+ export frac_grid=.true.            # uncomment to turn on fractional grid
  export mediator=cmeps              # comment this line for nems mediator
  export CICE=CICE6                  # comment this line to rutn on CIC5
 #export ICE_WW3_OVERLAP=YES         # uncomment this line to overlap ww3 and cice pes (with CICE6 only)
@@ -141,7 +142,8 @@ fi
 
  RUN_CCPP=${RUN_CCPP:-NO}
  if [ $RUN_CCPP = NO ] ; then IPD='_ipd' ; fi
-#if [ $RUN_CCPP = NO ] ; then IPD='_ipdr' ; fi
+ if [ $RUN_CCPP = NO ] ; then IPD='_ipdr' ; fi
+ if [ $RUN_CCPP = NO ] ; then IPD='_ipdm' ; fi
 #IPD=r
 #IPD=n
  IPD=${IPD:-""}
@@ -180,10 +182,10 @@ export MOM6_RIVER_RUNOF=${MOM6_RIVER_RUNOF:-False}
 
 #g0nosc=/gpfs/dell2/emc/modeling/noscrub
 export FIX_LAKE_ORO=$NOSCRUB/oro_lake
-export use_lake_oro=YES
+ export use_lake_oro=YES
 #export use_lake_oro=NO
 
- export NSOUT=1
+#export NSOUT=1
  export NSOUT=${NSOUT:-0}
 
 #export LINK_OCN_FILES=NO
@@ -273,14 +275,19 @@ if [ $machine = HERA ]; then
 #export appdir=ufs_compile2
 fi
 
-# export satmedmf=.true.
+  export satmedmf=.true.
   export satmedmf=${satmedmf:-.false.}
 
 # export DONST=NO
   export DONST=YES
   export DONST=${DONST:-NO}
 
-# export v17ras=YES
+# export V16="_v16"
+  export V16=${V16:-""}
+# export RAS=NO
+  if [ ${V16:-none} = _v16 ] ; then export use_lake_oro=NO ; fi
+
+  export v17ras=YES
   export v17ras=${v17ras:-NO}
 
 # export v17rasnoshal=YES
@@ -566,9 +573,9 @@ export FH_CHUNK=${FH_CHUNK:-240}
  export restart_interval=864000
 #export restart_interval=432000
 #export restart_interval=86400
-#export restart_interval=43200
- export restart_interval=21600
-#export restart_interval=10800
+ export restart_interval=43200
+#export restart_interval=21600
+ export restart_interval=10800
 #export restart_interval=7200
 #export restart_interval=3600
  export restart_interval_atm=$((restart_interval/3600))
@@ -581,8 +588,8 @@ export FH_CHUNK=${FH_CHUNK:-240}
 #export FHMAX_GFS_00=96
 #export FHMAX_GFS_00=36
 #export FHMAX_GFS_00=27
- export FHMAX_GFS_00=26
-#export FHMAX_GFS_00=24
+#export FHMAX_GFS_00=26
+ export FHMAX_GFS_00=24
 #export FHMAX_GFS_00=15
 #export FHMAX_GFS_00=12
 #export FHMAX_GFS_00=9
@@ -622,9 +629,9 @@ export FH_CHUNK=${FH_CHUNK:-240}
  export FHMAX_GFS=$(eval echo \${FHMAX_GFS_$cyc})
  export FH_CHUNK=${FH_CHUNK:-$FHMAX_GFS}
 
- export FHOUT_GFS=3
-#export FHOUT_GFS=6
- export FHOUT_GFS=1
+#export FHOUT_GFS=3
+ export FHOUT_GFS=6
+#export FHOUT_GFS=1
 #export FHOUT_GFS=0.125
  export FHOUT=$FHOUT_GFS
  export FHOUT_O=6            # ocan history output frequency
@@ -651,7 +658,7 @@ export FHMAX_COLD=1
 #export QUILTING=.true.
 #export OUTPUT_GRID=gaussian_grid
 #export OUTPUT_GRID=cubed_sphere_grid
-#export OUTPUT_FILE=netcdf
+ export OUTPUT_FILE=netcdf
 export QUILTING=${QUILTING:-.true.}
 export OUTPUT_GRID=${OUTPUT_GRID:-gaussian_grid}
 export OUTPUT_FILE=${OUTPUT_FILE:-nemsio}
@@ -660,7 +667,7 @@ export OUTPUT_FILE=${OUTPUT_FILE:-nemsio}
 if [ $satmedmf = .true. ] ; then
   if [ $v17ras = YES -o $v17rasnoshal = YES ] ; then
     export imp_physics=11
-    export RAS=YES
+    export RAS=${RAS:-YES}
     export SHOC=NO
     export CSAW=NO
     export MGVER=-1
@@ -716,7 +723,8 @@ if [ $DOHYBVAR = YES ] ; then
 fi
 export SCRDIR=$HOMEgfs/scripts
 #FORECASTSH="$SCRDIR/exglobal_fcst_nemsfv3_res.sh"   # with    UGW
- export FORECASTSH=${FORECASTSH:-"$SCRDIR/exglobal_fcst_emcufs.sh"}    # with    UGW
+#export FORECASTSH=${FORECASTSH:-"$SCRDIR/exglobal_fcst_emcufs.sh"}    # with    UGW
+ export FORECASTSH=${FORECASTSH:-"$SCRDIR/exglobal_fcst_emcufs.sh$V16"}    # with    UGW
 if [ $CPLD_APP = YES ] ; then
 # export FCSTEXECDIR="$HOMEgfs/exec"
 # export FCSTEXEC="nems_fv3_mom6_cice5.ccppo"

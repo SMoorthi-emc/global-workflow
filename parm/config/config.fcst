@@ -113,10 +113,12 @@ atmos_model_nml=${atmos_model_nml:-''}
 #fv_sg_adj=600
 #fv_sg_adj=900
 #d2_bg=0.005
-#d2_bg_k1=0.2
- d2_bg_k1=0.16
- d2_bg_k2=0.05
- d_ext=0.01
+ d2_bg_k1=0.2
+ d2_bg_k2=0.04
+#d2_bg_k1=0.16
+#d2_bg_k2=0.05
+#d_ext=0.01
+ d_ext=0.00
  do_vort_damp=.true.
 #
 #REMAP_GRID=${REMAP_GRID:-latlon}
@@ -363,7 +365,8 @@ MGVER=${MGVER:--1}
 
 NST_GSI=0
 
-if [ ${RAS:-NO} = YES ] ; then
+RAS=${RAS:-NO}
+if [ $RAS = YES ] ; then
   ras=.true.                      # turn on RAS
 # trans_trac=.false.
 # shal_cnv=.false.
@@ -443,7 +446,10 @@ elif [ $imp_physics -eq 11 ] ; then # GFDL
   cal_pre=.false.
   do_sat_adj=.true.
   reiflag=2
-# random_clds=.false.
+  if [ $RAS = NO ] ; then
+   random_clds=.false.
+   cnvcld=.true.
+  fi
 
   hord_mt_nh_nonmono=5
   hord_xx_nh_nonmono=5
@@ -451,6 +457,7 @@ elif [ $imp_physics -eq 11 ] ; then # GFDL
   nord=2
   dddmp=0.1
   d4_bg=0.12
+  vtdm4=0.02
 
   tau_l2r=300.0
 # tau_l2r=600.0
@@ -466,7 +473,7 @@ elif [ $imp_physics -eq 11 ] ; then # GFDL
   rh_ins=${rh_ins:-0.30}
   tau_i2s=${tau_i2s:-1000.0}
   tau_l2r=${tau_l2r:-900.0}
-  tau_l2v=${tau_l2v:-300.}
+  tau_l2v=${tau_l2v:-225.}
   tau_v2l=${tau_v2l:-150.}
   tau_g2v=${tau_g2v:-900.}
   rthresh=${rthresh:-10.e-6}
@@ -654,7 +661,9 @@ do_shoc=${do_shoc:-.false.}      # default
 
  cscnv=${cscnv:-.false.}
  ras=${ras:-.false.}
- cnvcld=.false.
+ if [ $ras = .true. -o $cscnv = .true. ] ; then
+   cnvcld=.false.
+ fi
 #cs_parm="8.0,4.0,1.0e3,4.0e3,20.0,1.0,0.0,1.0,0.0,0.0" # flux form AW Dec04
  cs_parm="8.0,4.0,1.0e3,3.5e3,20.0,1.0,0.0,1.0,0.6,0.0" # flux form AW Dec04
 #cs_parm="8.0,4.0,1.0e3,3.5e3,20.0,1.0,0.0,1.0,0.7,0.0" # flux form AW Dec04
@@ -674,13 +683,15 @@ fi
  fhouri=3.0
  fac_n_spl=2.0
 #fac_n_spl=1.5
+ fhouri=0.0
+ fac_n_spl=1.0
 
 #
 #
 
- tau=5.0             # GFDL Rayleigh friction
+#tau=5.0             # GFDL Rayleigh friction
                      # ----------------------
-#tau=10.0
+ tau=10.0
 #tau=2.0
 rf_cutoff=750.0
 prslrd0=0.0
@@ -891,9 +902,11 @@ if [ $ras = .true. -o $cscnv = .true. ] ; then imfdeepcnv=-1 ; fi
 #cnvgwd=.false.
 
 zhao_mic=${zhao_mic:-.false}
-psautco=${psautco:-"6.0d-4,3.0d-4"}
+psautco=${psautco:-"0.0008,0.0005"}
+prautco=${prautco:-"0.00015,0.00015"}
+#psautco=${psautco:-"6.0d-4,3.0d-4"}
 #prautco=${prautco:-"6.0d-4,3.0d-4"}
-prautco=${prautco:-"1.0d-4,1.0d-4"}
+#prautco=${prautco:-"1.0d-4,1.0d-4"}
 wminco=${wminco:-"1.0d-5,1.0d-6"}
 evpco=${evpco:-2.0d-5}
 crtrh=${crtrh:-"0.90,0.90,0.90"}
@@ -992,9 +1005,10 @@ n_sponge=$((LEVS/3))
 #n_sponge=24
 n_sponge=$((LEVS/5))
 n_sponge=$((LEVS/4))
-if [ $levs -gt 65 ] ; then
+if [ $LEVS -gt 65 ] ; then
  n_sponge=$((LEVS-2))
 fi
+if [ $LEVS -gt 120 ] ; then  n_sponge=42 ; fi
 
 min_seaice=1.0e-11
 min_seaice=1.0e-6
@@ -1002,7 +1016,7 @@ min_seaice=1.0e-6
 min_seaice=${min_seaice:-0.15}
 min_lakeice=${min_lakeice:-0.15}
 frac_grid=${frac_grid:-.false.}
-#if [ $cplflx = .false. ] ; then min_seaice=$min_lakeice ; fi # for uncoupled case use same min sea and lake ice
+ if [ $cplflx = .false. ] ; then min_seaice=$min_lakeice ; fi # for uncoupled case use same min sea and lake ice
 sfc_z0_type=${sfc_z0_type:-0}
 #fhswr=$DELTIM
 #fhlwr=$DELTIM
@@ -1026,8 +1040,8 @@ fi
 #IAER=1111  #spectral band mapping method for aerosol optical properties
 iovr_lw=3   #de-correlation length cloud overlap method (Barker, 2008)
 iovr_sw=3   #de-correlation length cloud overlap method (Barker, 2008)
-iovr_lw=2   #de-correlation length cloud overlap method (Barker, 2008)
-iovr_sw=2   #de-correlation length cloud overlap method (Barker, 2008)
+#iovr_lw=2   #de-correlation length cloud overlap method (Barker, 2008)
+#iovr_sw=2   #de-correlation length cloud overlap method (Barker, 2008)
 icliq_sw=2  #cloud optical coeffs from AER's newer version v3.9-v4.0 for hu and stamnes
 #
 IAER=${IAER:-111}
@@ -1042,35 +1056,35 @@ iaerclm=${iaerclm:-.false.}
 # ideflate: netcdf zlib lossless compression (0-9): 0 no compression
 # nbits: netcdf lossy compression level (0-32): 0 lossless
 
-#ideflate=1
-#nbits=14
-#ishuffle=0
+ideflate=1
+nbits=14
+ishuffle=0
 # compression for RESTART files written by FMS
-#shuffle=1
-#deflate_level=1
+shuffle=1
+deflate_level=1
 
-#OUTPUT_FILETYPES=$OUTPUT_FILE
-#if [[ $OUTPUT_FILE == netcdf ]]; then
-#  ichunk2d=0 ; jchunk2d=0
-#  ichunk3d=0 ; jchunk3d=0 ;  kchunk3d=0
-#  RESTILE=`echo $CASE |cut -c 2-`
-#  if [[ $machine == WCOSS_DELL_P3 ]] ; then
-#    if [ $RESTILE -ge 768 ]; then
-#      OUTPUT_FILETYPES=" 'netcdf_parallel' 'netcdf_parallel' "
-#      ichunk3d=$((4*RESTILE))
-#      jchunk3d=$((2*RESTILE))
-#      kchunk3d=1
-#    else
-#      OUTPUT_FILETYPES=" 'netcdf_parallel' 'netcdf' "
-#    fi
-#  fi
-#  if [[ $machine == HERA ]] ; then
-#    OUTPUT_FILETYPES=" 'netcdf_parallel' 'netcdf_parallel' "
-#    if [ $RESTILE -le 192 ] ; then
-#       OUTPUT_FILETYPES=" 'netcdf_parallel' 'netcdf' "
-#    fi
-#  fi
-#fi
+OUTPUT_FILETYPES=$OUTPUT_FILE
+if [[ $OUTPUT_FILE == netcdf ]] ; then
+  ichunk2d=0 ; jchunk2d=0
+  ichunk3d=0 ; jchunk3d=0 ;  kchunk3d=0
+  RESTILE=`echo $CASE |cut -c 2-`
+  if [[ $machine == WCOSS_DELL_P3 ]] ; then
+    if [ $RESTILE -ge 768 ]; then
+      OUTPUT_FILETYPES=" 'netcdf_parallel' 'netcdf_parallel' "
+      ichunk3d=$((4*RESTILE))
+      jchunk3d=$((2*RESTILE))
+      kchunk3d=1
+    else
+      OUTPUT_FILETYPES=" 'netcdf_parallel' 'netcdf' "
+    fi
+  fi
+  if [[ $machine == HERA ]] ; then
+    OUTPUT_FILETYPES=" 'netcdf_parallel' 'netcdf_parallel' "
+    if [ $RESTILE -le 192 ] ; then
+       OUTPUT_FILETYPES=" 'netcdf_parallel' 'netcdf' "
+    fi
+  fi
+fi
 
 
 #---------------------------------------------------------------------

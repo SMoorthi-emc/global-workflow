@@ -1052,7 +1052,7 @@ write_dopost:               ${WRITE_DOPOST:-.false.}
 num_files:                  ${NUM_FILES:-2}
 filename_base:              ${FILENAME_BASE:-'atm sfc'}
 output_grid:                ${OUTPUT_GRID:-cubed_sphere_grid}
-output_file:                ${OUTPUT_FILE:-netcdf}
+output_file:                ${OUTPUT_FILETYPES:-${OUTPUT_FILE:-netcdf}}
 write_nemsioflip:           ${WRITE_NEMSIOFLIP:-.true.}
 write_fsyncflag:            $WRITE_FSYNCFLAG
 imo:                        ${imo:-${LONB_IMO:-384}}
@@ -1210,7 +1210,7 @@ cat > input.nml << EOF
        hord_vt             = ${hord_vt:-5}
        hord_tm             = ${hord_tm:-5}
        hord_dp             = ${hord_dp:--5}
-       hord_tr             = ${hord_tr:--8}
+       hord_tr             = ${hord_tr:-8}
        adjust_dry_mass     = ${adjust_dry_mass:-.false.}
        dry_mass            = ${dry_mass:-98320.0}
        consv_te            = ${consv_te:-0.0}
@@ -1260,7 +1260,6 @@ cat > input.nml << EOF
        ialb           = ${IALB:-1}
        iems           = ${iems:-1}
        iaer           = ${iaer:-${IAER:-111}}
-       iaerclm        = ${iaerclm:-.false.}
        icliq_sw       = ${icliq_sw:-2}
        iovr_lw        = ${iovr_lw:-3}
        iovr_sw        = ${iovr_sw:-3}
@@ -1316,34 +1315,16 @@ cat > input.nml << EOF
        pdfcld         = ${pdfcld:-.false.}
        ccwf           = ${ccwf:-"1.0, 1.0"}
        dlqf           = ${dlqf:-"0.25, 0.05"}
-       mg_dcs         = ${mg_dcs:-100.0}
-       mg_ts_auto_ice = ${mg_ts_auto_ice:-"180.0,180.0"}
-       mg_qcvar       = ${mg_qcvar:-1.0}
-       mg_qcmin       = ${mg_qcmin:-"1.0e-8,1.0e-7"}
-       mg_alf         = ${mg_alf:-1.0}
-       fprcp          = ${fprcp:-0}
-       pdfflag        = ${pdfflag:-4}
-       iccn           = ${iccn:-0}
-       mg_do_graupel  = ${mg_do_graupel:-.false.}
-       mg_do_hail     = ${mg_do_hail:-.false.}
-       do_sb_physics  = ${do_sb_physics:-.true.}
-       mg_do_ice_gmao = ${mg_do_ice_gmao:-.true.}
-       mg_do_liq_liu  = ${mg_do_liq_liu:-.true.}
-       cs_parm        = ${cs_parm:-"8.0,4.0,1.0e3,3.5e3,20.0,1.0,-999.,1.,0.,0."}
-       ctei_rm        = ${ctei_rm:-"10.0,10.0"}
        max_lon        = ${max_lon:-8000}
        max_lat        = ${max_lat:-4000}
        rhcmax         = ${rhcmax:-0.9999999}
        effr_in        = ${effr_in:-.true.}
        ccnorm         = ${ccnorm:-.true.}
 
+       cplwav         = ${cplwav:-.false.}
+
        ltaerosol      = ${ltaerosol:-.false.}
        lradar         = ${lradar:-.false.}
-
-       cplflx         = ${cplflx:-${CPLFLX:-.false.}}
-       cplwav         = ${cplwav:-${CPLWAV:-.false.}}
-       cplwav2atm     = ${cplwav2atm:-${CPLWAV2ATM:-.false.}}
-       cplchm         = ${cplchm:-${CPLCHM:-.false.}}
 
        iau_delthrs    = ${iau_delthrs:-6}
        iaufhrs        = ${iaufhrs:-30}
@@ -1351,23 +1332,8 @@ cat > input.nml << EOF
        lheatstrg      = ${lheatstrg:-.true.}
        lgfdlmprad     = ${lgfdlmprad:-.true.}
 
-       nca            = ${nca:-1}
-       ncells         = ${ncells:-5}
-       nfracseed      = ${nfracseed:-0.5}
-       nlives         = ${nlives:-30}
-       nthresh        = ${nthresh:-0.5}
-       nseed          = ${nseed:-100000}
-       do_ca          = ${do_ca:-.false.}
-       ca_global      = ${ca_global:-.false.}
-       ca_sgs         = ${ca_sgs:-.true.}
-       ca_smooth      = ${ca_smooth:-.false.}
-       nspinup        = ${nspinup:-1000}
-       iseed_ca       = ${iseed_ca:-0}
-
        min_seaice     = ${min_seaice:-1.0e-6}
        min_lakeice    = ${min_lakeice:-0.15}
-       frac_grid      = ${frac_grid:-.false.}
-       ignore_lake    = ${ignore_lake:-.false.}
        sfc_z0_type    = ${sfc_z0_type:-0}
 
        do_sppt        = ${do_sppt:-.false.}
@@ -1406,6 +1372,7 @@ if [ $DOIAU = YES ] ; then
        iaufhrs        = ${IAUFHRS:-0}
        iau_delthrs    = ${IAU_DELTHRS:-0}
        iau_inc_files  = ${IAU_INC_FILES:-""}
+       iau_drymassfixer = i${iau_drymassfixer:-.false.}
 EOF
 fi
 cat >> input.nml << EOF
