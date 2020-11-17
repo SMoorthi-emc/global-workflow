@@ -162,7 +162,7 @@ Create COMROT experiment directory structure'''
       execbase = '/gpfs/dell2/emc/modeling/noscrub/$USER'
       account  = 'GFS-DEV'
       queue    = 'dev'
-#     queue    = 'debug'
+      queue    = 'debug'
       queue_arch = 'dev_transfer'
       if partition in ['3p5']:
         queue = 'dev2'

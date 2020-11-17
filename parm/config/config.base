@@ -17,7 +17,7 @@ export QUEUE="@QUEUE@"
 export QUEUE_ARCH="@QUEUE_ARCH@"
 
  export LEVS=128
-#export LEVS=65
+ export LEVS=65
 
  export IAER=5111
 #export IAER=1111
@@ -91,7 +91,7 @@ export REALTIME=NO
 #export RUN_CCPP=YES                # turn on ccpp physics
 #export HYPT=on                     # turn on hyper threading
 #export cplflx=.true.               # turn on cupule model 
- export CPLD_APP=YES                # use coupled app
+#export CPLD_APP=YES                # use coupled app
 #export INLINE_POST=YES             # turn on inline post
 #export USE_COLDSTART=.true.        # uncomment this line to turn on cold start step
  export frac_grid=.true.            # uncomment to turn on fractional grid
@@ -141,16 +141,16 @@ fi
 #export DumpFields_ICE=true
 
  RUN_CCPP=${RUN_CCPP:-NO}
- if [ $RUN_CCPP = NO ] ; then IPD='_ipd' ; fi
- if [ $RUN_CCPP = NO ] ; then IPD='_ipdr' ; fi
- if [ $RUN_CCPP = NO ] ; then IPD='_ipdm' ; fi
+#if [ $RUN_CCPP = NO ] ; then IPD='_ipd' ; fi
+#if [ $RUN_CCPP = NO ] ; then IPD='_ipdr' ; fi
+#if [ $RUN_CCPP = NO ] ; then IPD='_ipdm' ; fi
 #IPD=r
 #IPD=n
  IPD=${IPD:-""}
 
 #appdate=Aug12
 #appdate=Sep15                   # latest version
-appdate=${appdate:-Oct10}        # version prior to the above on wcoss
+ appdate=${appdate:-Oct10}       # version prior to the above on wcoss
 
 export cplflx=${cplflx:-.false.}
 export CPLD_APP=${CPLD_APP:-NO}
@@ -287,6 +287,9 @@ fi
 # export RAS=NO
   if [ ${V16:-none} = _v16 ] ; then export use_lake_oro=NO ; fi
 
+# export v17sas=YES
+  export v17sas=${v17sas:-NO}
+
   export v17ras=YES
   export v17ras=${v17ras:-NO}
 
@@ -326,23 +329,27 @@ if [ ${RUN_CCPP:-YES} = YES ] ; then
   if [ $satmedmf = .true. ] ; then
     if [ $v17ras = YES ] ; then
       export CCPP_SUITE=FV3_GFS_v17_cpldnsstras
+#     if [ $cplflx = .false. ] ; then export CCPP_SUITE=FV3_GFS_v17_ras ; fi
     elif [ $v17rasnoshal = YES ] ; then
       export CCPP_SUITE=FV3_GFS_v17_cpldnsstrasnoshal
     else
 #     export CCPP_SUITE=FV3_GFS_2017_satmedmf_coupled
       export CCPP_SUITE=FV3_GFS_2017_couplednsst
+      export CCPP_SUITE=FV3_GFS_v17_cpldnsstsas
+      if [ $cplflx = .false. ] ; then export CCPP_SUITE=FV3_GFS_v17_sas ; fi
     fi
   fi
   export CCPP_SUITE=${CCPP_SUITE:-FV3_GFS_v15_rasmgshoc}
   if [ $CPLD_APP = NO ] ; then
-   export CCPP_SUITE=FV3_GFS_v15_rasmgshoc
-   export CCPP_SUITE=FV3_GFS_2017
+#  export CCPP_SUITE=FV3_GFS_v15_rasmgshoc
+#  export CCPP_SUITE=FV3_GFS_2017
    export SCRDIR=$HOMEgfs/scripts
 #  export FORECASTSH="$SCRDIR/exglobal_fcst_emcufs.sh_feb02"    # with    UGW
    export FCSTEXECDIR=$EXECBASE/$appdir/$app/tests
    export FCSTEXEC=fv3_ccpprms.exe            # RAS, MG3, SHOC
    export FCSTEXEC=fv3_ccpprms.exe            # RAS, MG3, SHOC
    export FCSTEXEC=fcst_fv3_2017.exe
+   export FCSTEXEC=fcst_fv3_2020.exe
   fi
 # export FCSTEXEC=fv3_ccpprms0.exe            # RAS, MG3, SHOC
 # export FCSTEXEC=fv3_ccpprmsd.exe            # RAS, MG3, SHOC
@@ -575,7 +582,7 @@ export FH_CHUNK=${FH_CHUNK:-240}
 #export restart_interval=86400
  export restart_interval=43200
 #export restart_interval=21600
- export restart_interval=10800
+#export restart_interval=10800
 #export restart_interval=7200
 #export restart_interval=3600
  export restart_interval_atm=$((restart_interval/3600))
@@ -629,7 +636,7 @@ export FH_CHUNK=${FH_CHUNK:-240}
  export FHMAX_GFS=$(eval echo \${FHMAX_GFS_$cyc})
  export FH_CHUNK=${FH_CHUNK:-$FHMAX_GFS}
 
-#export FHOUT_GFS=3
+ export FHOUT_GFS=3
  export FHOUT_GFS=6
 #export FHOUT_GFS=1
 #export FHOUT_GFS=0.125
@@ -665,9 +672,10 @@ export OUTPUT_FILE=${OUTPUT_FILE:-nemsio}
 
 # Microphysics Options: 99-ZhaoCarr, 8-Thompson; 6-WSM6, 10-MG, 11-GFDL
 if [ $satmedmf = .true. ] ; then
-  if [ $v17ras = YES -o $v17rasnoshal = YES ] ; then
+  if [ $v17ras = YES -o $v17rasnoshal = YES -o $v17sas = YES ] ; then
     export imp_physics=11
     export RAS=${RAS:-YES}
+    if [ $v17sas = YES ] ; then export RAS=NO ; fi
     export SHOC=NO
     export CSAW=NO
     export MGVER=-1
@@ -746,7 +754,8 @@ elif [ $RUN_CCPP = NO ] ; then
 # export FCSTEXECDIR=$g0nosc/Shrinivas.Moorthi/fv3_git1230/ufs-weather-model/tests
   export FCSTEXECDIR=$EXECBASE/$appdir/$app/tests
   export FCSTEXEC="fv3_5.exe"
-  export isatmedmf=0
+   export FCSTEXEC=fcst_fv3_2020.exe
+  export isatmedmf=${isatmedmf:-0}
 fi
 
 if [ ${NUMOM:-NO} = NO ] ; then
