@@ -88,10 +88,11 @@ export REALTIME=NO
 
 # some available switches
 # -----------------------
-#export RUN_CCPP=YES                # turn on ccpp physics
+ export USE_IOVR=YES
+ export RUN_CCPP=YES                # turn on ccpp physics
 #export HYPT=on                     # turn on hyper threading
-#export cplflx=.true.               # turn on cupule model 
-#export CPLD_APP=YES                # use coupled app
+ export cplflx=.true.               # turn on cupule model 
+ export CPLD_APP=YES                # use coupled app
 #export INLINE_POST=YES             # turn on inline post
 #export USE_COLDSTART=.true.        # uncomment this line to turn on cold start step
  export frac_grid=.true.            # uncomment to turn on fractional grid
@@ -596,7 +597,7 @@ export FH_CHUNK=${FH_CHUNK:-240}
 #export FHMAX_GFS_00=36
 #export FHMAX_GFS_00=27
 #export FHMAX_GFS_00=26
- export FHMAX_GFS_00=24
+#export FHMAX_GFS_00=24
 #export FHMAX_GFS_00=15
 #export FHMAX_GFS_00=12
 #export FHMAX_GFS_00=9
@@ -733,6 +734,9 @@ export SCRDIR=$HOMEgfs/scripts
 #FORECASTSH="$SCRDIR/exglobal_fcst_nemsfv3_res.sh"   # with    UGW
 #export FORECASTSH=${FORECASTSH:-"$SCRDIR/exglobal_fcst_emcufs.sh"}    # with    UGW
  export FORECASTSH=${FORECASTSH:-"$SCRDIR/exglobal_fcst_emcufs.sh$V16"}    # with    UGW
+ if [ $USE_IOVR = YES ] ; then
+   export FORECASTSH=$SCRDIR/exglobal_fcst_emcufs_iovr.sh    # with    iovr instead of iver_lw and iovr_sw
+ fi
 if [ $CPLD_APP = YES ] ; then
 # export FCSTEXECDIR="$HOMEgfs/exec"
 # export FCSTEXEC="nems_fv3_mom6_cice5.ccppo"
