@@ -88,10 +88,11 @@ export REALTIME=NO
 
 # some available switches
 # -----------------------
+ export pre_exe=fv3
  export USE_IOVR=YES
  export RUN_CCPP=YES                # turn on ccpp physics
 #export HYPT=on                     # turn on hyper threading
- export cplflx=.true.               # turn on cupule model 
+#export cplflx=.true.               # turn on cupule model 
  export CPLD_APP=YES                # use coupled app
 #export INLINE_POST=YES             # turn on inline post
 #export USE_COLDSTART=.true.        # uncomment this line to turn on cold start step
@@ -141,17 +142,21 @@ fi
 #export DumpFields_OCN=true
 #export DumpFields_ICE=true
 
- RUN_CCPP=${RUN_CCPP:-NO}
-#if [ $RUN_CCPP = NO ] ; then IPD='_ipd' ; fi
+ export RUN_CCPP=${RUN_CCPP:-NO}
+ if [ $RUN_CCPP = NO ] ; then IPD='_ipd' ; fi
 #if [ $RUN_CCPP = NO ] ; then IPD='_ipdr' ; fi
 #if [ $RUN_CCPP = NO ] ; then IPD='_ipdm' ; fi
 #IPD=r
 #IPD=n
+#IPD=_b
  IPD=${IPD:-""}
 
 #appdate=Aug12
 #appdate=Sep15                   # latest version
+#appdate=Oct10_prev              # latest version
  appdate=${appdate:-Oct10}       # version prior to the above on wcoss
+
+ app=ufs-weather-model
 
 export cplflx=${cplflx:-.false.}
 export CPLD_APP=${CPLD_APP:-NO}
@@ -191,7 +196,8 @@ export FIX_LAKE_ORO=$NOSCRUB/oro_lake
 
 #export LINK_OCN_FILES=NO
 if [ $cplflx = .true. ] ; then
- app=ufs-s2s-model
+ app=${app:-ufs-s2s-model}
+ if [ $app = ufs-weather-model ] ; then CMEPS_NAME=CMEPS-interface/CMEPS ; fi
 #app=ufs-s2s-model_feb25
 #app=ufs-s2s-model_mar30
 #app=ufs-s2s-model_feb25_sav
@@ -226,7 +232,7 @@ if [ $cplflx = .true. ] ; then
  export NUMOM=YES
  export CPLD_APP=YES
 elif [ $CPLD_APP = YES ] ; then
- app=ufs-s2s-model
+ app=${app:-ufs-s2s-model}
 #app=ufs-s2s-model_feb25
 #app=ufs-s2s-model_mar30
 #export appdir=cfv3_git_jan08
@@ -338,6 +344,7 @@ if [ ${RUN_CCPP:-YES} = YES ] ; then
       export CCPP_SUITE=FV3_GFS_2017_couplednsst
       export CCPP_SUITE=FV3_GFS_v17_cpldnsstsas
       if [ $cplflx = .false. ] ; then export CCPP_SUITE=FV3_GFS_v17_sas ; fi
+#     if [ $cplflx = .false. ] ; then export CCPP_SUITE=FV3_GFS_v16beta ; fi
     fi
   fi
   export CCPP_SUITE=${CCPP_SUITE:-FV3_GFS_v15_rasmgshoc}
@@ -638,7 +645,7 @@ export FH_CHUNK=${FH_CHUNK:-240}
  export FH_CHUNK=${FH_CHUNK:-$FHMAX_GFS}
 
  export FHOUT_GFS=3
- export FHOUT_GFS=6
+#export FHOUT_GFS=6
 #export FHOUT_GFS=1
 #export FHOUT_GFS=0.125
  export FHOUT=$FHOUT_GFS
@@ -666,7 +673,7 @@ export FHMAX_COLD=1
 #export QUILTING=.true.
 #export OUTPUT_GRID=gaussian_grid
 #export OUTPUT_GRID=cubed_sphere_grid
- export OUTPUT_FILE=netcdf
+#export OUTPUT_FILE=netcdf
 export QUILTING=${QUILTING:-.true.}
 export OUTPUT_GRID=${OUTPUT_GRID:-gaussian_grid}
 export OUTPUT_FILE=${OUTPUT_FILE:-nemsio}
@@ -681,7 +688,7 @@ if [ $satmedmf = .true. ] ; then
     export CSAW=NO
     export MGVER=-1
     export isatmedmf=1
-    export oz_phys=.flse.
+    export oz_phys=.false.
     export oz_phys_2015=.true.
   else
     export imp_physics=99
@@ -734,6 +741,7 @@ export SCRDIR=$HOMEgfs/scripts
 #FORECASTSH="$SCRDIR/exglobal_fcst_nemsfv3_res.sh"   # with    UGW
 #export FORECASTSH=${FORECASTSH:-"$SCRDIR/exglobal_fcst_emcufs.sh"}    # with    UGW
  export FORECASTSH=${FORECASTSH:-"$SCRDIR/exglobal_fcst_emcufs.sh$V16"}    # with    UGW
+ export USE_IOVR=${USE_IOVR:-NO}
  if [ $USE_IOVR = YES ] ; then
    export FORECASTSH=$SCRDIR/exglobal_fcst_emcufs_iovr.sh    # with    iovr instead of iver_lw and iovr_sw
  fi
@@ -745,7 +753,8 @@ if [ $CPLD_APP = YES ] ; then
   export FCSTEXECDIR=${FCSTEXECDIR:-$EXECBASE/$appdir/$app/tests}
 # export model_name=fv3_mom6_cice_nemsland
 # export model_name=fcst_${mediator}_$CICE
-  export model_name=fcst_${mediator}_${CICE}$IPD
+  export pre_exe=${pre_exe:-fcst}
+  export model_name=${pre_exe}_${mediator}_${CICE}$IPD
 # export model_name=fcst_${mediator}_${CICE}o
 # export model_name=fv3_mom6_cice_nemsland
 # export model_name=fcst_nems_debug
@@ -775,7 +784,7 @@ if [ $CPLDFV3_MOM6_CICE = YES ] ; then
     else
       export CPLPREPSH=$HOMEgfs/scripts/prep_coupled_fcst_emcufs_cmeps_cice6.sh
     fi
-    export CMEPS_DIR=${CMEPS_DIR:-$EXECBASE/$appdir/$app/CMEPS}
+    export CMEPS_DIR=${CMEPS_DIR:-$EXECBASE/$appdir/$app/${CMEPS_NAME:-CMEPS}}
   else
     export CPLPREPSH=$HOMEgfs/scripts/prep_coupled_fcst_emcufs.sh
   fi

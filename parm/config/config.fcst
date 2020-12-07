@@ -1003,12 +1003,13 @@ launch_level=${launch_level:-$((LEVS*3/7))}
 n_sponge=$((LEVS/6))
 n_sponge=$((LEVS/3))
 #n_sponge=24
-n_sponge=$((LEVS/5))
-n_sponge=$((LEVS/4))
+#n_sponge=$((LEVS/5))
+#n_sponge=$((LEVS/4))
 if [ $LEVS -gt 65 ] ; then
  n_sponge=$((LEVS-2))
 fi
 if [ $LEVS -gt 120 ] ; then  n_sponge=42 ; fi
+#n_sponge=$((LEVS-2))
 
 min_seaice=1.0e-11
 min_seaice=1.0e-6
