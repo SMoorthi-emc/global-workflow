@@ -17,7 +17,7 @@ export QUEUE="@QUEUE@"
 export QUEUE_ARCH="@QUEUE_ARCH@"
 
  export LEVS=128
-#export LEVS=65
+ export LEVS=65
 
  export IAER=5111
 #export IAER=1111
@@ -89,7 +89,8 @@ export REALTIME=NO
 # some available switches
 # -----------------------
  export pre_exe=fv3
- export app=ufs-weather-model
+#export app=ufs-weather-model
+ export app=ufs-weather-model_Dec10
 
  export USE_IOVR=YES
  export RUN_CCPP=YES                # turn on ccpp physics
@@ -200,7 +201,7 @@ export FIX_LAKE_ORO=$NOSCRUB/oro_lake
 #export LINK_OCN_FILES=NO
 if [ $cplflx = .true. ] ; then
  app=${app:-ufs-s2s-model}
- if [ $app = ufs-weather-model ] ; then CMEPS_NAME=CMEPS-interface/CMEPS ; fi
+ if [ $(echo $app | cut -c1-17) = ufs-weather-model ] ; then CMEPS_NAME=CMEPS-interface/CMEPS ; fi
 #app=ufs-s2s-model_feb25
 #app=ufs-s2s-model_mar30
 #app=ufs-s2s-model_feb25_sav
@@ -607,11 +608,11 @@ export FH_CHUNK=${FH_CHUNK:-240}
 #export FHMAX_GFS_00=36
 #export FHMAX_GFS_00=27
 #export FHMAX_GFS_00=26
- export FHMAX_GFS_00=24
+#export FHMAX_GFS_00=24
 #export FHMAX_GFS_00=15
 #export FHMAX_GFS_00=12
 #export FHMAX_GFS_00=9
- export FHMAX_GFS_00=6
+#export FHMAX_GFS_00=6
 #export FHMAX_GFS_00=3
 #export FHMAX_GFS_00=84
 #export FHMAX_GFS_00=93
