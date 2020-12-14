@@ -1658,6 +1658,11 @@ cat >> INPUT/MOM_input << EOF
  Z_OUTPUT_GRID_FILE = $Z_OUTPUT_GRID_FILE
 EOF
 fi
+if [ ${USE_LA_LI2016:-False} = True ] ; then
+cat >> INPUT/MOM_input << EOF
+ USE_LA_LI2016 = $USE_LA_LI2016
+EOF
+fi
 if [ ${USE_WAVES:-False} = True ] ; then          # for coupled MOM6 and WW3
 cat >> INPUT/MOM_input << EOF
  USE_WAVES = $USE_WAVES

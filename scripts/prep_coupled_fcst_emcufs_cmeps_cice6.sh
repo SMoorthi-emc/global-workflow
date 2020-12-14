@@ -204,6 +204,8 @@ $NCP $FIXmom/INPUT/* .
 
 #JW use updated MOM_input (WIND_STAGGER=A, no more MIN_Z_DIAG_INTERVAL and Z_OUTPUT_GRID_FILE)
 #cp -p $FIXmom/INPUT/MOM_input_update MOM_input
+$NCP $FIXmom/INPUT/${MOM_input_file:-MOM_input} MOM_input
+
 export WIND_STAGGER="A"              # default = "C"
                                      # A case-insensitive character string to indicate the
                                      # staggering of the input wind stress field.  Valid
