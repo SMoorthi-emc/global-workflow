@@ -400,9 +400,11 @@ fi
 export WRITE_DOPOST=${WRITE_DOPOST:-.false.}
 if [ $WRITE_DOPOST = .true. ] ; then
  if [ $machine = WCOSS_DELL_P3 ] ; then
-  export POSTDIR=/gpfs/dell2/emc/modeling/noscrub/Shrinivas.Moorthi/postdir_mar24/EMC_post
+# export POSTDIR=/gpfs/dell2/emc/modeling/noscrub/Shrinivas.Moorthi/postdir_mar24/EMC_post
+  export POSTDIR=/gpfs/dell2/emc/modeling/noscrub/Shrinivas.Moorthi/atm_post_dec16/EMC_post
  elif [ $machine = HERA ] ; then
-  export POSTDIR=/scratch1/NCEPDEV/global/Shrinivas.Moorthi/save/postdir/EMC_post
+# export POSTDIR=/scratch1/NCEPDEV/global/Shrinivas.Moorthi/save/postdir/EMC_post
+  export POSTDIR=/scratch1/NCEPDEV/global/Shrinivas.Moorthi/save/atm_post_dec16/EMC_post
  fi
  KPO=${KPO:-57}
  if [ $KPO -eq 47 ] ; then
