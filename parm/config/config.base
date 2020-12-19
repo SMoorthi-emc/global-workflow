@@ -97,7 +97,7 @@ export REALTIME=NO
 #export HYPT=on                     # turn on hyper threading
  export cplflx=.true.               # turn on cupule model 
  export CPLD_APP=YES                # use coupled app
-#export INLINE_POST=YES             # turn on inline post
+ export INLINE_POST=YES             # turn on inline post
 #export USE_COLDSTART=.true.        # uncomment this line to turn on cold start step
  export frac_grid=.true.            # uncomment to turn on fractional grid
  export mediator=cmeps              # comment this line for nems mediator
@@ -139,7 +139,8 @@ elif [ $OCNRES = '100' ] ; then
  export NY_GLB=320
  export BLCKX=60
 fi
-#export MOM_input_file=MOM_input_template_$OCNRES
+ export MOM_input_file=MOM_input_template_$OCNRES
+#export MOM_input_file=MOM_input_template_${OCNRES}_works
 
 #export DumpFields_MED=true
 #export DumpFields_ATM=true
@@ -600,7 +601,7 @@ export FH_CHUNK=${FH_CHUNK:-240}
  export restart_interval_atm=$((restart_interval/3600))
 
  export FHMAX_GFS_00=48
-#export FHMAX_GFS_00=72
+ export FHMAX_GFS_00=72
 #export FHMAX_GFS_00=240
 #export FHMAX_GFS_00=120
 #export FHMAX_GFS_00=72
