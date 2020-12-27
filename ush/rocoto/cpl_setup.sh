@@ -36,7 +36,7 @@ HH=$(echo $IDATE | cut -c9-10)
 RES=$(echo $CASE|cut -c 2-)
 
 # $PSLOT is the name of your experiment
- expt=_phyae
+ expt=_phybc
 #expt=_phyxd
 #expt=_phyai    # cmeps run
 

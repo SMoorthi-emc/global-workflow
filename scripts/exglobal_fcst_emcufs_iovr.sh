@@ -1647,7 +1647,7 @@ EOF
 
 if [ ${IN_Z_DIAG_INTERVAL:-0} -gt 0 ] ; then
 cat >> INPUT/MOM_input << EOF
- IN_Z_DIAG_INTERVAL = $IN_Z_DIAG_INTERVAL
+  IN_Z_DIAG_INTERVAL = $IN_Z_DIAG_INTERVAL
 EOF
 #else
 #cat >> INPUT/MOM_input << EOF
@@ -1656,25 +1656,25 @@ EOF
 fi
 if [ ${Z_OUTPUT_GRID_FILE:-none} != none ] ; then
 cat >> INPUT/MOM_input << EOF
- Z_OUTPUT_GRID_FILE = $Z_OUTPUT_GRID_FILE
+  Z_OUTPUT_GRID_FILE = $Z_OUTPUT_GRID_FILE
 EOF
 fi
 if [ ${USE_LA_LI2016:-False} = True ] ; then
 cat >> INPUT/MOM_input << EOF
- USE_LA_LI2016 = $USE_LA_LI2016
+  USE_LA_LI2016 = $USE_LA_LI2016
 EOF
 fi
 if [ ${USE_WAVES:-False} = True ] ; then          # for coupled MOM6 and WW3
 cat >> INPUT/MOM_input << EOF
- USE_WAVES = $USE_WAVES
+  USE_WAVES = $USE_WAVES
 EOF
-#WAVE_METHOD=$WAVE_METHOD
-#SURFBAND_SOURCE = "COUPLER"               ! default = "EMPTY"
-#SURFBAND_WAVENUMBERS = 0.04, 0.11, 0.3305 !   [rad/m] default = 0.12566
-#STK_BAND_COUPLER = 3
+# WAVE_METHOD=$WAVE_METHOD
+# SURFBAND_SOURCE = "COUPLER"               ! default = "EMPTY"
+# SURFBAND_WAVENUMBERS = 0.04, 0.11, 0.3305 !   [rad/m] default = 0.12566
+# STK_BAND_COUPLER = 3
 fi
 if [ ${MOM6_RIVER_RUNOF:-False} = True ] ; then          # for coupled MOM6 and WW3
- LIQUID_RUNOFF_FROM_DATA = $MOM6_RIVER_RUNOF
+  LIQUID_RUNOFF_FROM_DATA = $MOM6_RIVER_RUNOF
 fi
 
 fi                                         # if [ cplflx = .true. ] ; then
