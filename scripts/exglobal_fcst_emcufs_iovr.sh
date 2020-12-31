@@ -933,6 +933,16 @@ fi
 
 # copy over the other tables and executable
 $NCP $PARM_DIR/data_table                        data_table
+
+if [ $cpl = .true. ] ; then
+ NX_GLB=${NX_GLB:-1440}
+ NY_GLB=${NY_GLB:-1080}
+ if [ $NX_GLB -ne 1440 -o $NY_GLB -ne 1080 ] ; then
+  rm $DATA/data_table
+  sed -e "s/1440x1080/${NX_GLB}x${NY_GLB}/g" $PARM_DIR/data_table > $DATA/data_table
+ fi
+fi
+
 $NCP $PARM_DIR/field_table${FVER:-""}${FVRS:-''} field_table
 export ntrac=$(grep TRACER field_table | wc -l)
 ncom=$(grep '#' field_table | grep TRACER | wc -l)
@@ -1643,6 +1653,7 @@ cat >> INPUT/MOM_input << EOF
   NJGLOBAL              = ${NY_GLB:-1080}
   USE_IDEAL_AGE_TRACER  = ${USE_IDEAL_AGE_TRACER:-False}
   THERMO_SPANS_COUPLING = ${THERMO_SPANS_COUPLING:-False}
+  CHL_FILE              = ${CHLCLIM:-seawifs-clim-1997-2010.${NX_GLB}x${NY_GLB}.v20180328.nc}
 EOF
 
 if [ ${IN_Z_DIAG_INTERVAL:-0} -gt 0 ] ; then
@@ -1674,7 +1685,9 @@ EOF
 # STK_BAND_COUPLER = 3
 fi
 if [ ${MOM6_RIVER_RUNOF:-False} = True ] ; then          # for coupled MOM6 and WW3
+cat >> INPUT/MOM_input << EOF
   LIQUID_RUNOFF_FROM_DATA = $MOM6_RIVER_RUNOF
+EOF
 fi
 
 fi                                         # if [ cplflx = .true. ] ; then

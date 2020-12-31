@@ -180,9 +180,9 @@ RESTART_CHECKSUMS_REQUIRED=${RESTART_CHECKSUMS_REQUIRED:-False}
 
 # Copy CICE5 fixed files, and namelists
 # -------------------------------------
-export CICEGRID=grid_cice_NEMS_mx$ICERES.nc
-export CICEMASK=kmtu_cice_NEMS_mx$ICERES.nc
-export MESHICE=mesh.mx$ICERES.nc
+export CICEGRID=${CICEGRID:-grid_cice_NEMS_mx$ICERES.nc}
+export CICEMASK=${CICEMASK:-kmtu_cice_NEMS_mx$ICERES.nc}
+export MESHICE=${MESHICE:-mesh.mx$ICERES.nc}
 $NCP $FIXcice/$CICEMASK .
 $NCP $FIXcice/$CICEGRID .
 $NCP $FIXcice/$MESHICE  .
