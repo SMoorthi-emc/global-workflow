@@ -171,7 +171,7 @@ else
    echo "Currently initial conditions not available"
    exit 777
   fi
-  if [ $CPLDWAV = YES -a $USE_WAVES = True ] ; then
+  if [ $CPLDWAV = YES -a $USE_WAVES = True -a ${WW3_IC:-YES} = YES ] ; then
     yyyymmdd=$(echo $CDATE | cut -c1-8)
     $NCP $ICSDIR/$CDATE/$yyyymmdd.000000.restart.$ww3_grid restart.$ww3_grid
   fi

@@ -115,9 +115,9 @@ export REALTIME=NO
 #export OUTPUT_FILE=netcdf
 
 # uncomment to turn on coupled wave
-#export cplwav=.true.
-#export cplwav2atm=.true.
-#export CPLDWAV=YES
+ export cplwav=.true.
+ export cplwav2atm=.true.
+ export CPLDWAV=YES
 
  export USE_COLDSTART=${USE_COLDSTART:-.false.}
 #export NETCDF_TYPE=\"pnetcdf\"
@@ -183,7 +183,10 @@ export OCNPOSTsrc=$HOMEgfs/fix/ocean_ice_post
  export USE_WAVES=True
 #export ww3_grid=glo_30m
  export ww3_grid=${ww3_grid:-gwes_30m}
-export FIX_WW3=${FIX_WW3:-$NOSCRUB/WW3_input_data}
+export WW3_SUF=_20201220
+export WW3_IC=NO
+export WW3_SUF=${WW3_SUF:-""}
+export FIX_WW3=${FIX_WW3:-$NOSCRUB/WW3_input_data$WW3_SUF}
 export ww3_grid=${ww3_grid:-'glo_30m'}
 export USE_WAVES=${USE_WAVES:-False}
 export WAVE_METHOD=${WAVE_METHOD:-\"SURFACE_BANDS\"}
@@ -626,7 +629,7 @@ export FH_CHUNK=${FH_CHUNK:-240}
 #export FHMAX_GFS_00=36
 #export FHMAX_GFS_00=27
 #export FHMAX_GFS_00=26
-#export FHMAX_GFS_00=24
+ export FHMAX_GFS_00=24
 #export FHMAX_GFS_00=15
 #export FHMAX_GFS_00=12
 #export FHMAX_GFS_00=9
