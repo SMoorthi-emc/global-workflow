@@ -91,6 +91,7 @@ export REALTIME=NO
  export pre_exe=fv3
 #export app=ufs-weather-model
  export app=ufs-weather-model_Dec10
+ export app=ufs-weather-model_Jan04
 
  export USE_IOVR=YES
  export RUN_CCPP=YES                # turn on ccpp physics
@@ -115,9 +116,9 @@ export REALTIME=NO
 #export OUTPUT_FILE=netcdf
 
 # uncomment to turn on coupled wave
- export cplwav=.true.
- export cplwav2atm=.true.
- export CPLDWAV=YES
+#export cplwav=.true.
+#export cplwav2atm=.true.
+#export CPLDWAV=YES
 
  export USE_COLDSTART=${USE_COLDSTART:-.false.}
 #export NETCDF_TYPE=\"pnetcdf\"
@@ -158,6 +159,7 @@ fi
 
 #appdate=Aug12
 #appdate=Sep15                   # latest version
+#appdate=Oct10_prev              # latest version
 #appdate=Oct10_prev              # latest version
  appdate=${appdate:-Oct10}       # version prior to the above on wcoss
 
@@ -629,7 +631,7 @@ export FH_CHUNK=${FH_CHUNK:-240}
 #export FHMAX_GFS_00=36
 #export FHMAX_GFS_00=27
 #export FHMAX_GFS_00=26
- export FHMAX_GFS_00=24
+#export FHMAX_GFS_00=24
 #export FHMAX_GFS_00=15
 #export FHMAX_GFS_00=12
 #export FHMAX_GFS_00=9

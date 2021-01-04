@@ -495,7 +495,7 @@ EOF
       export warm_start=.true.
       PDYT=$(echo $CDATE_RST | cut -c1-8)
       cyct=$(echo $CDATE_RST | cut -c9-10)
-      for file in $ATM_RESTDIR/${PDYT}.${cyct}0000.* ; do
+      for file in $(ls $ATM_RESTDIR/${PDYT}.${cyct}0000.*) ; do
         file2=$(echo $(basename $file))
         if [ -f $ATM_RESTDIR/$file2 ] ; then
           file3=$(echo $file2 | cut -d. -f3-)
@@ -504,6 +504,23 @@ EOF
           $NLN $ATM_RESTDIR/$file3 $DATA/INPUT/$file3
         fi
       done
+
+      if [ $DOIAU = YES ] ; then
+        hour_rst=$($NHOUR $CDATE_RST $CDATE)
+        IAU_FHROT=$((IAU_OFFSET+hour_rst))
+        IAUFHRS=-1
+        IAU_DELTHRS=0
+        IAU_INC_FILES="''"
+
+        rst_list_rerun=""
+        xfh=$restart_interval_gfs
+        while [ $xfh -le $FHMAX ] ; do
+          rst_list_rerun="$rst_list_rerun $xfh"
+          xfh=$((xfh+restart_interval_gfs))
+        done
+        restart_interval="$rst_list_rerun"
+      fi
+
     fi
   fi
   export fhouri=0.0
