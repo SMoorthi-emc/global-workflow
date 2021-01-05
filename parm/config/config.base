@@ -16,9 +16,13 @@ export ACCOUNT="@ACCOUNT@"
 export QUEUE="@QUEUE@"
 export QUEUE_ARCH="@QUEUE_ARCH@"
 
- export LEVS=128
- export LEVS=65
+#export LEVS=128
+#export LEVS=65
+ export LEVS="@LEVS@"
+ export LEVS=${LEVS:-65}
 
+ export IC_FROM="@IC_FROM@"
+ export IC_FROM=${IC_FROM:-bench1}
  export IAER=5111
 #export IAER=1111
 #export iccn=2
@@ -185,9 +189,10 @@ export OCNPOSTsrc=$HOMEgfs/fix/ocean_ice_post
  export USE_WAVES=True
 #export ww3_grid=glo_30m
  export ww3_grid=${ww3_grid:-gwes_30m}
-export WW3_SUF=_20201220
-export WW3_IC=NO
-export WW3_SUF=${WW3_SUF:-""}
+ export WW3_SUF=_20201220
+ export WW3_SUF=${WW3_SUF:-""}
+ export USE_WW3_IC=NO
+#export USE_LA_LI2016=True
 export FIX_WW3=${FIX_WW3:-$NOSCRUB/WW3_input_data$WW3_SUF}
 export ww3_grid=${ww3_grid:-'glo_30m'}
 export USE_WAVES=${USE_WAVES:-False}
@@ -237,7 +242,7 @@ if [ $cplflx = .true. ] ; then
 #export cplwav2atm=.true.
 #export CPLDWAV=YES
 
- export IC_FROM=bench1
+#export IC_FROM=bench1
  if [ $IC_FROM = bench1 ] ; then export USE_IDEAL_AGE_TRACER=True ; fi
  export NUMOM=YES
  export CPLD_APP=YES
@@ -493,6 +498,9 @@ export ROTDIR="@ROTDIR@/$PSLOT"
 export RUNDIR="$STMP/RUNDIRS/$PSLOT"
 export ARCDIR="$NOSCRUB/archive/$PSLOT"
 export ICSDIR="@ICSDIR@"
+export OCNICS="@OCNICS@"
+export ICEICS="@ICEICS@"
+export WAVICS="@WAVICS@"
 export ATARDIR="/NCEPDEV/$HPSS_PROJECT/5year/$USER/$machine/benchmark1/$PSLOT"
 export CDATE
 PDY=$(echo $CDATE | cut -c1-8)

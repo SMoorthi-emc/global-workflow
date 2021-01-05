@@ -18,7 +18,7 @@ import workflow_utils as wfu
 
 
 global machines
-global expdir, configdir, comrot, pslot, res, idate, edate, gfs_cyc, fhmin, warm_start, fhcyc, cdump
+global expdir, configdir, comrot, pslot, res, idate, edate, gfs_cyc, fhmin, warm_start, fhcyc, cdump, levs, ic_from
 
 
 machines = ['HERA', 'WCOSS_C', 'WCOSS_DELL_P3', 'WCOSS']
@@ -91,9 +91,16 @@ def edit_baseconfig():
                     line = line.replace('@WARM_START@', warm_start)
                 if fhcyc is not None:
                     line = line.replace('@FHCYC@', fhcyc)
+                if levs is not None:
+                    line = line.replace('@LEVS@', levs)
+                if ic_from is not None:
+                    line = line.replace('@IC_FROM@', ic_from)
                 if comrot is not None:
                     line = line.replace('@ROTDIR@', os.path.dirname(comrot))
                 line = line.replace('@ICSDIR@', os.path.join(os.path.dirname(comrot), 'FV3ICS'))
+                line = line.replace('@OCNICS@', os.path.join(os.path.dirname(comrot), 'OCNICS'))
+                line = line.replace('@ICEICS@', os.path.join(os.path.dirname(comrot), 'ICEICS'))
+                line = line.replace('@WAVICS@', os.path.join(os.path.dirname(comrot), 'WAVICS'))
                 fo.write(line)
     os.unlink(base_config)
     os.rename(base_config + '.new', base_config)
@@ -126,7 +133,9 @@ Create COMROT experiment directory structure'''
     parser.add_argument('--cdump',help='cycle to run forecasts', type=str, choices=['gdas', 'gfs'], default='gfs', required=False)
     parser.add_argument('--fhmin',help='starting forecast hour', type=str, default='0', required=False)
     parser.add_argument('--warm_start',help='warm start of forecasts', type=str, choices=['.false.', '.true.'], default='.false.', required=False)
-    parser.add_argument('--fhcyc',help='urface cycling interval', type=str, default='24', required=False)
+    parser.add_argument('--fhcyc',help='surface cycling interval', type=str, default='24', required=False)
+    parser.add_argument('--levs',help='number of vertical layers', type=str, default='64', required=False)
+    parser.add_argument('--ic_from',help='initial condition source', type=str, default='bench5', required=False)
 
     args = parser.parse_args()
 
@@ -148,6 +157,8 @@ Create COMROT experiment directory structure'''
     fhmin      = args.fhmin
     warm_start = args.warm_start
     fhcyc      = args.fhcyc
+    levs       = args.levs
+    ic_from    = args.ic_from
 
     # Set machine defaults
     if machine == 'WCOSS_DELL_P3':

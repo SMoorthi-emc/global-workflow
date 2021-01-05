@@ -20,10 +20,11 @@ IDATE=2018010100
  IDATE=2018090100
 #IDATE=2011100100
 #IDATE=2018011500
- IDATE=2018031500
+#IDATE=2018031500
 #IDATE=2019052500    # EC 127 version from FY
  CASE=C384
 #IDATE=2017051500
+#IDATE=2016110100
 #CASE=C768
 # $EDATE is the ending date of your run (YYYYMMDDCC) and is the last cycle that will complete
 #EDATE=2016010100
@@ -36,7 +37,7 @@ HH=$(echo $IDATE | cut -c9-10)
 RES=$(echo $CASE|cut -c 2-)
 
 # $PSLOT is the name of your experiment
- expt=_phyad
+ expt=_phyag
 #expt=_phyxd
 #expt=_phyai    # cmeps run
 
@@ -57,15 +58,30 @@ FHCYC=${FHCYC:-24}
 # $COMROT is the path to the experiment output directory. DO NOT include PSLOT folder at end of path, it’ll be built.
 # $EXPDIR is the path to the experiment directory where config and workflow monitoring (rocoto database and xml) files are placed. Do not include PSLOT folder at end of path, it will be built.
 
+#export IC_FROM=bench5
+export IC_FROM=${IC_FROM:-bench1}
+ export LEVS=128
+export LEVS=${LEVS:-65}
+if [ $IC_FROM = bench5 ] ; then
+ frac=fracL$((LEVS-1))
+ frac=${frac:-""}
+fi
+
 if [ $(echo $CWD | cut -c1-8) = "/scratch" ] ; then
  NOSCRUB=/scratch1/NCEPDEV/global
  FROM_HPSS=$NOSCRUB/$LOGNAME/noscrub/FROM_HPSS
+ if [ $IC_FROM = bench5 ] ; then
+  FROM_HPSS=/scratch2/NCEPDEV/climate/climpara/S2S/IC/CFSR${frac}
+ fi
  COMROT=/scratch1/NCEPDEV/stmp4/$LOGNAME/CFV3/$IDATE
  EXPDIR=$NOSCRUB/$LOGNAME/CFV3/$IDATE/EXPFV3
 elif [ $(echo $CWD | cut -c1-11) = "/gpfs/dell2" ] ; then
  NOSCRUB=/gpfs/dell2/emc/modeling/noscrub
  COMROT=/gpfs/dell2/ptmp/$LOGNAME/CFV3/$IDATE
  FROM_HPSS=$NOSCRUB/$LOGNAME/FROM_HPSS
+ if [ $IC_FROM = bench5 ] ; then
+  FROM_HPSS=/gpfs/dell2/emc/modeling/noscrub/Walter.Kolczynski/global-workflow/IC/CFSR${frac}
+ fi
  EXPDIR=$NOSCRUB/$LOGNAME/CFV3/$IDATE/EXPFV3
 elif [ $(echo $CWD | cut -c1-9) = "/gpfs/hps" ] ; then
  NOSCRUB=/gpfs/hps3/emc/modeling/noscrub
@@ -89,6 +105,12 @@ if [ $FHMIN -eq 0 ] ; then
   cd $COMROT
   mkdir -p FV3ICS
   ln -fs $FROM_HPSS/$IDATE FV3ICS/
+  if [ $IC_FROM = bench5 ] ; then
+    mkdir -p OCNICS ICEICS WAVICS
+    ln -fs $FROM_HPSS/../CPC3Dvar/$IDATE OCNICS/
+    ln -fs $FROM_HPSS/../CPC/$IDATE      ICEICS/
+    ln -fs $FROM_HPSS/../CFSR/$IDATE     WAVICS/
+  fi
 fi
 
 cd $CWD
@@ -96,7 +118,7 @@ cd $CWD
 # $GFS_CYC is the forecast frequency (0 = none, 1 = 00z only [default], 2 = 00z & 12z, 4 = all cycles)
 GFS_CYC=1
 
-./setup_expt_fcstonly.py --pslot $PSLOT --configdir $CONFIGDIR --idate $IDATE --edate $EDATE --res $RES --gfs_cyc $GFS_CYC --comrot $COMROT --expdir $EXPDIR --fhmin $FHMIN --warm_start $WARM_START --fhcyc $FHCYC --cdump $CDUMP
+./setup_expt_fcstonly.py --pslot $PSLOT --configdir $CONFIGDIR --idate $IDATE --edate $EDATE --res $RES --gfs_cyc $GFS_CYC --comrot $COMROT --expdir $EXPDIR --fhmin $FHMIN --warm_start $WARM_START --fhcyc $FHCYC --cdump $CDUMP --levs $LEVS --ic_from $IC_FROM
 
 # Appropriate account e.g. fv3-cpu (hera) GFS-DEV (wcoss)
 

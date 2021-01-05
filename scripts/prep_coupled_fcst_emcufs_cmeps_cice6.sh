@@ -167,13 +167,24 @@ else
    export input_filename="'r'"
    export USE_IDEAL_AGE_TRACER=${USE_IDEAL_AGE_TRACER:-False}
    $NCP $ICSDIR/$CDATE/mom6_da/MOM*nc INPUT/.
+  elif [ $IC_FROM = bench5 ] ; then
+   $NCP $ICEICS/$CDATE/ice/$ICERES/cice5_model_0.25.res_$CDATE.nc ./cice5_model.res_$CDATE.nc
+   export prepend_date=.false.
+#  export prepend_date=.true.
+   export input_filename="'r'"
+   export USE_IDEAL_AGE_TRACER=${USE_IDEAL_AGE_TRACER:-False}
+   $NCP $OCNICS/$CDATE/ocn/$OCNRES/MOM*nc INPUT/.
   else
    echo "Currently initial conditions not available"
    exit 777
   fi
-  if [ $CPLDWAV = YES -a $USE_WAVES = True -a ${WW3_IC:-YES} = YES ] ; then
+  if [ $CPLDWAV = YES -a $USE_WAVES = True -a ${USE_WW3_IC:-YES} = YES ] ; then
     yyyymmdd=$(echo $CDATE | cut -c1-8)
-    $NCP $ICSDIR/$CDATE/$yyyymmdd.000000.restart.$ww3_grid restart.$ww3_grid
+    if [ $IC_FROM = bench5 ] ; then
+      $NCP $WAVICS/$CDATE/wav/$ww3_grid/$yyyymmdd.000000.restart.$ww3_grid restart.$ww3_grid
+    else
+      $NCP $ICSDIR/$CDATE/$yyyymmdd.000000.restart.$ww3_grid restart.$ww3_grid
+    fi
   fi
 fi
 RESTART_CHECKSUMS_REQUIRED=${RESTART_CHECKSUMS_REQUIRED:-False}
