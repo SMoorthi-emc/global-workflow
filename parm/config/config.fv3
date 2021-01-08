@@ -74,11 +74,11 @@ case $case_in in
 #       export DELTIM=225
 #       export DELTIM=180
 #       export DELTIM=120
-        export DELTIM=450
+#       export DELTIM=450
 #       export DELTIM=600
         export k_split=2
         export n_split=6
-#       export n_split=8          # 9 month run from march 15 to Oct
+        export n_split=8          # 9 month run from march 15 to Oct
 #       export n_split=10         # 9 month run requires this from Oct to Jan
 #       export n_split=12         # 9 month run requires this from Oct to Jan
 #       export OCNTIM=300
@@ -98,8 +98,8 @@ case $case_in in
         export layout_y=6
 #       export layout_y=8
                                   # 127 layers
-#       export layout_x=8
-#       export layout_y=12
+        export layout_x=8
+        export layout_y=12
 
         export io_layout_x=2      # restart may not reproduce!
         export io_layout_y=2      # restart may not reproduce!

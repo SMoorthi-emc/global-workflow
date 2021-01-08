@@ -18,7 +18,7 @@ import workflow_utils as wfu
 
 
 global machines
-global expdir, configdir, comrot, pslot, res, idate, edate, gfs_cyc, fhmin, warm_start, cdump, envars
+global expdir, configdir, comrot, pslot, res, idate, edate, gfs_cyc, fhmin, warm_start, fhcyc, cdump, levs, ic_from
 
 
 machines = ['HERA', 'WCOSS_C', 'WCOSS_DELL_P3', 'WCOSS']
@@ -89,8 +89,12 @@ def edit_baseconfig():
                     line = line.replace('@FHMIN@', fhmin)
                 if warm_start is not None:
                     line = line.replace('@WARM_START@', warm_start)
-                if envars is not None:
-                    line = line.replace('@envars@', envars)
+                if fhcyc is not None:
+                    line = line.replace('@FHCYC@', fhcyc)
+                if levs is not None:
+                    line = line.replace('@LEVS@', levs)
+                if ic_from is not None:
+                    line = line.replace('@IC_FROM@', ic_from)
                 if comrot is not None:
                     line = line.replace('@ROTDIR@', os.path.dirname(comrot))
                 line = line.replace('@ICSDIR@', os.path.join(os.path.dirname(comrot), 'FV3ICS'))
@@ -129,7 +133,9 @@ Create COMROT experiment directory structure'''
     parser.add_argument('--cdump',help='cycle to run forecasts', type=str, choices=['gdas', 'gfs'], default='gfs', required=False)
     parser.add_argument('--fhmin',help='starting forecast hour', type=str, default='0', required=False)
     parser.add_argument('--warm_start',help='warm start of forecasts', type=str, choices=['.false.', '.true.'], default='.false.', required=False)
-    parser.add_argument('--envars',help='environmental variables', type=str, default='None', required=False)
+    parser.add_argument('--fhcyc',help='surface cycling interval', type=str, default='24', required=False)
+    parser.add_argument('--levs',help='number of vertical layers', type=str, default='64', required=False)
+    parser.add_argument('--ic_from',help='initial condition source', type=str, default='bench5', required=False)
 
     args = parser.parse_args()
 
@@ -150,7 +156,9 @@ Create COMROT experiment directory structure'''
     cdump      = args.cdump
     fhmin      = args.fhmin
     warm_start = args.warm_start
-    envars    = args.envars
+    fhcyc      = args.fhcyc
+    levs       = args.levs
+    ic_from    = args.ic_from
 
     # Set machine defaults
     if machine == 'WCOSS_DELL_P3':
@@ -196,7 +204,7 @@ Create COMROT experiment directory structure'''
       execbase = '/scratch1/NCEPDEV/global/$USER/save'
       account  = 'fv3-cpu'
       queue    = 'batch'
-#     queue    = 'debug'
+      queue    = 'debug'
       queue_arch = 'service'
 
     print (" comrot=",comrot)

@@ -16,22 +16,14 @@ export ACCOUNT="@ACCOUNT@"
 export QUEUE="@QUEUE@"
 export QUEUE_ARCH="@QUEUE_ARCH@"
 
- export envars="@envars@"
-
-for var in $(eval echo $envars | tr , ' ') ; do
- export $var
-done
-
 #export LEVS=128
 #export LEVS=65
-#export LEVS="@LEVS@"
+ export LEVS="@LEVS@"
  export LEVS=${LEVS:-65}
 
-#export IC_FROM="@IC_FROM@"
+ export IC_FROM="@IC_FROM@"
  export IC_FROM=${IC_FROM:-bench1}
-
-
- export IAER=${IAER:-5111}
+ export IAER=5111
 #export IAER=1111
 #export iccn=2
 #export iaerclm=.true.
@@ -107,14 +99,12 @@ export REALTIME=NO
 
  export USE_IOVR=YES
  export RUN_CCPP=YES                # turn on ccpp physics
-
 #export HYPT=on                     # turn on hyper threading
-#export cplflx=.true.               # turn on cupule model 
-#export CPLD_APP=YES                # use coupled app
-#export INLINE_POST=YES             # turn on inline post
+ export cplflx=.true.               # turn on cupule model 
+ export CPLD_APP=YES                # use coupled app
+ export INLINE_POST=YES             # turn on inline post
 #export USE_COLDSTART=.true.        # uncomment this line to turn on cold start step
 #export frac_grid=.true.            # uncomment to turn on fractional grid
-
  export mediator=cmeps              # comment this line for nems mediator
  export CICE=CICE6                  # comment this line to rutn on CIC5
 #export ICE_WW3_OVERLAP=YES         # uncomment this line to overlap ww3 and cice pes (with CICE6 only)
@@ -307,12 +297,12 @@ if [ $machine = HERA ]; then
 #export appdir=ufs_compile2
 fi
 
-# export DONST=NO
-# export DONST=YES
-  export DONST=${DONST:-NO}
-
-# export satmedmf=.true.
+  export satmedmf=.true.
   export satmedmf=${satmedmf:-.false.}
+
+# export DONST=NO
+  export DONST=YES
+  export DONST=${DONST:-NO}
 
 # export V16="_v16"
   export V16=${V16:-""}
@@ -322,7 +312,7 @@ fi
 # export v17sas=YES
   export v17sas=${v17sas:-NO}
 
-# export v17ras=YES
+  export v17ras=YES
   export v17ras=${v17ras:-NO}
 
 # export v17rasnoshal=YES
@@ -497,8 +487,8 @@ export EDATE=@EDATE@
 export assim_freq=6
 export PSLOT="@PSLOT@"
 export CDUMP="@CDUMP@"
-#export FHCYC="@FHCYC@"
- export FHMIN="@FHMIN@"
+export FHCYC="@FHCYC@"
+export FHMIN="@FHMIN@"
 export warm_start="@WARM_START@"   # for warm_start need to set FHMIN (i.e. starting time)
 if [ $FHMIN -gt 0 ] ; then
  export USE_COLDSTART=.false.
@@ -598,10 +588,9 @@ export FHMIN_GFS=${FHMIN_GFS:-${FHMIN:-0}}
 #export restart_ext=.false.
 
 export warm_start=${warm_start:-.true.}   # for warm_start need to set FHMIN (i.e. starting time)
-
 #FH_CHUNK=3
-#FH_CHUNK=$((24*45))
-#export FH_CHUNK=${FH_CHUNK:-240}
+ FH_CHUNK=$((24*45))
+export FH_CHUNK=${FH_CHUNK:-240}
 #export FHMIN=1
 #export FHMIN=2
 #export FHMIN=3
@@ -628,23 +617,20 @@ export warm_start=${warm_start:-.true.}   # for warm_start need to set FHMIN (i.
 #export FHMIN=1440
 #export FHMIN=1800
 
-#export restart_interval=432000
-#export restart_interval=864000
-#export restart_interval=1296000
-#export restart_interval=864000
-#export restart_interval=432000
+ export restart_interval=432000
+ export restart_interval=864000
+ export restart_interval=1296000
+ export restart_interval=864000
+ export restart_interval=432000
 #export restart_interval=86400
 #export restart_interval=43200
-#export restart_interval=21600
+ export restart_interval=21600
 #export restart_interval=10800
 #export restart_interval=7200
 #export restart_interval=3600
-
- export FH_CHUNK=${FH_CHUNK:-240}
- export restart_interval=${restart_interval:-864000}
  export restart_interval_atm=$((restart_interval/3600))
 
-#export FHMAX_GFS_00=48
+ export FHMAX_GFS_00=48
 #export FHMAX_GFS_00=72
 #export FHMAX_GFS_00=240
 #export FHMAX_GFS_00=120
@@ -687,23 +673,21 @@ export warm_start=${warm_start:-.true.}   # for warm_start need to set FHMIN (i.
 #export FHMAX_GFS=1080
 #export FHMAX_GFS_00=1440
 
-#export FHMAX_GFS_12=0
-#export FHMAX_GFS_06=0
-#export FHMAX_GFS_18=0
-
+ export FHMAX_GFS_12=0
+ export FHMAX_GFS_06=0
+ export FHMAX_GFS_18=0
  export FHMAX_GFS=$(eval echo \${FHMAX_GFS_$cyc})
  export FH_CHUNK=${FH_CHUNK:-$FHMAX_GFS}
 
+ export FHOUT_GFS=3
 #export FHOUT_GFS=6
 #export FHOUT_GFS=1
 #export FHOUT_GFS=0.125
- export FHOUT_GFS=${FHOUT_GFS:-3}
  export FHOUT=$FHOUT_GFS
-#export FHOUT_O=6            # ocan history output frequency
- export FHOUT_O=${FHOUT_O:-6}  # ocan history output frequency
-#export OCN_AVG=NO
+ export FHOUT_O=6            # ocan history output frequency
+ export FHOUT_O=3            # ocan history output frequency
+ export OCN_AVG=NO
 #export OCN_AVG=YES
- export OCN_AVG=${OCN_AVG:-NO}
 
 
 #BL2018
