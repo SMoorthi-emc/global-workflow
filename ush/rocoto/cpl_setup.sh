@@ -19,6 +19,7 @@ IDATE=2018010100
 #IDATE=2018090100
  IDATE=2018090100
 #IDATE=2011100100
+ IDATE=2013040100
 #IDATE=2018011500
 #IDATE=2018031500
 #IDATE=2019052500    # EC 127 version from FY
@@ -37,7 +38,7 @@ HH=$(echo $IDATE | cut -c9-10)
 RES=$(echo $CASE|cut -c 2-)
 
 # $PSLOT is the name of your experiment
- expt=_phyah
+ expt=_phyac
 #expt=_phyxd
 #expt=_phyai    # cmeps run
 
@@ -58,7 +59,7 @@ FHCYC=${FHCYC:-24}
 # $COMROT is the path to the experiment output directory. DO NOT include PSLOT folder at end of path, it’ll be built.
 # $EXPDIR is the path to the experiment directory where config and workflow monitoring (rocoto database and xml) files are placed. Do not include PSLOT folder at end of path, it will be built.
 
-#export IC_FROM=bench5
+ export IC_FROM=bench5
 export IC_FROM=${IC_FROM:-bench1}
  export LEVS=128
 export LEVS=${LEVS:-65}
@@ -148,7 +149,7 @@ cd $CWD
 #export restart_interval=864000
 #export restart_interval=1296000
  export restart_interval=864000
-#export restart_interval=432000
+ export restart_interval=432000
 #export restart_interval=86400
 #export restart_interval=43200
 #export restart_interval=21600
@@ -156,9 +157,12 @@ cd $CWD
 
 #export FHMAX_GFS_00=1920
  export FHMAX_GFS_00=1680
+ export FHMAX_GFS_00=1440
 #export FHMAX_GFS_00=960
+#export FHMAX_GFS_00=720
 #export FHMAX_GFS_00=480
 #export FHMAX_GFS_00=48
+#export FHMAX_GFS_00=240
 #export FHMAX_GFS_00=24
 
  export FHMAX_GFS_06=0
@@ -167,14 +171,15 @@ cd $CWD
 
  export NSOUT=0
  export FHOUT_GFS=3
- export FHOUT_GFS=${FHOUT_GFS:-6}     # atmos history output frequency
- export FHOUT_O=${FHOUT_O:-FHOUT_GFS} # ocean history output frequency
+ export FHOUT_GFS=${FHOUT_GFS:-6}      # atmos history output frequency
+ export FHOUT_O=${FHOUT_O:-$FHOUT_GFS} # ocean history output frequency
 #export OCN_AVG=YES
  export OCN_AVG=${OCN_AVG:-NO}
  export HYPT=on
  export HYPT=${HYPT:-off}
+ export FSICS=0
 
- export envars="LEVS=$LEVS,FHCYC=$FHCYC,IC_FROM=$IC_FROM,IAER=5111,app=$app,appdate=$appdate,cplflx=$cplflx,frac_grid=$frac_grid,INLINE_POST=$INLINE_POST,cplwav=$cplwav,cplwav2atm=$cplwav2atm,CPLDWAV=$CPLDWAV,OCNRES=$OCNRES,DONST=$DONST,satmedmf=$satmedmf,v17sas=$v17sas,v17ras=$v17ras,v17rasnoshal=$v17rasnoshal,FH_CHUNK=$FH_CHUNK,restart_interval=$restart_interval,FHMAX_GFS_00=$FHMAX_GFS_00,FHMAX_GFS_06=$FHMAX_GFS_06,FHMAX_GFS_12=$FHMAX_GFS_12,FHMAX_GFS_18=$FHMAX_GFS_18,FHOUT_GFS=$FHOUT_GFS,HYPT=$HYPT,NSOUT=$NSOUT,FHOUT_O=$FHOUT_O,OCN_AVG=$OCN_AVG,USE_COLDSTART=$USE_COLDSTART"
+ export envars="LEVS=$LEVS,FHCYC=$FHCYC,IC_FROM=$IC_FROM,IAER=5111,app=$app,appdate=$appdate,cplflx=$cplflx,frac_grid=$frac_grid,INLINE_POST=$INLINE_POST,cplwav=$cplwav,cplwav2atm=$cplwav2atm,CPLDWAV=$CPLDWAV,OCNRES=$OCNRES,DONST=$DONST,satmedmf=$satmedmf,v17sas=$v17sas,v17ras=$v17ras,v17rasnoshal=$v17rasnoshal,FH_CHUNK=$FH_CHUNK,restart_interval=$restart_interval,FHMAX_GFS_00=$FHMAX_GFS_00,FHMAX_GFS_06=$FHMAX_GFS_06,FHMAX_GFS_12=$FHMAX_GFS_12,FHMAX_GFS_18=$FHMAX_GFS_18,FHOUT_GFS=$FHOUT_GFS,HYPT=$HYPT,NSOUT=$NSOUT,FHOUT_O=$FHOUT_O,OCN_AVG=$OCN_AVG,USE_COLDSTART=$USE_COLDSTART,FSICS=$FSICS"
 
 echo $envars
 

@@ -573,8 +573,8 @@ NC2NEMSIOSH="$HOMEgfs/ush/fv3gfs_nc2nemsio.sh"
 #mountain=.false.
 #xkzm_h=0.25
 #xkzm_m=0.25
- xkzm_h=0.5
- xkzm_m=0.5
+#xkzm_h=0.5
+#xkzm_m=0.5
 #xkzm_h=0.75
 #xkzm_m=0.75
 #lwhtr=.false.
@@ -683,8 +683,8 @@ fi
  fhouri=3.0
  fac_n_spl=2.0
 #fac_n_spl=1.5
- fhouri=0.0
- fac_n_spl=1.0
+#fhouri=0.0
+#fac_n_spl=1.0
 
 #
 #
