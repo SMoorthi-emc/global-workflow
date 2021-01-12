@@ -38,7 +38,7 @@ HH=$(echo $IDATE | cut -c9-10)
 RES=$(echo $CASE|cut -c 2-)
 
 # $PSLOT is the name of your experiment
- expt=_phyac
+ expt=_phybc
 #expt=_phyxd
 #expt=_phyai    # cmeps run
 
@@ -121,6 +121,7 @@ cd $CWD
  export cplflx=.true.               # turn on cupule model
  export CPLD_APP=YES                # use coupled app
  export INLINE_POST=YES             # turn on inline post
+ export INLINE_POST=NO              # turn off inline post
  export USE_COLDSTART=.false.       # uncomment this line to turn on cold start step
  export frac_grid=.false.
 
@@ -130,9 +131,9 @@ cd $CWD
 #export cplwav2atm=.false.
 #export CPLDWAV=NO
 
- export cplwav=${cplwav:-.true.}
- export cplwav2atm=${cplwav2atm:-.true.}
- export CPLDWAV=${CPLDWAV:-YES}
+#export cplwav=${cplwav:-.true.}
+#export cplwav2atm=${cplwav2atm:-.true.}
+#export CPLDWAV=${CPLDWAV:-YES}
 
  export app=ufs-weather-model_Jan04
  export appdate=Oct10
@@ -155,15 +156,17 @@ cd $CWD
 #export restart_interval=21600
 #export restart_interval=10800
 
+ export FHMAX_GFS_00=2160
 #export FHMAX_GFS_00=1920
- export FHMAX_GFS_00=1680
- export FHMAX_GFS_00=1440
+#export FHMAX_GFS_00=1680
+#export FHMAX_GFS_00=1440
 #export FHMAX_GFS_00=960
 #export FHMAX_GFS_00=720
 #export FHMAX_GFS_00=480
+ export FHMAX_GFS_00=120
 #export FHMAX_GFS_00=48
 #export FHMAX_GFS_00=240
-#export FHMAX_GFS_00=24
+ export FHMAX_GFS_00=24
 
  export FHMAX_GFS_06=0
  export FHMAX_GFS_12=0
@@ -175,7 +178,7 @@ cd $CWD
  export FHOUT_O=${FHOUT_O:-$FHOUT_GFS} # ocean history output frequency
 #export OCN_AVG=YES
  export OCN_AVG=${OCN_AVG:-NO}
- export HYPT=on
+#export HYPT=on
  export HYPT=${HYPT:-off}
  export FSICS=0
 
