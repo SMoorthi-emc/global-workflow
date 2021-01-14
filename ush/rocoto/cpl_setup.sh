@@ -38,7 +38,7 @@ HH=$(echo $IDATE | cut -c9-10)
 RES=$(echo $CASE|cut -c 2-)
 
 # $PSLOT is the name of your experiment
- expt=_phybc
+ expt=_phab
 #expt=_phyxd
 #expt=_phyai    # cmeps run
 
@@ -118,22 +118,26 @@ cd $CWD
 
 # turn on some options
 # --------------------
- export cplflx=.true.               # turn on cupule model
- export CPLD_APP=YES                # use coupled app
- export INLINE_POST=YES             # turn on inline post
- export INLINE_POST=NO              # turn off inline post
- export USE_COLDSTART=.false.       # uncomment this line to turn on cold start step
+ export cplflx=.true.                      # turn on cupule model
+ export CPLD_APP=YES                       # use coupled app
+#export INLINE_POST=NO                     # turn off inline post
+ export INLINE_POST=${INLINE_POST:-YES}    # turn on inline post
+ export USE_COLDSTART=.false.              # uncomment this line to turn on cold start step
  export frac_grid=.false.
+ export frac_grid=${frac_grid:-.true.}
+ export OUTPUT_FILE=netcdf                 # to turn on netcdf output (default nemsio)
+ export OUTPUT_FILE=${OUTPUT_FILE:-nemsio} # to turn on netcdf output (default nemsio)
 
  export OCNRES=025
 
-#export cplwav=.false.
-#export cplwav2atm=.false.
-#export CPLDWAV=NO
+#   uncomment the following three lines to turn off wave coupling
+ export cplwav=.false.
+ export cplwav2atm=.false.
+ export CPLDWAV=NO
 
-#export cplwav=${cplwav:-.true.}
-#export cplwav2atm=${cplwav2atm:-.true.}
-#export CPLDWAV=${CPLDWAV:-YES}
+ export cplwav=${cplwav:-.true.}
+ export cplwav2atm=${cplwav2atm:-.true.}
+ export CPLDWAV=${CPLDWAV:-YES}
 
  export app=ufs-weather-model_Jan04
  export appdate=Oct10
@@ -163,10 +167,10 @@ cd $CWD
 #export FHMAX_GFS_00=960
 #export FHMAX_GFS_00=720
 #export FHMAX_GFS_00=480
- export FHMAX_GFS_00=120
+#export FHMAX_GFS_00=120
 #export FHMAX_GFS_00=48
 #export FHMAX_GFS_00=240
- export FHMAX_GFS_00=24
+#export FHMAX_GFS_00=24
 
  export FHMAX_GFS_06=0
  export FHMAX_GFS_12=0
@@ -178,11 +182,11 @@ cd $CWD
  export FHOUT_O=${FHOUT_O:-$FHOUT_GFS} # ocean history output frequency
 #export OCN_AVG=YES
  export OCN_AVG=${OCN_AVG:-NO}
-#export HYPT=on
+ export HYPT=on
  export HYPT=${HYPT:-off}
  export FSICS=0
 
- export envars="LEVS=$LEVS,FHCYC=$FHCYC,IC_FROM=$IC_FROM,IAER=5111,app=$app,appdate=$appdate,cplflx=$cplflx,frac_grid=$frac_grid,INLINE_POST=$INLINE_POST,cplwav=$cplwav,cplwav2atm=$cplwav2atm,CPLDWAV=$CPLDWAV,OCNRES=$OCNRES,DONST=$DONST,satmedmf=$satmedmf,v17sas=$v17sas,v17ras=$v17ras,v17rasnoshal=$v17rasnoshal,FH_CHUNK=$FH_CHUNK,restart_interval=$restart_interval,FHMAX_GFS_00=$FHMAX_GFS_00,FHMAX_GFS_06=$FHMAX_GFS_06,FHMAX_GFS_12=$FHMAX_GFS_12,FHMAX_GFS_18=$FHMAX_GFS_18,FHOUT_GFS=$FHOUT_GFS,HYPT=$HYPT,NSOUT=$NSOUT,FHOUT_O=$FHOUT_O,OCN_AVG=$OCN_AVG,USE_COLDSTART=$USE_COLDSTART,FSICS=$FSICS"
+ export envars="LEVS=$LEVS,FHCYC=$FHCYC,IC_FROM=$IC_FROM,IAER=5111,app=$app,appdate=$appdate,cplflx=$cplflx,frac_grid=$frac_grid,INLINE_POST=$INLINE_POST,cplwav=$cplwav,cplwav2atm=$cplwav2atm,CPLDWAV=$CPLDWAV,OCNRES=$OCNRES,DONST=$DONST,satmedmf=$satmedmf,v17sas=$v17sas,v17ras=$v17ras,v17rasnoshal=$v17rasnoshal,FH_CHUNK=$FH_CHUNK,restart_interval=$restart_interval,FHMAX_GFS_00=$FHMAX_GFS_00,FHMAX_GFS_06=$FHMAX_GFS_06,FHMAX_GFS_12=$FHMAX_GFS_12,FHMAX_GFS_18=$FHMAX_GFS_18,FHOUT_GFS=$FHOUT_GFS,HYPT=$HYPT,NSOUT=$NSOUT,FHOUT_O=$FHOUT_O,OCN_AVG=$OCN_AVG,USE_COLDSTART=$USE_COLDSTART,FSICS=$FSICS,OUTPUT_FILE=$OUTPUT_FILE"
 
 echo $envars
 

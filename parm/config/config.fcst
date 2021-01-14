@@ -584,7 +584,7 @@ NC2NEMSIOSH="$HOMEgfs/ush/fv3gfs_nc2nemsio.sh"
 #satmedmf=.false.
 #hybedmf=.false.
 #satmedmf=.true.
- dspheat=.false.                 # to turn off dissipative heating in moninedmf
+#dspheat=.false.                 # to turn off dissipative heating in moninedmf
 
 # new ozone forcing - uncomment below
  if [ $new_o3forc = YES ] ; then
@@ -689,11 +689,12 @@ fi
 #
 #
 
-#tau=5.0             # GFDL Rayleigh friction
+ tau=5.0             # GFDL Rayleigh friction
                      # ----------------------
- tau=10.0
+#tau=10.0
 #tau=2.0
-rf_cutoff=750.0
+rf_cutoff=500.0
+#rf_cutoff=750.0
 prslrd0=0.0
 
 ral_ts=0             # to turn on EMC Rayleigh friction 
