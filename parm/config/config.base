@@ -196,7 +196,8 @@ export OCNFIXDIR=$HOMEgfs/fix/fix_ocnice
 export OCNPOSTsrc=$HOMEgfs/fix/ocean_ice_post
 #
 #For WW3
- export USE_WAVES=True
+#export USE_WAVES=True
+ export USE_WAVES=${USE_WAVES:-False}
 #export ww3_grid=glo_30m
  export ww3_grid=${ww3_grid:-gwes_30m}
  export WW3_SUF=_20201220
@@ -205,7 +206,6 @@ export OCNPOSTsrc=$HOMEgfs/fix/ocean_ice_post
 #export USE_LA_LI2016=True
 export FIX_WW3=${FIX_WW3:-$NOSCRUB/WW3_input_data$WW3_SUF}
 export ww3_grid=${ww3_grid:-'glo_30m'}
-export USE_WAVES=${USE_WAVES:-False}
 export WAVE_METHOD=${WAVE_METHOD:-\"SURFACE_BANDS\"}
 export MOM6_RIVER_RUNOF=True
 export MOM6_RIVER_RUNOF=${MOM6_RIVER_RUNOF:-False}

@@ -38,7 +38,7 @@ HH=$(echo $IDATE | cut -c9-10)
 RES=$(echo $CASE|cut -c 2-)
 
 # $PSLOT is the name of your experiment
- expt=_phyab
+ expt=_phyad
 #expt=_phyxd
 #expt=_phyai    # cmeps run
 
@@ -130,16 +130,21 @@ cd $CWD
 
  export OCNRES=025
 
-#   uncomment the following three lines to turn off wave coupling
- export cplwav=.false.
- export cplwav2atm=.false.
- export CPLDWAV=NO
+#   comment the following line to turn on wave coupling
+#export USE_WAVES=True
+ export USE_WAVES=${USE_WAVES:-False}
+ if [ $USE_WAVES = True ] ; then
+  export cplwav=.true.
+  export cplwav2atm=.true.
+  export CPLDWAV=YES
+ fi
 
- export cplwav=${cplwav:-.true.}
- export cplwav2atm=${cplwav2atm:-.true.}
- export CPLDWAV=${CPLDWAV:-YES}
+ export cplwav=${cplwav:-.false.}
+ export cplwav2atm=${cplwav2atm:-.false.}
+ export CPLDWAV=${CPLDWAV:-NO}
 
- export app=ufs-weather-model_Jan04
+#export app=ufs-weather-model_Jan04
+ export app=ufs-weather-model_Jan14
  export appdate=Oct10
  export DONST=YES
 
@@ -164,7 +169,7 @@ cd $CWD
 #export FHMAX_GFS_00=1920
 #export FHMAX_GFS_00=1680
 #export FHMAX_GFS_00=1440
-#export FHMAX_GFS_00=960
+ export FHMAX_GFS_00=960
 #export FHMAX_GFS_00=720
 #export FHMAX_GFS_00=480
 #export FHMAX_GFS_00=120
@@ -186,7 +191,7 @@ cd $CWD
  export HYPT=${HYPT:-off}
  export FSICS=0
 
- export envars="LEVS=$LEVS,FHCYC=$FHCYC,IC_FROM=$IC_FROM,IAER=5111,app=$app,appdate=$appdate,cplflx=$cplflx,frac_grid=$frac_grid,INLINE_POST=$INLINE_POST,cplwav=$cplwav,cplwav2atm=$cplwav2atm,CPLDWAV=$CPLDWAV,OCNRES=$OCNRES,DONST=$DONST,satmedmf=$satmedmf,v17sas=$v17sas,v17ras=$v17ras,v17rasnoshal=$v17rasnoshal,FH_CHUNK=$FH_CHUNK,restart_interval=$restart_interval,FHMAX_GFS_00=$FHMAX_GFS_00,FHMAX_GFS_06=$FHMAX_GFS_06,FHMAX_GFS_12=$FHMAX_GFS_12,FHMAX_GFS_18=$FHMAX_GFS_18,FHOUT_GFS=$FHOUT_GFS,HYPT=$HYPT,NSOUT=$NSOUT,FHOUT_O=$FHOUT_O,OCN_AVG=$OCN_AVG,USE_COLDSTART=$USE_COLDSTART,FSICS=$FSICS,OUTPUT_FILE=$OUTPUT_FILE"
+ export envars="LEVS=$LEVS,FHCYC=$FHCYC,IC_FROM=$IC_FROM,IAER=5111,app=$app,appdate=$appdate,cplflx=$cplflx,frac_grid=$frac_grid,INLINE_POST=$INLINE_POST,cplwav=$cplwav,cplwav2atm=$cplwav2atm,CPLDWAV=$CPLDWAV,USE_WAVES=$USE_WAVES,OCNRES=$OCNRES,DONST=$DONST,satmedmf=$satmedmf,v17sas=$v17sas,v17ras=$v17ras,v17rasnoshal=$v17rasnoshal,FH_CHUNK=$FH_CHUNK,restart_interval=$restart_interval,FHMAX_GFS_00=$FHMAX_GFS_00,FHMAX_GFS_06=$FHMAX_GFS_06,FHMAX_GFS_12=$FHMAX_GFS_12,FHMAX_GFS_18=$FHMAX_GFS_18,FHOUT_GFS=$FHOUT_GFS,HYPT=$HYPT,NSOUT=$NSOUT,FHOUT_O=$FHOUT_O,OCN_AVG=$OCN_AVG,USE_COLDSTART=$USE_COLDSTART,FSICS=$FSICS,OUTPUT_FILE=$OUTPUT_FILE"
 
 echo $envars
 
