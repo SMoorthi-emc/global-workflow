@@ -1738,6 +1738,9 @@ if [ $QUILTING = .true. -a $OUTPUT_GRID = gaussian_grid ] ; then
     sfco=sfcf$FH3.$output_file
     logo=logf$FH3.$output_file
     prefix="$CDUMP.t${cyc}z."
+#   if [ -f $memdir/${prefix}$atmo ] ; then rm $memdir/${prefix}$atmo ; fi
+#   if [ -f $memdir/${prefix}$sfco ] ; then rm $memdir/${prefix}$sfco ; fi
+#   if [ -f $memdir/${prefix}$logo ] ; then rm $memdir/${prefix}$logo ; fi
     rm $memdir/${prefix}$atmo ; $memdir/${prefix}$sfco ; $memdir/${prefix}$logo
     eval $NLN $memdir/${prefix}$atmo ${prefix}$atmo
     eval $NLN $memdir/${prefix}$sfco ${prefix}$sfco

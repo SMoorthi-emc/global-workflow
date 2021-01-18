@@ -167,9 +167,9 @@ cd $CWD
 
  export FHMAX_GFS_00=2160
 #export FHMAX_GFS_00=1920
-#export FHMAX_GFS_00=1680
+ export FHMAX_GFS_00=1680
 #export FHMAX_GFS_00=1440
- export FHMAX_GFS_00=960
+#export FHMAX_GFS_00=960
 #export FHMAX_GFS_00=720
 #export FHMAX_GFS_00=480
 #export FHMAX_GFS_00=120

@@ -1060,7 +1060,8 @@ iaerclm=${iaerclm:-.false.}
 # nbits: netcdf lossy compression level (0-32): 0 lossless
 
 ideflate=1
-nbits=14
+nbits=0
+nbits=${nbits:-14}
 ishuffle=0
 # compression for RESTART files written by FMS
 shuffle=1
