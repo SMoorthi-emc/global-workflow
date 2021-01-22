@@ -98,7 +98,7 @@ case $case_in in
         export layout_y=6
 #       export layout_y=8
                                   # 127 layers
-        if [ $LEVS -ge 127 ] ; tnen
+        if [ $LEVS -ge 127 ] ; then
          export layout_x=8
          export layout_y=12
         fi
