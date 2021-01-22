@@ -9,24 +9,36 @@ echo "Load modules first"
  module load ruby/2.5.1
  module load python/2.7.14
  module load rocoto/1.3.0rc2
-module load hpss
+ module load hpss
 
-CWD=${ROCODIR:-$(pwd)}
+FHMIN=${1:-${FHMIN:-0}}
+WARM_START=${2:-${WARM_START:-.false.}}
+
+#FHMIN=${FHMIN:-0}
+#WARM_START=${WARM_START:-.false.}
+
+CWD=${3:-${ROCODIR:-$(pwd)}}
+
 # $IDATE is the initial start date of your run (first cycle CDATE, YYYYMMDDCC)
 #IDATE=$1
-IDATE=2016010100
-IDATE=2018010100
+#IDATE=2016010100
+#IDATE=2018010100
 #IDATE=2018090100
- IDATE=2018090100
+#IDATE=2018090100
 #IDATE=2011100100
- IDATE=2013040100
+ CDATE=2018031500
+ LEVS=65
+ export IDATE=${4:-${CDATE:-2013040100}}
+ export LEVS=${5:-${LEVS:-128}}
 #IDATE=2018011500
 #IDATE=2018031500
 #IDATE=2019052500    # EC 127 version from FY
- CASE=C384
+ CASE=C${6:-${ATMRES:-384}}
 #IDATE=2017051500
 #IDATE=2016110100
-#CASE=C768
+
+#CASE=C${ATMRES:-768}
+
 # $EDATE is the ending date of your run (YYYYMMDDCC) and is the last cycle that will complete
 #EDATE=2016010100
 
@@ -36,6 +48,7 @@ HH=$(echo $IDATE | cut -c9-10)
 
 # $RES is the resolution of the forecast (i.e. 768 for C768)
 RES=$(echo $CASE|cut -c 2-)
+ATMRES=${6:-${ATMRES:-$RES}}
 
 # $PSLOT is the name of your experiment
  expt=_phyad
@@ -43,26 +56,29 @@ RES=$(echo $CASE|cut -c 2-)
 #expt=_phyai    # cmeps run
 
 expt=${expt:-''}
-PSLOT=c${RES}$expt
+PSLOT=${7:-${PSLOT:-c${RES}$expt}}
 CDUMP=gfs
 
-FHMIN=${1:-$FHMIN}
-WARM_START=${2:-$WARM_START}
+export CPLSCRIPT=cpl_setup.sh     # this should be the name of this script
 
-FHMIN=${FHMIN:-0}
-WARM_START=${WARM_START:-.false.}
+#FHMIN=${1:-$FHMIN}
+#WARM_START=${2:-$WARM_START}
+
+#FHMIN=${FHMIN:-0}
+#WARM_START=${WARM_START:-.false.}
 #FHCYC=0
 #FHCYC=3
 FHCYC=${FHCYC:-24}
+
+export LEVS=${LEVS:-65}
 
 
 # $COMROT is the path to the experiment output directory. DO NOT include PSLOT folder at end of path, it’ll be built.
 # $EXPDIR is the path to the experiment directory where config and workflow monitoring (rocoto database and xml) files are placed. Do not include PSLOT folder at end of path, it will be built.
 
- export IC_FROM=bench5
+
+export IC_FROM=bench5
 export IC_FROM=${IC_FROM:-bench1}
- export LEVS=128
-export LEVS=${LEVS:-65}
 if [ $IC_FROM = bench5 ] ; then
  frac=fracL$((LEVS-1))
  frac=${frac:-""}
@@ -128,7 +144,7 @@ cd $CWD
  export OUTPUT_FILE=netcdf                 # to turn on netcdf output (default nemsio)
  export OUTPUT_FILE=${OUTPUT_FILE:-nemsio} # to turn on netcdf output (default nemsio)
 
- export OCNRES=025
+ export OCNRES=${OCNRES:-025}
 
 #   comment the following line to turn on wave coupling
 #export USE_WAVES=True
@@ -153,7 +169,7 @@ cd $CWD
  export v17ras=YES
  export v17rasnoshal=NO
 
- export FH_CHUNK=$((24*45))
+ export FH_CHUNK=$((24*45))                # number of hours to run in one forecast
 
 #export restart_interval=432000
 #export restart_interval=864000
@@ -167,13 +183,14 @@ cd $CWD
 
  export FHMAX_GFS_00=2160
 #export FHMAX_GFS_00=1920
- export FHMAX_GFS_00=1680
+#export FHMAX_GFS_00=1680
 #export FHMAX_GFS_00=1440
+#export FHMAX_GFS_00=1080
 #export FHMAX_GFS_00=960
 #export FHMAX_GFS_00=720
 #export FHMAX_GFS_00=480
 #export FHMAX_GFS_00=120
-#export FHMAX_GFS_00=48
+ export FHMAX_GFS_00=48
 #export FHMAX_GFS_00=240
 #export FHMAX_GFS_00=24
 
@@ -187,11 +204,14 @@ cd $CWD
  export FHOUT_O=${FHOUT_O:-$FHOUT_GFS} # ocean history output frequency
 #export OCN_AVG=YES
  export OCN_AVG=${OCN_AVG:-NO}
- export HYPT=on
+
+#export nth_f=2
+#export HYPT=on
+ export nth_f=${nth_f:-1}
  export HYPT=${HYPT:-off}
  export FSICS=0
 
- export envars="LEVS=$LEVS,FHCYC=$FHCYC,IC_FROM=$IC_FROM,IAER=5111,app=$app,appdate=$appdate,cplflx=$cplflx,frac_grid=$frac_grid,INLINE_POST=$INLINE_POST,cplwav=$cplwav,cplwav2atm=$cplwav2atm,CPLDWAV=$CPLDWAV,USE_WAVES=$USE_WAVES,OCNRES=$OCNRES,DONST=$DONST,satmedmf=$satmedmf,v17sas=$v17sas,v17ras=$v17ras,v17rasnoshal=$v17rasnoshal,FH_CHUNK=$FH_CHUNK,restart_interval=$restart_interval,FHMAX_GFS_00=$FHMAX_GFS_00,FHMAX_GFS_06=$FHMAX_GFS_06,FHMAX_GFS_12=$FHMAX_GFS_12,FHMAX_GFS_18=$FHMAX_GFS_18,FHOUT_GFS=$FHOUT_GFS,HYPT=$HYPT,NSOUT=$NSOUT,FHOUT_O=$FHOUT_O,OCN_AVG=$OCN_AVG,USE_COLDSTART=$USE_COLDSTART,FSICS=$FSICS,OUTPUT_FILE=$OUTPUT_FILE"
+ export envars="LEVS=$LEVS,FHCYC=$FHCYC,IC_FROM=$IC_FROM,IAER=5111,app=$app,appdate=$appdate,cplflx=$cplflx,frac_grid=$frac_grid,INLINE_POST=$INLINE_POST,cplwav=$cplwav,cplwav2atm=$cplwav2atm,CPLDWAV=$CPLDWAV,USE_WAVES=$USE_WAVES,ATMRES=$ATMRES,OCNRES=$OCNRES,DONST=$DONST,satmedmf=$satmedmf,v17sas=$v17sas,v17ras=$v17ras,v17rasnoshal=$v17rasnoshal,FH_CHUNK=$FH_CHUNK,restart_interval=$restart_interval,FHMAX_GFS_00=$FHMAX_GFS_00,FHMAX_GFS_06=$FHMAX_GFS_06,FHMAX_GFS_12=$FHMAX_GFS_12,FHMAX_GFS_18=$FHMAX_GFS_18,FHOUT_GFS=$FHOUT_GFS,nth_f=$nth_f,HYPT=$HYPT,NSOUT=$NSOUT,FHOUT_O=$FHOUT_O,OCN_AVG=$OCN_AVG,USE_COLDSTART=$USE_COLDSTART,FSICS=$FSICS,OUTPUT_FILE=$OUTPUT_FILE,CPLSCRIPT=$CPLSCRIPT"
 
 echo $envars
 

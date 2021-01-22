@@ -102,8 +102,8 @@ export REALTIME=NO
 # -----------------------
  export pre_exe=fv3
 #export app=ufs-weather-model
- export app=ufs-weather-model_Dec10
- export app=ufs-weather-model_Jan04
+#export app=ufs-weather-model_Dec10
+#export app=ufs-weather-model_Jan04
 
  export USE_IOVR=YES
  export RUN_CCPP=YES                # turn on ccpp physics

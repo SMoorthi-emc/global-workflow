@@ -1079,7 +1079,7 @@ write_dopost:               ${WRITE_DOPOST:-.false.}
 num_files:                  ${NUM_FILES:-2}
 filename_base:              ${FILENAME_BASE:-'atm sfc'}
 output_grid:                ${OUTPUT_GRID:-cubed_sphere_grid}
-output_file:                ${OUTPUT_FILE:-netcdf}
+output_file:                ${OUTPUT_FILETYPES:-${OUTPUT_FILE:-netcdf}}
 write_nemsioflip:           ${WRITE_NEMSIOFLIP:-.true.}
 write_fsyncflag:            $WRITE_FSYNCFLAG
 imo:                        ${imo:-${LONB_IMO:-384}}

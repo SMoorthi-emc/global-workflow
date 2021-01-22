@@ -688,13 +688,18 @@ fi
 
 #
 #
+ tau=-10.0           # minus sign implies GSM Rayleigh friction
+                     # ----------------------------------------
+ rf_cutoff=100.0
 
- tau=5.0             # GFDL Rayleigh friction
+
+#tau=5.0             # GFDL Rayleigh friction
                      # ----------------------
 #tau=10.0
 #tau=2.0
-rf_cutoff=500.0
+#rf_cutoff=500.0
 #rf_cutoff=750.0
+
 prslrd0=0.0
 
 ral_ts=0             # to turn on EMC Rayleigh friction 
@@ -1060,32 +1065,35 @@ iaerclm=${iaerclm:-.false.}
 # nbits: netcdf lossy compression level (0-32): 0 lossless
 
 ideflate=1
-nbits=0
+#nbits=0
 nbits=${nbits:-14}
 ishuffle=0
 # compression for RESTART files written by FMS
 shuffle=1
 deflate_level=1
 
-OUTPUT_FILETYPES=$OUTPUT_FILE
+export OUTPUT_FILETYPES=$OUTPUT_FILE
 if [[ $OUTPUT_FILE == netcdf ]] ; then
   ichunk2d=0 ; jchunk2d=0
   ichunk3d=0 ; jchunk3d=0 ;  kchunk3d=0
   RESTILE=`echo $CASE |cut -c 2-`
   if [[ $machine == WCOSS_DELL_P3 ]] ; then
     if [ $RESTILE -ge 768 ]; then
-      OUTPUT_FILETYPES=" 'netcdf_parallel' 'netcdf_parallel' "
+      export OUTPUT_FILETYPES=" 'netcdf_parallel' 'netcdf_parallel' "
       ichunk3d=$((4*RESTILE))
       jchunk3d=$((2*RESTILE))
       kchunk3d=1
     else
-      OUTPUT_FILETYPES=" 'netcdf_parallel' 'netcdf' "
+      export OUTPUT_FILETYPES=" 'netcdf_parallel' 'netcdf' "
     fi
   fi
   if [[ $machine == HERA ]] ; then
-    OUTPUT_FILETYPES=" 'netcdf_parallel' 'netcdf_parallel' "
+    export OUTPUT_FILETYPES=" 'netcdf_parallel' 'netcdf' "
+  fi
+  if [[ $machine == ORION ]] ; then
+    export OUTPUT_FILETYPES=" 'netcdf_parallel' 'netcdf_parallel' "
     if [ $RESTILE -le 192 ] ; then
-       OUTPUT_FILETYPES=" 'netcdf_parallel' 'netcdf' "
+      export OUTPUT_FILETYPES=" 'netcdf_parallel' 'netcdf' "
     fi
   fi
 fi
