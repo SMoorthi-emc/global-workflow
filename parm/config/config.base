@@ -833,7 +833,7 @@ if [ $CPLDFV3_MOM6_CICE = YES ] ; then
     if [ $CICE = CICE5 ] ; then
       export CPLPREPSH=$HOMEgfs/scripts/prep_coupled_fcst_emcufs_cmeps.sh
     else
-      export CPLPREPSH=$HOMEgfs/scripts/prep_coupled_fcst_emcufs_cmeps_cice6.sh
+      export CPLPREPSH=$HOMEgfs/scripts/${CPLPREPSC:-prep_coupled_fcst_emcufs_cmeps_cice6.sh}
     fi
     export CMEPS_DIR=${CMEPS_DIR:-$EXECBASE/$appdir/$app/${CMEPS_NAME:-CMEPS}}
   else

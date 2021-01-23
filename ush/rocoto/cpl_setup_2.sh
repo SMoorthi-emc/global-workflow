@@ -51,7 +51,7 @@ RES=$(echo $CASE|cut -c 2-)
 ATMRES=${6:-${ATMRES:-$RES}}
 
 # $PSLOT is the name of your experiment
- expt=_phyad
+ expt=_phybb
 #expt=_phyxd
 #expt=_phyai    # cmeps run
 
@@ -59,7 +59,7 @@ expt=${expt:-''}
 PSLOT=${7:-${PSLOT:-c${RES}$expt}}
 CDUMP=gfs
 
-export CPLSCRIPT=cpl_setup.sh     # this should be the name of this script
+export CPLSCRIPT=cpl_setup_2.sh     # this should be the name of this script
 
 #FHMIN=${1:-$FHMIN}
 #WARM_START=${2:-$WARM_START}
@@ -159,9 +159,9 @@ cd $CWD
  export cplwav2atm=${cplwav2atm:-.false.}
  export CPLDWAV=${CPLDWAV:-NO}
 
- export app=ufs-weather-model_Jan04
-#export app=ufs-weather-model_Jan14
-#export CPLPREPSC=prep_coupled_emcufs.sh
+#export app=ufs-weather-model_Jan04
+ export app=ufs-weather-model_Jan14
+ export CPLPREPSC=prep_coupled_emcufs.sh
  export appdate=Oct10
  export DONST=YES
 
