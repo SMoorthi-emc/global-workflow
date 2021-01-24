@@ -688,7 +688,7 @@ fi
 
 #
 #
- tau=-10.0           # minus sign implies GSM Rayleigh friction
+ tau=-5.0           # minus sign implies GSM Rayleigh friction
                      # ----------------------------------------
  rf_cutoff=100.0
 
@@ -727,10 +727,10 @@ if [ $ras = .true. ] ; then
  hord_tm=6
  hord_dp=-6
 #
-#hord_mt=5
-#hord_vt=5
-#hord_tm=5
-#hord_dp=-5
+ hord_mt=5
+ hord_vt=5
+ hord_tm=5
+ hord_dp=-5
 #hord_tr=-8
 fi
 FVER=""

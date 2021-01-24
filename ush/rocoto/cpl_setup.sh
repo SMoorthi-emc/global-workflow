@@ -160,8 +160,8 @@ cd $CWD
  export CPLDWAV=${CPLDWAV:-NO}
 
  export app=ufs-weather-model_Jan04
-#export app=ufs-weather-model_Jan14
-#export CPLPREPSC=prep_coupled_emcufs.sh
+ export app=ufs-weather-model_Jan14
+ export CPLPREPSC=prep_coupled_emcufs.sh
  export appdate=Oct10
  export DONST=YES
 
