@@ -872,6 +872,7 @@ cd $DATA
    fi
  fi
 
+ export fv_core_nml=${fv_core_nml:-""}
 #   if [ $vtdm4 -lt 0.02 ] ; then export d_con=0.0 ; fi
 
 #   clock_grain=${clock_grain:-ROUTINE}

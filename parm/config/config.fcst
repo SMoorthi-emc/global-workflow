@@ -566,7 +566,7 @@ NC2NEMSIOSH="$HOMEgfs/ush/fv3gfs_nc2nemsio.sh"
 #
 #blocksize=96
  blocksize=${blocksize:-32}
-#range_warn=.true.
+ range_warn=.true.
 #fv_debug=.true.
 #print_freq=-1
  print_freq=6
@@ -688,9 +688,12 @@ fi
 
 #
 #
- tau=-5.0           # minus sign implies GSM Rayleigh friction
+#tau=-5.0            # minus sign implies GSM Rayleigh friction
+ tau=-3.0            # minus sign implies GSM Rayleigh friction
                      # ----------------------------------------
- rf_cutoff=100.0
+ tau=${tau_rayl:-${tau:--5.0}}
+ rf_cutoff=50.0
+#rf_cutoff=100.0
 
 
 #tau=5.0             # GFDL Rayleigh friction
@@ -727,10 +730,10 @@ if [ $ras = .true. ] ; then
  hord_tm=6
  hord_dp=-6
 #
- hord_mt=5
- hord_vt=5
- hord_tm=5
- hord_dp=-5
+#hord_mt=5
+#hord_vt=5
+#hord_tm=5
+#hord_dp=-5
 #hord_tr=-8
 fi
 FVER=""
@@ -1015,7 +1018,8 @@ if [ $LEVS -gt 65 ] ; then
  n_sponge=$((LEVS-2))
 fi
 if [ $LEVS -gt 120 ] ; then  n_sponge=42 ; fi
-#n_sponge=$((LEVS-2))
+ n_sponge=$((LEVS-2))
+ n_sponge=$((LEVS-1))
 
 min_seaice=1.0e-11
 min_seaice=1.0e-6

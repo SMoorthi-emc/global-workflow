@@ -28,7 +28,8 @@ CWD=${3:-${ROCODIR:-$(pwd)}}
 #IDATE=2011100100
 #CDATE=2018031500
 #LEVS=65
- export IDATE=${4:-${CDATE:-2013040100}}
+ export IDATE=${4:-${CDATE:-2013100100}}
+#export IDATE=${4:-${CDATE:-2013040100}}
  export LEVS=${5:-${LEVS:-128}}
 #IDATE=2018011500
 #IDATE=2018031500
@@ -134,7 +135,8 @@ cd $CWD
 
 # turn on some options
 # --------------------
- export cplflx=.true.                      # turn on cupule model
+#export cplflx=.false.                     # turn on to run in uncoupled modeDcupule model
+ export cplflx=${cplflx:-.true.}           # default is to run in coupled mode
  export CPLD_APP=YES                       # use coupled app
 #export INLINE_POST=NO                     # turn off inline post
  export INLINE_POST=${INLINE_POST:-YES}    # turn on inline post
@@ -183,9 +185,13 @@ cd $CWD
 #export restart_interval=21600
 #export restart_interval=10800
 
- export FHMAX_GFS_00=2160
+ export tau_rayl=-5
+
+ export FHMAX_GFS_00=2520
+#export FHMAX_GFS_00=2160
 #export FHMAX_GFS_00=1920
- export FHMAX_GFS_00=1680
+#export FHMAX_GFS_00=1680
+#export FHMAX_GFS_00=1449
 #export FHMAX_GFS_00=1440
 #export FHMAX_GFS_00=1080
 #export FHMAX_GFS_00=960
@@ -195,12 +201,15 @@ cd $CWD
 #export FHMAX_GFS_00=48
 #export FHMAX_GFS_00=240
 #export FHMAX_GFS_00=24
+#export FHMAX_GFS_00=6
 
  export FHMAX_GFS_06=0
  export FHMAX_GFS_12=0
  export FHMAX_GFS_18=0
 
+#export NSOUT=1
  export NSOUT=0
+#export FHOUT_GFS=1
  export FHOUT_GFS=3
  export FHOUT_GFS=${FHOUT_GFS:-6}      # atmos history output frequency
  export FHOUT_O=${FHOUT_O:-$FHOUT_GFS} # ocean history output frequency
@@ -213,7 +222,7 @@ cd $CWD
  export HYPT=${HYPT:-off}
  export FSICS=0
 
- export envars="LEVS=$LEVS,FHCYC=$FHCYC,IC_FROM=$IC_FROM,IAER=5111,app=$app,appdate=$appdate,cplflx=$cplflx,frac_grid=$frac_grid,INLINE_POST=$INLINE_POST,cplwav=$cplwav,cplwav2atm=$cplwav2atm,CPLDWAV=$CPLDWAV,USE_WAVES=$USE_WAVES,ATMRES=$ATMRES,OCNRES=$OCNRES,DONST=$DONST,satmedmf=$satmedmf,v17sas=$v17sas,v17ras=$v17ras,v17rasnoshal=$v17rasnoshal,FH_CHUNK=$FH_CHUNK,restart_interval=$restart_interval,FHMAX_GFS_00=$FHMAX_GFS_00,FHMAX_GFS_06=$FHMAX_GFS_06,FHMAX_GFS_12=$FHMAX_GFS_12,FHMAX_GFS_18=$FHMAX_GFS_18,FHOUT_GFS=$FHOUT_GFS,nth_f=$nth_f,HYPT=$HYPT,NSOUT=$NSOUT,FHOUT_O=$FHOUT_O,OCN_AVG=$OCN_AVG,USE_COLDSTART=$USE_COLDSTART,FSICS=$FSICS,OUTPUT_FILE=$OUTPUT_FILE,CPLSCRIPT=$CPLSCRIPT,CPLPREPSC=$CPLPREPSC"
+ export envars="LEVS=$LEVS,FHCYC=$FHCYC,IC_FROM=$IC_FROM,IAER=5111,app=$app,appdate=$appdate,cplflx=$cplflx,CPLD_APP=$CPLD_APP,frac_grid=$frac_grid,INLINE_POST=$INLINE_POST,cplwav=$cplwav,cplwav2atm=$cplwav2atm,CPLDWAV=$CPLDWAV,USE_WAVES=$USE_WAVES,ATMRES=$ATMRES,OCNRES=$OCNRES,DONST=$DONST,satmedmf=$satmedmf,v17sas=$v17sas,v17ras=$v17ras,v17rasnoshal=$v17rasnoshal,FH_CHUNK=$FH_CHUNK,restart_interval=$restart_interval,FHMAX_GFS_00=$FHMAX_GFS_00,FHMAX_GFS_06=$FHMAX_GFS_06,FHMAX_GFS_12=$FHMAX_GFS_12,FHMAX_GFS_18=$FHMAX_GFS_18,FHOUT_GFS=$FHOUT_GFS,nth_f=$nth_f,HYPT=$HYPT,NSOUT=$NSOUT,FHOUT_O=$FHOUT_O,OCN_AVG=$OCN_AVG,USE_COLDSTART=$USE_COLDSTART,FSICS=$FSICS,OUTPUT_FILE=$OUTPUT_FILE,CPLSCRIPT=$CPLSCRIPT,CPLPREPSC=$CPLPREPSC,tau_rayl=$tau_rayl"
 
 echo $envars
 
