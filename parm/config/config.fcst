@@ -734,7 +734,7 @@ if [ $ras = .true. ] ; then
 #hord_vt=5
 #hord_tm=5
 #hord_dp=-5
-#hord_tr=-8
+ hord_tr=-8
 fi
 FVER=""
 if [ $do_shoc = .true. ] ; then
