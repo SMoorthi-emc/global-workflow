@@ -692,8 +692,9 @@ fi
  tau=-3.0            # minus sign implies GSM Rayleigh friction
                      # ----------------------------------------
  tau=${tau_rayl:-${tau:--5.0}}
- rf_cutoff=50.0
+#rf_cutoff=50.0
 #rf_cutoff=100.0
+ rf_cutoff=${rf_cutoff:-100}
 
 
 #tau=5.0             # GFDL Rayleigh friction
