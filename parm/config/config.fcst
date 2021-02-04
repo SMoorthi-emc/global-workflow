@@ -681,7 +681,7 @@ fi
 
  fhouri=1.0
  fhouri=3.0
- fac_n_spl=2.0
+ fac_n_spl=3.0
 #fac_n_spl=1.5
 #fhouri=0.0
 #fac_n_spl=1.0

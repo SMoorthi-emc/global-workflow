@@ -26,8 +26,10 @@ CWD=${3:-${ROCODIR:-$(pwd)}}
 #IDATE=2018090100
 #IDATE=2018090100
 #IDATE=2011100100
+
 #CDATE=2018031500
 #LEVS=65
+
  export IDATE=${4:-${CDATE:-2013010100}}
 #export IDATE=${4:-${CDATE:-2013100100}}
 #export IDATE=${4:-${CDATE:-2013040100}}
@@ -53,7 +55,7 @@ RES=$(echo $CASE|cut -c 2-)
 ATMRES=${6:-${ATMRES:-$RES}}
 
 # $PSLOT is the name of your experiment
- expt=_phyaa
+ expt=_phyaf
 #expt=_phyxd
 #expt=_phyai    # cmeps run
 
@@ -142,7 +144,7 @@ cd $CWD
 #export INLINE_POST=NO                     # turn off inline post
  export INLINE_POST=${INLINE_POST:-YES}    # turn on inline post
  export USE_COLDSTART=.false.              # uncomment this line to turn on cold start step
- export frac_grid=.false.
+#export frac_grid=.false.
  export frac_grid=${frac_grid:-.true.}
  export OUTPUT_FILE=netcdf                 # to turn on netcdf output (default nemsio)
  export OUTPUT_FILE=${OUTPUT_FILE:-nemsio} # to turn on netcdf output (default nemsio)
@@ -163,7 +165,8 @@ cd $CWD
  export CPLDWAV=${CPLDWAV:-NO}
 
 #export app=ufs-weather-model_Jan04
- export app=ufs-weather-model_Jan14
+#export app=ufs-weather-model_Jan14
+ export app=ufs-weather-model_Feb02
  export CPLPREPSC=prep_coupled_emcufs.sh
  export appdate=Oct10
  export DONST=YES
@@ -186,7 +189,7 @@ cd $CWD
 #export restart_interval=21600
 #export restart_interval=10800
 
- export tau_rayl=-5
+ export tau_rayl=-10
  export rf_cutoff=200
 
  export FHMAX_GFS_00=2520
