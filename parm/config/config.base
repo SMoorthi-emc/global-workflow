@@ -101,6 +101,7 @@ export REALTIME=NO
 # some available switches
 # -----------------------
  export pre_exe=fv3
+ export post_exe=_nu
 #export app=ufs-weather-model
 #export app=ufs-weather-model_Dec10
 #export app=ufs-weather-model_Jan04
@@ -170,6 +171,7 @@ fi
 #IPD=n
 #IPD=_b
  IPD=${IPD:-""}
+ export post_exe=${post_exe:-${IPD:-""}}
 
 #appdate=Aug12
 #appdate=Sep15                   # latest version
@@ -806,7 +808,7 @@ if [ $CPLD_APP = YES ] ; then
 # export model_name=fv3_mom6_cice_nemsland
 # export model_name=fcst_${mediator}_$CICE
   export pre_exe=${pre_exe:-fcst}
-  export model_name=${pre_exe}_${mediator}_${CICE}$IPD
+  export model_name=${pre_exe}_${mediator}_${CICE}${post_exe}
 # export model_name=fcst_${mediator}_${CICE}o
 # export model_name=fv3_mom6_cice_nemsland
 # export model_name=fcst_nems_debug

@@ -46,13 +46,6 @@ FCSTEXECDIR=${FCSTEXECDIR:-$HOMEgfs/sorc/fv3gfs.fd/NEMS/exe}
 PTMP=${PTMP:-/gpfs/hps/ptmp}
 IC_DIR=${IC_DIR:-${ICDIR:-$PTMP/$LOGNAME/FV3IC/ICs}}
 ncep_plevels=${ncep_plevels:-.true.}
-NSP=2
-NSP=${NSP:-1}
-if [ $LEVS -le 65 ] ; then
- n_sponge=24
-else
- n_sponge=$((LEVS-NSP))
-fi
 
 ################# Coupled FV3_MOM6_CICE Wave Model ######################
 if [ ${CPLDFV3_MOM6_CICE:-NO} = YES ] ; then
@@ -92,35 +85,7 @@ atmos_model_nml=${atmos_model_nml:-''}
 # cdmbgwd=1.5,1.0
 #fi
 
-#nord=1           # 0 - 2nd, 1 - 4th, 2 - 6th and 3 - 8th order
-#nord_tr=1
- nord=2           # 0 - 2nd, 1 - 4th, 2 - 6th and 3 - 8th order
- nord_tr=2
-#nord=3           # 0 - 2nd, 1 - 4th, 2 - 6th and 3 - 8th order
-#nord_tr=3
 
-#hord_mt=6
-#hord_vt=6
-#hord_tm=6
-#hord_dp=-6
-
- d4_bg=0.16
-#d4_bg=0.2
-#trdm2=2.0e-4
-#nord=2
-#fv_sg_adj=225
-#fv_sg_adj=450
-#fv_sg_adj=600
-#fv_sg_adj=900
-#d2_bg=0.005
- d2_bg_k1=0.2
- d2_bg_k2=0.04
-#d2_bg_k1=0.16
-#d2_bg_k2=0.05
-#d_ext=0.01
- d_ext=0.00
- do_vort_damp=.true.
-#
 #REMAP_GRID=${REMAP_GRID:-latlon}
 REMAP_GRID=${REMAP_GRID:-gaussian}
 if [ $REMAP_GRID = latlon ] ; then
@@ -230,10 +195,10 @@ CPLPREPSH=${CPLPREPSH:-$HOMEgfs/scripts/prep_coupled_fcst.sh}
 
 npes=$((layout_x*layout_y*6))
 
-#tasks=$npes                         # number of PEs for 1st segment
-#nth_f=2                             # number of threads for AM forecast
-#nth_f=3                             # number of threads for AM forecast
-#nth_f=4                             # number of threads for AM forecast
+#tasks=$npes                        # number of PEs for 1st segment
+#nth_f=2                            # number of threads for AM forecast
+#nth_f=3                            # number of threads for AM forecast
+#nth_f=4                            # number of threads for AM forecast
 #nth_f=8                            # number of threads for AM forecast
 #nth_f=6                            # number of threads for AM forecast
 #nth_f=1                            # number of threads for AM forecast
@@ -346,7 +311,87 @@ TYPE="nh"
 MONO="non-mono"
 MONO=${MONO:-non-mono}
 
-fv_sg_adj=${fv_sg_adj:-${DELTIM:-300}}
+hord_opt=${hord_opt:-6}
+
+if [ $hord_opt -eq 5 ] ; then
+ hord_mt=5
+ hord_vt=5
+ hord_tm=5
+ hord_dp=-5
+ hord_tr=-8
+ d4_bg=0.15                     # SJLin recommendation
+ dddmp=0.2                      # SJLin recommendation
+elif [ $hord_opt -eq 6 ] ; then
+ hord_mt=6
+ hord_vt=6
+ hord_tm=6
+ hord_dp=-6
+ hord_tr=-8
+elif [ $hord_opt -eq 9 ] ; then
+ hord_mt=9
+ hord_vt=9
+ hord_tm=9
+ hord_dp=-9
+ hord_tr=-9
+elif [ $hord_opt -eq 10 ] ; then
+ hord_mt=10
+ hord_vt=10
+ hord_tm=10
+ hord_dp=-10
+ hord_tr=-10
+fi
+#hord_tr=13    # has 2dx filter for tracer
+
+
+ nord=${nord:-2}
+ d4_bg=${d4_bg:-0.12}               # background higher order divergence damping coefficient nord>0
+
+ trdm2=${trdm2:-0.0}                # backgroud tracer damping - default 0.0
+ d2_bg=${d2_bg:-0.0}                # background 2nd order divergence damping when nord=0
+ d2_bg_k1=${d2_bg_k1:-0.2}
+ d2_bg_k2=${d2_bg_k2:-0.04}
+ dddmp=${dddmp:-0.1}                # second order Smagorinsky type divergence damping coefficient
+ d_ext=${d_ext:-0.0}
+ do_vort_damp=${do_vort_damp:-.true.}
+ vtdm4=${vtdm4:-0.02}               # background other-variable damping coefficient
+#
+ NSP=${NSP:-1}
+ n_sponge=$((LEVS-NSP))
+ n_sponge=${n_sponge:-$((LEVS/3))}
+ fv_sg_adj=${fv_sg_adj:-$((DELTIM*2))}
+
+#
+#tau=-5.0            # negative sign for GSM and positive for GFDL Rayleigh friction
+                     # -------------------------------------------------------------
+ tau=${tau_rayl:-${tau:--10.0}}
+ rf_cutoff=${rf_cutoff:-200}
+
+prslrd0=0.0
+
+ral_ts=0             # to turn on EMC Rayleigh friction (in physics)
+                     # ---------------------------------------------
+if [ $ral_ts -gt 0 ] ; then
+ tau=10000
+ rf_cutoff=1.0
+ prslrd0=500.0
+fi
+#
+# Sponge layer settings for L127 for gdas
+# --------------------------------------f
+if [ $LEVS -gt 65 -a $CDUMP = gdas ] ; then
+  tau=5.0
+  rf_cutoff=1.0e3
+  d2_bg_k1=0.20
+  d2_bg_k2=0.0
+fi
+#
+#tau=1.0 ;  rf_cutoff=1000 ; d2_bg_k1=0.25  ; d2_bg_k2=0 # from Jeff W.
+#
+
+
+
+
+
 # Use stratosphere h2o physics
 h2o_phys=".true."
 
@@ -372,14 +417,9 @@ if [ $RAS = YES ] ; then
 # shal_cnv=.false.
 fi
 
-nord=2
-dddmp=0.1
-d4_bg=0.12
-dddmp=0.2
-d4_bg=0.16
-hord_mt_nh_nonmono=6
-hord_xx_nh_nonmono=6
-vtdm4_nh_nonmono=0.02
+#hord_mt_nh_nonmono=6
+#hord_xx_nh_nonmono=6
+#vtdm4_nh_nonmono=0.02
 
 #iccn=${iccn:-0}
 
@@ -451,13 +491,15 @@ elif [ $imp_physics -eq 11 ] ; then # GFDL
    cnvcld=.true.
   fi
 
-  hord_mt_nh_nonmono=5
-  hord_xx_nh_nonmono=5
-  vtdm4_nh_nonmono=0.02
-  nord=2
-  dddmp=0.1
-  d4_bg=0.12
-  vtdm4=0.02
+#        commented on feb05, 2021
+# hord_mt_nh_nonmono=5
+# hord_xx_nh_nonmono=5
+# vtdm4_nh_nonmono=0.02
+# nord=2
+# dddmp=0.1
+# d4_bg=0.12
+# vtdm4=0.02
+#        commented on feb05, 2021
 
   tau_l2r=300.0
 # tau_l2r=600.0
@@ -591,7 +633,6 @@ NC2NEMSIOSH="$HOMEgfs/ush/fv3gfs_nc2nemsio.sh"
   O3FORC=ozprdlos_2015_new_sbuvO3_tclm15_nuchem.f77 # to use new ozone forcing
  fi
 
-#hord_tr=13    # has 2dx filter for tracer
 
  RAS=${RAS:-NO}
  CSAW=${CSAW:-NO}
@@ -677,66 +718,13 @@ if [ $ras = .true. -a $cscnv = .true. ] ; then
 fi
 
  k_split=${k_split:-1}
- n_split=${n_split:-4}
+ n_split=${n_split:-6}
 
- fhouri=1.0
- fhouri=3.0
- fac_n_spl=3.0
-#fac_n_spl=1.5
-#fhouri=0.0
-#fac_n_spl=1.0
+ fhouri=${fhouri:-3.0}
+ fac_n_spl=${fac_n_spl:-3.0}
 
 #
-#
-#tau=-5.0            # minus sign implies GSM Rayleigh friction
- tau=-3.0            # minus sign implies GSM Rayleigh friction
-                     # ----------------------------------------
- tau=${tau_rayl:-${tau:--5.0}}
-#rf_cutoff=50.0
-#rf_cutoff=100.0
- rf_cutoff=${rf_cutoff:-100}
 
-
-#tau=5.0             # GFDL Rayleigh friction
-                     # ----------------------
-#tau=10.0
-#tau=2.0
-#rf_cutoff=500.0
-#rf_cutoff=750.0
-
-prslrd0=0.0
-
-ral_ts=0             # to turn on EMC Rayleigh friction 
-                     # --------------------------------
-if [ $ral_ts -gt 0 ] ; then
- tau=10000
- rf_cutoff=1.0
- prslrd0=500.0
-fi
-#
-# Sponge layer settings for L127
-if [ $LEVS -gt 65 -a $CDUMP = gdas ] ; then
-  tau=5.0
-  rf_cutoff=1.0e3
-  d2_bg_k1=0.20
-  d2_bg_k2=0.0
-fi
-#
-#tau=1.0 ;  rf_cutoff=1000 ; d2_bg_k1=0.25  ; d2_bg_k2=0 # from Jeff W.
-#
-
-if [ $ras = .true. ] ; then
- hord_mt=6
- hord_vt=6
- hord_tm=6
- hord_dp=-6
-#
-#hord_mt=5
-#hord_vt=5
-#hord_tm=5
-#hord_dp=-5
- hord_tr=-8
-fi
 FVER=""
 if [ $do_shoc = .true. ] ; then
   shal_cnv=.false.
@@ -1010,19 +998,7 @@ do_tofd=${do_tofd:-.true.}
 #launch_level=${launch_level:-50}
 launch_level=${launch_level:-$((LEVS*3/7))}
 
-n_sponge=$((LEVS/6))
-n_sponge=$((LEVS/3))
-#n_sponge=24
-#n_sponge=$((LEVS/5))
-#n_sponge=$((LEVS/4))
-if [ $LEVS -gt 65 ] ; then
- n_sponge=$((LEVS-2))
-fi
-if [ $LEVS -gt 120 ] ; then  n_sponge=42 ; fi
- n_sponge=$((LEVS-2))
- n_sponge=$((LEVS-1))
-
-min_seaice=1.0e-11
+#min_seaice=1.0e-11
 min_seaice=1.0e-6
 #min_seaice=1.0e-3
 min_seaice=${min_seaice:-0.15}
