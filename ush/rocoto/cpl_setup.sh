@@ -148,6 +148,8 @@ cd $CWD
  export frac_grid=${frac_grid:-.true.}
  export OUTPUT_FILE=netcdf                 # to turn on netcdf output (default nemsio)
  export OUTPUT_FILE=${OUTPUT_FILE:-nemsio} # to turn on netcdf output (default nemsio)
+#export QUILTING=.false.
+ export QUILTING=${QUILTING:-.true.}
 
  export OCNRES=${OCNRES:-025}
 
@@ -231,7 +233,7 @@ cd $CWD
  export HYPT=${HYPT:-off}
  export FSICS=0
 
- export envars="LEVS=$LEVS,FHCYC=$FHCYC,IC_FROM=$IC_FROM,IAER=5111,app=$app,appdate=$appdate,cplflx=$cplflx,CPLD_APP=$CPLD_APP,frac_grid=$frac_grid,INLINE_POST=$INLINE_POST,cplwav=$cplwav,cplwav2atm=$cplwav2atm,CPLDWAV=$CPLDWAV,USE_WAVES=$USE_WAVES,ATMRES=$ATMRES,OCNRES=$OCNRES,DONST=$DONST,satmedmf=$satmedmf,v17sas=$v17sas,v17ras=$v17ras,v17rasnoshal=$v17rasnoshal,FH_CHUNK=$FH_CHUNK,restart_interval=$restart_interval,FHMAX_GFS_00=$FHMAX_GFS_00,FHMAX_GFS_06=$FHMAX_GFS_06,FHMAX_GFS_12=$FHMAX_GFS_12,FHMAX_GFS_18=$FHMAX_GFS_18,FHOUT_GFS=$FHOUT_GFS,nth_f=$nth_f,HYPT=$HYPT,NSOUT=$NSOUT,FHOUT_O=$FHOUT_O,OCN_AVG=$OCN_AVG,USE_COLDSTART=$USE_COLDSTART,FSICS=$FSICS,OUTPUT_FILE=$OUTPUT_FILE,CPLSCRIPT=$CPLSCRIPT,CPLPREPSC=$CPLPREPSC,tau_rayl=$tau_rayl,rf_cutoff=$rf_cutoff,hord_opt=$hord_opt"
+ export envars="LEVS=$LEVS,FHCYC=$FHCYC,IC_FROM=$IC_FROM,IAER=5111,app=$app,appdate=$appdate,cplflx=$cplflx,CPLD_APP=$CPLD_APP,frac_grid=$frac_grid,INLINE_POST=$INLINE_POST,cplwav=$cplwav,cplwav2atm=$cplwav2atm,CPLDWAV=$CPLDWAV,USE_WAVES=$USE_WAVES,ATMRES=$ATMRES,OCNRES=$OCNRES,DONST=$DONST,satmedmf=$satmedmf,v17sas=$v17sas,v17ras=$v17ras,v17rasnoshal=$v17rasnoshal,FH_CHUNK=$FH_CHUNK,restart_interval=$restart_interval,FHMAX_GFS_00=$FHMAX_GFS_00,FHMAX_GFS_06=$FHMAX_GFS_06,FHMAX_GFS_12=$FHMAX_GFS_12,FHMAX_GFS_18=$FHMAX_GFS_18,FHOUT_GFS=$FHOUT_GFS,nth_f=$nth_f,HYPT=$HYPT,NSOUT=$NSOUT,FHOUT_O=$FHOUT_O,OCN_AVG=$OCN_AVG,USE_COLDSTART=$USE_COLDSTART,FSICS=$FSICS,OUTPUT_FILE=$OUTPUT_FILE,CPLSCRIPT=$CPLSCRIPT,CPLPREPSC=$CPLPREPSC,tau_rayl=$tau_rayl,rf_cutoff=$rf_cutoff,hord_opt=$hord_opt,QUILTING=$QUILTING"
 
 echo $envars
 

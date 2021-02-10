@@ -359,6 +359,11 @@ fi
  n_sponge=$((LEVS-NSP))
  n_sponge=${n_sponge:-$((LEVS/3))}
  fv_sg_adj=${fv_sg_adj:-$((DELTIM*2))}
+ n_sponge=42
+ dz_min=${dz_min:-6.0}
+ fv_sg_pbot=${fv_sg_pbot:-200.0e2}
+ fv_sg_pdepth=${fv_sg_pdepth:-100.0e2}
+ fv_core_nml="dz_min=$dz_min,fv_sg_pbot=$fv_sg_pbot,fv_sg_pdepth=$fv_sg_pdepth"
 
 #
 #tau=-5.0            # negative sign for GSM and positive for GFDL Rayleigh friction

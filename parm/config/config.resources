@@ -183,6 +183,13 @@ elif [ $step = "fcst" ]; then
 #       fi
 #       export npe_ocn=$((npe_ocn+xx-alltasks))
       done
+    else
+      ttasks=$((npe_fcst+npe_ocn+npe_ice_ww3))
+      nodes=$((1+(ttasks*nth_fcst)/npe_node_max))
+      npe_ocn=$((nodes*npe_node_max/nth_fcst-npe_fcst-npe_ice_ww3))
+      alltasks=$((npe_fcst+npe_ocn+npe_ice_ww3))
+      export WRITE_GROUP=0
+      export WRTTASK_PER_GROUP=0
     fi
 #   export npe_med=$((alltasks-1))
 #   export npe_med_max=48

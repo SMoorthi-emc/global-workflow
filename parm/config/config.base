@@ -126,7 +126,7 @@ export REALTIME=NO
 # I/O QUILTING, true--use Write Component; false--use GFDL FMS
 # if quilting=true, choose OUTPUT_GRID as cubed_sphere_grid in netcdf or gaussian_grid
 # if gaussian_grid, set OUTPUT_FILE for nemsio or netcdf
- export QUILTING=.true.
+#export QUILTING=.true.
 #export OUTPUT_GRID=gaussian_grid
 #export OUTPUT_FILE=netcdf
 
@@ -849,7 +849,7 @@ if [ $CPLDFV3_MOM6_CICE = YES ] ; then
 # export DONST=YES
 
 # The switch to apply SST elevation correction or not
-  export nst_anl=.false.
+# export nst_anl=.false.
 else
   if [ $mediator = cmeps ] ; then
     export CMEPS_DIR=${CMEPS_DIR:-$EXECBASE/$appdir/$app/CMEPS}

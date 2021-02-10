@@ -752,7 +752,7 @@ FNSMCC=${FNSMCC:-"$FIX_AM/global_soilmgldas.statsgo.t$JCAP.$LONB.$LATB.grb"}
 # nstf_name(3) : 0 = NSSTM analysis off, 1 = NSST analysis on
 # nstf_name(4) : zsea1 in mm
 # nstf_name(5) : zsea2 in mm
-# nst_anl      : .true. or .false., NSST analysis over lake
+# nst_anl      : .true. or .false., NSST analysis over lake - when true the value is at local surface height
 
 NST_MODEL=${NST_MODEL:-0}
 NST_SPINUP=${NST_SPINUP:-0}
@@ -760,7 +760,7 @@ NST_RESV=${NST_RESV-0}
 ZSEA1=${ZSEA1:-0}
 ZSEA2=${ZSEA2:-0}
 nstf_name=${nstf_name:-"$NST_MODEL,$NST_SPINUP,$NST_RESV,$ZSEA1,$ZSEA2"}
-nst_anl=${nst_anl:-.false.}
+nst_anl=${nst_anl:-.true.}
 
 #
 # export the pre-conditioning of the solution (na_init)
