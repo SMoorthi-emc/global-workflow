@@ -101,13 +101,14 @@ export REALTIME=NO
 # some available switches
 # -----------------------
  export pre_exe=fv3
- export post_exe=_nu
+ export post_exe=_nu2
 #export app=ufs-weather-model
 #export app=ufs-weather-model_Dec10
 #export app=ufs-weather-model_Jan04
 
  export USE_IOVR=YES
- export RUN_CCPP=YES                # turn on ccpp physics
+ export RUN_CCPP=${RUN_CCPP:-YES}   # turn on ccpp physics
+ if [ $RUN_CCPP = NO ] ; then export pre_exe=fcst ; fi
 
 #export HYPT=on                     # turn on hyper threading
 #export cplflx=.true.               # turn on cupule model 
@@ -163,8 +164,8 @@ fi
 #export DumpFields_OCN=true
 #export DumpFields_ICE=true
 
- export RUN_CCPP=${RUN_CCPP:-NO}
- if [ $RUN_CCPP = NO ] ; then IPD='_ipd' ; fi
+#export RUN_CCPP=${RUN_CCPP:-NO}
+#if [ $RUN_CCPP = NO ] ; then IPD='_ipd' ; fi
 #if [ $RUN_CCPP = NO ] ; then IPD='_ipdr' ; fi
 #if [ $RUN_CCPP = NO ] ; then IPD='_ipdm' ; fi
 #IPD=r

@@ -360,10 +360,15 @@ fi
  n_sponge=${n_sponge:-$((LEVS/3))}
  fv_sg_adj=${fv_sg_adj:-$((DELTIM*2))}
  n_sponge=42
- dz_min=${dz_min:-6.0}
- fv_sg_pbot=${fv_sg_pbot:-200.0e2}
- fv_sg_pdepth=${fv_sg_pdepth:-100.0e2}
- fv_core_nml="dz_min=$dz_min,fv_sg_pbot=$fv_sg_pbot,fv_sg_pdepth=$fv_sg_pdepth"
+
+ if [ $RUN_CCPP = YES ] ; then
+   dz_min=${dz_min:-2.0}
+   psm_bc=${psm_bc:-1}
+   fv_sg_pbot=${fv_sg_pbot:-200.0e2}
+   fv_sg_pdepth=${fv_sg_pdepth:-100.0e2}
+   fv_core_nml="dz_min=$dz_min,psm_bc=$psm_bc,fv_sg_pbot=$fv_sg_pbot,fv_sg_pdepth=$fv_sg_pdepth"
+ fi
+ 
 
 #
 #tau=-5.0            # negative sign for GSM and positive for GFDL Rayleigh friction
@@ -755,8 +760,8 @@ if [ $ncld -eq 2 -a $imp_physics -eq 10 ] ; then
 #   prauras="1.0d-3,1.0d-3"
 #   prauras="1.0d-3,2.0d-3"
 #   prauras="1.5d-3,2.0d-3"
-    wminras="1.0d-5,1.0d-5"
-#   wminras="1.0d-6,1.0d-6"
+#   wminras="1.0d-5,1.0d-5"
+    wminras="1.0d-6,1.0d-6"
 #   dlqf="0.25,0.25"
 #   dlqf="0.10,0.05"
     dlqf="0.15,0.15"

@@ -26,8 +26,10 @@ CWD=${3:-${ROCODIR:-$(pwd)}}
 #IDATE=2018090100
 #IDATE=2018090100
 #IDATE=2011100100
+
 #CDATE=2018031500
 #LEVS=65
+
  export IDATE=${4:-${CDATE:-2013010100}}
 #export IDATE=${4:-${CDATE:-2013100100}}
 #export IDATE=${4:-${CDATE:-2013040100}}
@@ -53,7 +55,7 @@ RES=$(echo $CASE|cut -c 2-)
 ATMRES=${6:-${ATMRES:-$RES}}
 
 # $PSLOT is the name of your experiment
- expt=_phyah
+ expt=_phyaj
 #expt=_phyxd
 #expt=_phyai    # cmeps run
 
@@ -170,6 +172,8 @@ cd $CWD
  export CPLPREPSC=prep_coupled_emcufs.sh
  export appdate=Oct10
  export DONST=YES
+#export RUN_CCPP=NO
+ export RUN_CCPP=${RUN_CCPP:-.YES}
 
  export satmedmf=.true.
  export v17sas=NO
@@ -177,14 +181,15 @@ cd $CWD
  export v17rasnoshal=NO
 
  export FH_CHUNK=$((24*45))                # number of hours to run in one forecast
- export FH_CHUNK=$((24*35))                # number of hours to run in one forecast
+ export FH_CHUNK=$((24*40))                # number of hours to run in one forecast
+#export FH_CHUNK=$((24*35))                # number of hours to run in one forecast
 
 #export restart_interval=432000
 #export restart_interval=864000
 #export restart_interval=1296000
  export restart_interval=864000
- export restart_interval=432000
-#export restart_interval=86400
+#export restart_interval=432000
+#export restart_interval=$((86400*2))
 #export restart_interval=43200
 #export restart_interval=21600
 #export restart_interval=10800
@@ -194,13 +199,17 @@ cd $CWD
  export hord_opt=5
  export hord_opt=${hord_opt:-6}
 
- export FHMAX_GFS_00=2520
+ export FHMAX_GFS_00=2880
+#export FHMAX_GFS_00=2520
 #export FHMAX_GFS_00=2160
 #export FHMAX_GFS_00=1920
 #export FHMAX_GFS_00=1680
+#export FHMAX_GFS_00=1632
+#export FHMAX_GFS_00=1599
 #export FHMAX_GFS_00=1449
 #export FHMAX_GFS_00=1440
 #export FHMAX_GFS_00=1344
+#export FHMAX_GFS_00=1341
 #export FHMAX_GFS_00=1080
 #export FHMAX_GFS_00=960
 #export FHMAX_GFS_00=720
@@ -230,7 +239,7 @@ cd $CWD
  export HYPT=${HYPT:-off}
  export FSICS=0
 
- export envars="LEVS=$LEVS,FHCYC=$FHCYC,IC_FROM=$IC_FROM,IAER=5111,app=$app,appdate=$appdate,cplflx=$cplflx,CPLD_APP=$CPLD_APP,frac_grid=$frac_grid,INLINE_POST=$INLINE_POST,cplwav=$cplwav,cplwav2atm=$cplwav2atm,CPLDWAV=$CPLDWAV,USE_WAVES=$USE_WAVES,ATMRES=$ATMRES,OCNRES=$OCNRES,DONST=$DONST,satmedmf=$satmedmf,v17sas=$v17sas,v17ras=$v17ras,v17rasnoshal=$v17rasnoshal,FH_CHUNK=$FH_CHUNK,restart_interval=$restart_interval,FHMAX_GFS_00=$FHMAX_GFS_00,FHMAX_GFS_06=$FHMAX_GFS_06,FHMAX_GFS_12=$FHMAX_GFS_12,FHMAX_GFS_18=$FHMAX_GFS_18,FHOUT_GFS=$FHOUT_GFS,nth_f=$nth_f,HYPT=$HYPT,NSOUT=$NSOUT,FHOUT_O=$FHOUT_O,OCN_AVG=$OCN_AVG,USE_COLDSTART=$USE_COLDSTART,FSICS=$FSICS,OUTPUT_FILE=$OUTPUT_FILE,CPLSCRIPT=$CPLSCRIPT,CPLPREPSC=$CPLPREPSC,tau_rayl=$tau_rayl,rf_cutoff=$rf_cutoff,hord_opt=$hord_opt,QUILTING=$QUILTING"
+ export envars="LEVS=$LEVS,FHCYC=$FHCYC,IC_FROM=$IC_FROM,IAER=5111,app=$app,appdate=$appdate,cplflx=$cplflx,CPLD_APP=$CPLD_APP,frac_grid=$frac_grid,INLINE_POST=$INLINE_POST,cplwav=$cplwav,cplwav2atm=$cplwav2atm,CPLDWAV=$CPLDWAV,USE_WAVES=$USE_WAVES,ATMRES=$ATMRES,OCNRES=$OCNRES,DONST=$DONST,satmedmf=$satmedmf,v17sas=$v17sas,v17ras=$v17ras,v17rasnoshal=$v17rasnoshal,FH_CHUNK=$FH_CHUNK,restart_interval=$restart_interval,FHMAX_GFS_00=$FHMAX_GFS_00,FHMAX_GFS_06=$FHMAX_GFS_06,FHMAX_GFS_12=$FHMAX_GFS_12,FHMAX_GFS_18=$FHMAX_GFS_18,FHOUT_GFS=$FHOUT_GFS,nth_f=$nth_f,HYPT=$HYPT,NSOUT=$NSOUT,FHOUT_O=$FHOUT_O,OCN_AVG=$OCN_AVG,USE_COLDSTART=$USE_COLDSTART,FSICS=$FSICS,OUTPUT_FILE=$OUTPUT_FILE,CPLSCRIPT=$CPLSCRIPT,CPLPREPSC=$CPLPREPSC,tau_rayl=$tau_rayl,rf_cutoff=$rf_cutoff,hord_opt=$hord_opt,QUILTING=$QUILTING,RUN_CCPP=$RUN_CCPP"
 
 echo $envars
 

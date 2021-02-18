@@ -17,7 +17,7 @@ if [[ -d /lfs3 ]] ; then
 	module load module_base.jet 
 elif [[ -d /scratch1 ]] ; then
     # We are on NOAA Hera
-	module load module_base.hera
+	module load module_base.hera$1
 elif [[ -d /scratch3 ]] ; then
     # We are on NOAA Theia
 	module load module_base.theia 
@@ -26,7 +26,7 @@ elif [[ -d /gpfs/hps && -e /etc/SuSE-release ]] ; then
 	module load module_base.wcoss_c 
 elif [[ -L /usrx && "$( readlink /usrx 2> /dev/null )" =~ dell ]] ; then
     # We are on NOAA Mars or Venus
-	module load module_base.wcoss_dell_p3 
+	module load module_base.wcoss_dell_p3$1
 elif [[ -d /dcom && -d /hwrf ]] ; then
     # We are on NOAA Tide or Gyre
 	module load module_base.wcoss 
