@@ -319,7 +319,7 @@ if [ $hord_opt -eq 5 ] ; then
  hord_tm=5
  hord_dp=-5
  hord_tr=-8
- d4_bg=0.15                     # SJLin recommendation
+ d4_bg=${d4_bg:-0.15}           # SJLin recommendation
  dddmp=0.2                      # SJLin recommendation
 elif [ $hord_opt -eq 6 ] ; then
  hord_mt=6
@@ -327,18 +327,21 @@ elif [ $hord_opt -eq 6 ] ; then
  hord_tm=6
  hord_dp=-6
  hord_tr=-8
+ d4_bg=${d4_bg:-0.12}
 elif [ $hord_opt -eq 9 ] ; then
  hord_mt=9
  hord_vt=9
  hord_tm=9
  hord_dp=-9
  hord_tr=-9
+ d4_bg=${d4_bg:-0.12}
 elif [ $hord_opt -eq 10 ] ; then
  hord_mt=10
  hord_vt=10
  hord_tm=10
  hord_dp=-10
  hord_tr=-10
+ d4_bg=${d4_bg:-0.12}
 fi
 #hord_tr=13    # has 2dx filter for tracer
 

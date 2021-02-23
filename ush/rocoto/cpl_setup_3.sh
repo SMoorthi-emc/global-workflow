@@ -55,7 +55,7 @@ RES=$(echo $CASE|cut -c 2-)
 ATMRES=${6:-${ATMRES:-$RES}}
 
 # $PSLOT is the name of your experiment
- expt=_phyaj
+ expt=_phyaa
 #expt=_phyxd
 #expt=_phyai    # cmeps run
 
@@ -63,7 +63,7 @@ expt=${expt:-''}
 PSLOT=${7:-${PSLOT:-c${RES}$expt}}
 CDUMP=gfs
 
-export CPLSCRIPT=cpl_setup_2.sh     # this should be the name of this script
+export CPLSCRIPT=cpl_setup_3.sh     # this should be the name of this script
 
 #FHMIN=${1:-$FHMIN}
 #WARM_START=${2:-$WARM_START}
@@ -188,14 +188,16 @@ cd $CWD
 #export restart_interval=864000
 #export restart_interval=1296000
  export restart_interval=864000
-#export restart_interval=432000
+ export restart_interval=432000
 #export restart_interval=$((86400*2))
 #export restart_interval=43200
 #export restart_interval=21600
 #export restart_interval=10800
 
- export tau_rayl=-10
- export rf_cutoff=200
+ export tau_rayl=5
+ export rf_cutoff=750
+#export tau_rayl=-10
+#export rf_cutoff=200
  export hord_opt=5
  export hord_opt=${hord_opt:-6}
 

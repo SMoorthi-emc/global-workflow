@@ -101,7 +101,8 @@ export REALTIME=NO
 # some available switches
 # -----------------------
  export pre_exe=fv3
- export post_exe=_nu2
+ export post_exe=_nu
+#export post_exe=_nu2
 #export app=ufs-weather-model
 #export app=ufs-weather-model_Dec10
 #export app=ufs-weather-model_Jan04
@@ -216,8 +217,8 @@ export MOM6_RIVER_RUNOF=${MOM6_RIVER_RUNOF:-False}
 
 #g0nosc=/gpfs/dell2/emc/modeling/noscrub
 export FIX_LAKE_ORO=$NOSCRUB/oro_lake
-#export use_lake_oro=YES
- export use_lake_oro=NO
+ export use_lake_oro=YES
+#export use_lake_oro=NO
 if [ $IC_FROM = bench1 -o $IC_FROM = bench2 ] ; then export use_lake_oro=YES ; fi
 
 #export NSOUT=1
