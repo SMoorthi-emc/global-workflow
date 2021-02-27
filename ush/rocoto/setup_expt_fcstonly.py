@@ -196,7 +196,7 @@ Create COMROT experiment directory structure'''
       execbase = '/scratch1/NCEPDEV/global/$USER/save'
       account  = 'fv3-cpu'
       queue    = 'batch'
-#     queue    = 'debug'
+      queue    = 'debug'
       queue_arch = 'service'
 
     print (" comrot=",comrot)

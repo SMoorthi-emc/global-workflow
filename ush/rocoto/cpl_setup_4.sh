@@ -30,6 +30,7 @@ CWD=${3:-${ROCODIR:-$(pwd)}}
 #CDATE=2018031500
 #LEVS=65
 
+ CDATE=2012040100
  export IDATE=${4:-${CDATE:-2013010100}}
 #export IDATE=${4:-${CDATE:-2013100100}}
 #export IDATE=${4:-${CDATE:-2013040100}}
@@ -55,7 +56,7 @@ RES=$(echo $CASE|cut -c 2-)
 ATMRES=${6:-${ATMRES:-$RES}}
 
 # $PSLOT is the name of your experiment
- expt=_phyba
+ expt=_phybc
 #expt=_phyxd
 #expt=_phyai    # cmeps run
 
@@ -93,8 +94,12 @@ if [ $(echo $CWD | cut -c1-8) = "/scratch" ] ; then
  FROM_HPSS=$NOSCRUB/$LOGNAME/noscrub/FROM_HPSS
  if [ $IC_FROM = bench5 ] ; then
   FROM_HPSS=/scratch2/NCEPDEV/climate/climpara/S2S/IC/CFSR${frac}
+  if [ $IDATE -eq 2012040100 ] ; then
+   FROM_HPSS=/scratch1/NCEPDEV/global/Shrinivas.Moorthi/noscrub/S2S/IC/CFSR${frac}
+  fi
  fi
  COMROT=/scratch1/NCEPDEV/stmp4/$LOGNAME/CFV3/$IDATE
+#COMROT=/scratch2/NCEPDEV/stmp3/$LOGNAME/CFV3/$IDATE
  EXPDIR=$NOSCRUB/$LOGNAME/CFV3/$IDATE/EXPFV3
 elif [ $(echo $CWD | cut -c1-11) = "/gpfs/dell2" ] ; then
  NOSCRUB=/gpfs/dell2/emc/modeling/noscrub
@@ -141,7 +146,7 @@ cd $CWD
 #export cplflx=.false.                     # turn on to run in uncoupled modeDcupule model
  export cplflx=${cplflx:-.true.}           # default is to run in coupled mode
  export CPLD_APP=YES                       # use coupled app
-#export INLINE_POST=NO                     # turn off inline post
+ export INLINE_POST=NO                     # turn off inline post
  export INLINE_POST=${INLINE_POST:-YES}    # turn on inline post
  export USE_COLDSTART=.false.              # uncomment this line to turn on cold start step
 #export frac_grid=.false.
@@ -154,7 +159,7 @@ cd $CWD
  export OCNRES=${OCNRES:-025}
 
 #   comment the following line to turn on wave coupling
-#export USE_WAVES=True
+ export USE_WAVES=True
  export USE_WAVES=${USE_WAVES:-False}
  if [ $USE_WAVES = True ] ; then
   export cplwav=.true.
@@ -222,11 +227,11 @@ cd $CWD
 #export FHMAX_GFS_00=960
 #export FHMAX_GFS_00=720
 #export FHMAX_GFS_00=480
-#export FHMAX_GFS_00=120
-#export FHMAX_GFS_00=48
+ export FHMAX_GFS_00=120
+ export FHMAX_GFS_00=48
 #export FHMAX_GFS_00=240
-#export FHMAX_GFS_00=24
-#export FHMAX_GFS_00=3
+ export FHMAX_GFS_00=24
+ export FHMAX_GFS_00=3
 
  export FHMAX_GFS_06=0
  export FHMAX_GFS_12=0
@@ -241,7 +246,7 @@ cd $CWD
 #export OCN_AVG=YES
  export OCN_AVG=${OCN_AVG:-NO}
 
- export nth_f=2
+#export nth_f=2
  export HYPT=on
  export nth_f=${nth_f:-1}
  export HYPT=${HYPT:-off}

@@ -102,7 +102,7 @@ export REALTIME=NO
 # -----------------------
  export pre_exe=fv3
  export post_exe=_nu
-#export post_exe=_nu2
+ export post_exe=_nu2
 #export app=ufs-weather-model
 #export app=ufs-weather-model_Dec10
 #export app=ufs-weather-model_Jan04

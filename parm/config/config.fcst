@@ -833,7 +833,8 @@ if [ $ncld -eq 2 -a $imp_physics -eq 10 ] ; then
     prauras="2.0d-3,2.0d-3"
 #   prauras="2.0d-3,2.0d-3"
 #   wminras="1.0d-5,1.0d-5"
-    wminras="1.0d-5,1.0d-5"
+#   wminras="1.0d-5,1.0d-5"
+    wminras="1.0d-6,1.0d-6"
 #   dlqf="0.25,0.05"
 #   dlqf="0.25,0.10"
 #
@@ -942,7 +943,7 @@ cdmbgwd=${cdmbgwd:-1.00, 1.00}
 
 cs_parm=${cs_parm:-"8.0,4.0,1.0e3,3.5e3,20.0,1.0,0.0,1.0,0.6,0.0"}
 shoc_cld=${shoc_cld:-.false.}
-h2o_phys=${h2o_phys:-.false.}
+h2o_phys=${h2o_phys:-.true.}
 shcnvcw=${shcnvcw:-.false.}
 xkzm_h=${xkzm_h:-1.0}
 xkzm_m=${xkzm_m:-1.0}
@@ -951,9 +952,9 @@ nstf_name=${nstf_name:-"0,0,1,0,5"}
 ccwf=${ccwf:-"1.0,1.0"}
 dlqf=${dlqf:-"0.10,0.02"}
 #dlqf=${dlqf:-"0.25,0.05"}
-psauras=${psauras:-"1.0d-3,1.0d-3"}
+psauras=${psauras:-"1.5d-3,1.0d-3"}
 prauras=${prauras:-"2.0d-3,2.0d-3"}
-wminras=${wminras:-"1.0d-5,1.0d-5"}
+wminras=${wminras:-"1.0d-6,1.0d-6"}
 mg_dcs=${mg_dcs:-200.0}
 mg_qcvar=${mg_qcvar:-1.0}
 mg_ts_auto_ice=${mg_ts_auto_ice:-"1800.0,1800.0"}

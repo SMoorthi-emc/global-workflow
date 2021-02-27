@@ -127,7 +127,8 @@ elif [ $step = "fcst" ]; then
     export ICE_WW3_OVERLAP=${ICE_WW3_OVERLAP:-NO}
     if [ $CPLDWAV = YES ] ; then
       if [ $machine == HERA ] ; then
-        export npe_ww3=40
+#       export npe_ww3=40
+        export npe_ww3=60
 #       export npe_ww3=80
       fi
 #     npe_ww3=${npe_ww3:-$((npe_node_fcst*3))}
