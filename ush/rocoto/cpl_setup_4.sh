@@ -56,7 +56,7 @@ RES=$(echo $CASE|cut -c 2-)
 ATMRES=${6:-${ATMRES:-$RES}}
 
 # $PSLOT is the name of your experiment
- expt=_phybc
+ expt=_phybb
 #expt=_phyxd
 #expt=_phyai    # cmeps run
 
@@ -230,8 +230,8 @@ cd $CWD
  export FHMAX_GFS_00=120
  export FHMAX_GFS_00=48
 #export FHMAX_GFS_00=240
- export FHMAX_GFS_00=24
- export FHMAX_GFS_00=3
+#export FHMAX_GFS_00=24
+#export FHMAX_GFS_00=3
 
  export FHMAX_GFS_06=0
  export FHMAX_GFS_12=0
@@ -246,7 +246,7 @@ cd $CWD
 #export OCN_AVG=YES
  export OCN_AVG=${OCN_AVG:-NO}
 
-#export nth_f=2
+ export nth_f=2
  export HYPT=on
  export nth_f=${nth_f:-1}
  export HYPT=${HYPT:-off}

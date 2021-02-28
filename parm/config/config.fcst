@@ -911,7 +911,7 @@ if [ $shal_cnv = .false. ] ; then imfshalcnv=-1 ; fi
 if [ $ras = .true. -o $cscnv = .true. ] ; then imfdeepcnv=-1 ; fi
 
 #h2o_phys=.true.                # to use new h2o forcing for the stratosphere
-#cnvgwd=.false.
+#cnvgwd=.true.
 
 zhao_mic=${zhao_mic:-.false}
 psautco=${psautco:-"0.0008,0.0005"}
@@ -924,7 +924,7 @@ evpco=${evpco:-2.0d-5}
 crtrh=${crtrh:-"0.90,0.90,0.90"}
 
 
-cnvgwd=${cnvgwd:-.true.}
+cnvgwd=${cnvgwd:-.false.}
 shal_cnv=${shal_cnv:-.true.}
 cal_pre=${cal_pre:-.false.}
 redrag=${redrag:-.true.}
@@ -952,7 +952,7 @@ nstf_name=${nstf_name:-"0,0,1,0,5"}
 ccwf=${ccwf:-"1.0,1.0"}
 dlqf=${dlqf:-"0.10,0.02"}
 #dlqf=${dlqf:-"0.25,0.05"}
-psauras=${psauras:-"1.5d-3,1.0d-3"}
+psauras=${psauras:-"1.5d-3,1.5d-3"}
 prauras=${prauras:-"2.0d-3,2.0d-3"}
 wminras=${wminras:-"1.0d-6,1.0d-6"}
 mg_dcs=${mg_dcs:-200.0}
