@@ -193,7 +193,7 @@ elif [ $step = "fcst" ]; then
       export WRTTASK_PER_GROUP=0
     fi
 #   export npe_med=$((alltasks-1))
-#   export npe_med_max=48
+    export npe_med_max=599
 
 elif [ $step = "post" ]; then
 

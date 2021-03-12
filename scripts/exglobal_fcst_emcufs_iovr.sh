@@ -1539,7 +1539,6 @@ cat >> input.nml << EOF
        FTSFS = ${FTSFS:-90}
        FAISS = 99999
        FSNOL = 99999
-       FSICL = 99999
        FTSFL = 99999
        FAISL = 99999
        FVETL = 99999
@@ -1549,7 +1548,8 @@ cat >> input.nml << EOF
        FSLPL = 99999
        FABSL = 99999
        FSNOS = 99999
-       FSICS = ${FSICS:-99999}
+       FSICS = ${FSICS:-0}
+       FSICL = ${FSICL:-0}
        $namsfc_nml
 /
 

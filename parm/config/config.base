@@ -373,7 +373,7 @@ if [ ${RUN_CCPP:-YES} = YES ] ; then
 #     export CCPP_SUITE=FV3_GFS_2017_satmedmf_coupled
       export CCPP_SUITE=FV3_GFS_2017_couplednsst
       export CCPP_SUITE=FV3_GFS_v17_cpldnsstsas
-      if [ $cplflx = .false. ] ; then export CCPP_SUITE=FV3_GFS_v17_sas ; fi
+#     if [ $cplflx = .false. ] ; then export CCPP_SUITE=FV3_GFS_v17_sas ; fi
 #     if [ $cplflx = .false. ] ; then export CCPP_SUITE=FV3_GFS_v16beta ; fi
     fi
   fi

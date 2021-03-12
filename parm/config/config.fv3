@@ -100,7 +100,8 @@ case $case_in in
                                   # 127 layers
         if [ $LEVS -ge 127 ] ; then
          export layout_x=8
-         export layout_y=12
+#        export layout_y=12
+         export layout_y=16
         fi
 
         export io_layout_x=2      # restart may not reproduce!

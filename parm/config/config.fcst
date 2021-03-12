@@ -326,7 +326,7 @@ elif [ $hord_opt -eq 6 ] ; then
  hord_vt=6
  hord_tm=6
  hord_dp=-6
- hord_tr=-8
+ hord_tr=13
  d4_bg=${d4_bg:-0.12}
 elif [ $hord_opt -eq 9 ] ; then
  hord_mt=9

@@ -30,7 +30,7 @@ CWD=${3:-${ROCODIR:-$(pwd)}}
 #CDATE=2018031500
 #LEVS=65
 
- CDATE=2012040100
+#CDATE=2012040100
  export IDATE=${4:-${CDATE:-2013010100}}
 #export IDATE=${4:-${CDATE:-2013100100}}
 #export IDATE=${4:-${CDATE:-2013040100}}
@@ -56,7 +56,7 @@ RES=$(echo $CASE|cut -c 2-)
 ATMRES=${6:-${ATMRES:-$RES}}
 
 # $PSLOT is the name of your experiment
- expt=_phybd
+ expt=_phyaa
 #expt=_phyxd
 #expt=_phyai    # cmeps run
 
@@ -72,7 +72,7 @@ export CPLSCRIPT=cpl_setup_4.sh     # this should be the name of this script
 #FHMIN=${FHMIN:-0}
 #WARM_START=${WARM_START:-.false.}
 #FHCYC=0
-#FHCYC=3
+#FHCYC=6
 FHCYC=${FHCYC:-24}
 
 export LEVS=${LEVS:-65}
@@ -94,9 +94,9 @@ if [ $(echo $CWD | cut -c1-8) = "/scratch" ] ; then
  FROM_HPSS=$NOSCRUB/$LOGNAME/noscrub/FROM_HPSS
  if [ $IC_FROM = bench5 ] ; then
   FROM_HPSS=/scratch2/NCEPDEV/climate/climpara/S2S/IC/CFSR${frac}
-  if [ $IDATE -eq 2012040100 ] ; then
-   FROM_HPSS=/scratch1/NCEPDEV/global/Shrinivas.Moorthi/noscrub/S2S/IC/CFSR${frac}
-  fi
+# if [ $IDATE -eq 2012040100 ] ; then
+#  FROM_HPSS=/scratch1/NCEPDEV/global/Shrinivas.Moorthi/noscrub/S2S/IC/CFSR${frac}
+# fi
  fi
  COMROT=/scratch1/NCEPDEV/stmp4/$LOGNAME/CFV3/$IDATE
 #COMROT=/scratch2/NCEPDEV/stmp3/$LOGNAME/CFV3/$IDATE
@@ -146,7 +146,7 @@ cd $CWD
 #export cplflx=.false.                     # turn on to run in uncoupled modeDcupule model
  export cplflx=${cplflx:-.true.}           # default is to run in coupled mode
  export CPLD_APP=YES                       # use coupled app
- export INLINE_POST=NO                     # turn off inline post
+#export INLINE_POST=NO                     # turn off inline post
  export INLINE_POST=${INLINE_POST:-YES}    # turn on inline post
  export USE_COLDSTART=.false.              # uncomment this line to turn on cold start step
 #export frac_grid=.false.
@@ -159,7 +159,7 @@ cd $CWD
  export OCNRES=${OCNRES:-025}
 
 #   comment the following line to turn on wave coupling
- export USE_WAVES=True
+#export USE_WAVES=True
  export USE_WAVES=${USE_WAVES:-False}
  if [ $USE_WAVES = True ] ; then
   export cplwav=.true.
@@ -177,40 +177,56 @@ cd $CWD
  export CPLPREPSC=prep_coupled_emcufs.sh
  export appdate=Oct10
  export DONST=YES
+ export DONST=${DONST:-NO}
 #export RUN_CCPP=NO
  export RUN_CCPP=${RUN_CCPP:-YES}
 
- export satmedmf=.true.
+#export satmedmf=.false.
+ export satmedmf=${satmedmf:-.true.}
 #export v17sas=YES
 #export v17ras=NO
 
  export v17sas=NO
  export v17ras=YES
  export v17rasnoshal=NO
+#export d4_bg=0.15
 
  export FH_CHUNK=$((24*45))                # number of hours to run in one forecast
  export FH_CHUNK=$((24*40))                # number of hours to run in one forecast
 #export FH_CHUNK=$((24*35))                # number of hours to run in one forecast
 
 #export restart_interval=432000
-#export restart_interval=864000
-#export restart_interval=1296000
  export restart_interval=864000
+#export restart_interval=1296000
+#export restart_interval=86400
 #export restart_interval=432000
 #export restart_interval=$((86400*2))
 #export restart_interval=43200
 #export restart_interval=21600
 #export restart_interval=10800
+#export restart_interval=3600
 
 #export tau_rayl=5
  export tau_rayl=10
- export rf_cutoff=750
+#export rf_cutoff=750
 #export tau_rayl=-10
 #export rf_cutoff=200
- export hord_opt=5
- export hord_opt=${hord_opt:-6}
+#export hord_opt=6
+#export n_sponge=127
+
+if [ $satmedmf = .false. ] ; then
+ export tau_rayl=5
+ export hord_opt=6
+ export d4_bg=0.16
+ export v17sas=NO
+ export v17ras=NO
+fi
+
+ export hord_opt=${hord_opt:-5}
  export d4_bg=${d4_bg:-0.12}
-#export n_sponge=${n_sponge:-42}
+ export n_sponge=${n_sponge:-42}
+ export tau_rayl=${tau_rayl:-10}
+ export rf_cutoff=${rf_cutoff:-750}
 
  export FHMAX_GFS_00=2880
 #export FHMAX_GFS_00=2520
@@ -227,10 +243,12 @@ cd $CWD
 #export FHMAX_GFS_00=960
 #export FHMAX_GFS_00=720
 #export FHMAX_GFS_00=480
- export FHMAX_GFS_00=120
- export FHMAX_GFS_00=48
+#export FHMAX_GFS_00=360
+#export FHMAX_GFS_00=120
+#export FHMAX_GFS_00=48
 #export FHMAX_GFS_00=240
 #export FHMAX_GFS_00=24
+#export FHMAX_GFS_00=6
 #export FHMAX_GFS_00=3
 
  export FHMAX_GFS_06=0
@@ -251,8 +269,9 @@ cd $CWD
  export nth_f=${nth_f:-1}
  export HYPT=${HYPT:-off}
  export FSICS=0
+ export FSICL=0
 
- export envars="LEVS=$LEVS,FHCYC=$FHCYC,IC_FROM=$IC_FROM,IAER=5111,app=$app,appdate=$appdate,cplflx=$cplflx,CPLD_APP=$CPLD_APP,frac_grid=$frac_grid,INLINE_POST=$INLINE_POST,cplwav=$cplwav,cplwav2atm=$cplwav2atm,CPLDWAV=$CPLDWAV,USE_WAVES=$USE_WAVES,ATMRES=$ATMRES,OCNRES=$OCNRES,DONST=$DONST,satmedmf=$satmedmf,v17sas=$v17sas,v17ras=$v17ras,v17rasnoshal=$v17rasnoshal,FH_CHUNK=$FH_CHUNK,restart_interval=$restart_interval,FHMAX_GFS_00=$FHMAX_GFS_00,FHMAX_GFS_06=$FHMAX_GFS_06,FHMAX_GFS_12=$FHMAX_GFS_12,FHMAX_GFS_18=$FHMAX_GFS_18,FHOUT_GFS=$FHOUT_GFS,nth_f=$nth_f,HYPT=$HYPT,NSOUT=$NSOUT,FHOUT_O=$FHOUT_O,OCN_AVG=$OCN_AVG,USE_COLDSTART=$USE_COLDSTART,FSICS=$FSICS,OUTPUT_FILE=$OUTPUT_FILE,CPLSCRIPT=$CPLSCRIPT,CPLPREPSC=$CPLPREPSC,tau_rayl=$tau_rayl,rf_cutoff=$rf_cutoff,hord_opt=$hord_opt,d4_bg=$d4_bg,QUILTING=$QUILTING,RUN_CCPP=$RUN_CCPP"
+ export envars="LEVS=$LEVS,FHCYC=$FHCYC,IC_FROM=$IC_FROM,IAER=5111,app=$app,appdate=$appdate,cplflx=$cplflx,CPLD_APP=$CPLD_APP,frac_grid=$frac_grid,INLINE_POST=$INLINE_POST,cplwav=$cplwav,cplwav2atm=$cplwav2atm,CPLDWAV=$CPLDWAV,USE_WAVES=$USE_WAVES,ATMRES=$ATMRES,OCNRES=$OCNRES,DONST=$DONST,satmedmf=$satmedmf,v17sas=$v17sas,v17ras=$v17ras,v17rasnoshal=$v17rasnoshal,FH_CHUNK=$FH_CHUNK,restart_interval=$restart_interval,FHMAX_GFS_00=$FHMAX_GFS_00,FHMAX_GFS_06=$FHMAX_GFS_06,FHMAX_GFS_12=$FHMAX_GFS_12,FHMAX_GFS_18=$FHMAX_GFS_18,FHOUT_GFS=$FHOUT_GFS,nth_f=$nth_f,HYPT=$HYPT,NSOUT=$NSOUT,FHOUT_O=$FHOUT_O,OCN_AVG=$OCN_AVG,USE_COLDSTART=$USE_COLDSTART,FSICS=$FSICS,FSICL=$FSICL,OUTPUT_FILE=$OUTPUT_FILE,CPLSCRIPT=$CPLSCRIPT,CPLPREPSC=$CPLPREPSC,tau_rayl=$tau_rayl,rf_cutoff=$rf_cutoff,hord_opt=$hord_opt,d4_bg=$d4_bg,QUILTING=$QUILTING,RUN_CCPP=$RUN_CCPP"
 
 echo $envars
 
