@@ -111,7 +111,6 @@ elif [ $step = "fcst" ]; then
 #     export npe_ocn=105
 #     export npe_ocn=80
 #     export npe_ice=24
-#     export npe_ice=34
       export npe_ice=48
 #     export npe_ice=72
 #     export npe_ice=18
@@ -124,7 +123,6 @@ elif [ $step = "fcst" ]; then
       if [ $machine == HERA ] ; then
 #       export npe_ocn=200
         export npe_ice=48
-        export npe_ice=34
         export WRTTASK_MIN=${WRTTASK_MIN:-10}
       fi
     fi
