@@ -70,12 +70,13 @@ export CDUMP=${CDUMP:-gdas}
 export FHMAX=${FHMAX:-240}             # max hours to forecast
 export FHOUT=${FHOUT:-6.0}             # output interval
 export FHZER=${FHZER:-$FHOUT}          # interval over which to reset accumulating arrays
-export FHMAX_HF=${FHMAX_HF:-0}         # max hour for high frquency output
-export FHOUT_HF=${FHOUT_HF:-1}         # output interval for high frequency output
+export FHMAX_HF=${FHMAX_HF:--1}        # max hour for high frquency output
+export FHOUT_HF=${FHOUT_HF:--1}        # output interval for high frequency output
 export FHMIN=${FHMIN:-0}               # starting hour
 export FHROT=${FHROT:-$FHMIN}
 export FHCYC=${FHCYC:-0.0}             # interval to update boundary conditions
 export NSOUT=${NSOUT:-${nsout:--1}}
+if [ $NSOUT -gt 0 ] ; then export FHMAX_HF=0 ; fi
 if [ $FHMAX_HF -gt 0 -a $FHOUT_HF -gt 0 ] ; then
  export fdiag=${fdiag:-$FHOUT_HF}
 else

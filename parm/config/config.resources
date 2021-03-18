@@ -100,7 +100,9 @@ elif [ $step = "fcst" ]; then
 
     if [ $CPLDFV3_MOM6_CICE = YES ] ; then
       export npe_ocn=84
-      export npe_ocn=120
+      export npe_ocn=80
+#     export npe_ocn=60
+###   export npe_ocn=120
 #     export npe_ocn=240
 #     export npe_ice=24
 ##    export npe_ocn=140
@@ -109,6 +111,7 @@ elif [ $step = "fcst" ]; then
 #     export npe_ocn=105
 #     export npe_ocn=80
 #     export npe_ice=24
+#     export npe_ice=34
       export npe_ice=48
 #     export npe_ice=72
 #     export npe_ice=18
@@ -121,6 +124,7 @@ elif [ $step = "fcst" ]; then
       if [ $machine == HERA ] ; then
 #       export npe_ocn=200
         export npe_ice=48
+        export npe_ice=34
         export WRTTASK_MIN=${WRTTASK_MIN:-10}
       fi
     fi

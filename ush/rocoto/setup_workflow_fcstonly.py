@@ -216,8 +216,13 @@ def get_postgroups(post, cdump='gdas'):
         fhout = post['FHOUT_GFS']
         fhmax_hf = post['FHMAX_HF_GFS']
         fhout_hf = post['FHOUT_HF_GFS']
-        fhrs_hf = range(fhmin, fhmax_hf+fhout_hf, fhout_hf)
-        fhrs = fhrs_hf + range(fhrs_hf[-1]+fhout, fhmax+fhout, fhout)
+        if fhmax_hf > 0:
+            fhrs_hf = range(fhmin, fhmax_hf+fhout_hf, fhout_hf)
+            fhrs = fhrs_hf + range(fhrs_hf[-1]+fhout, fhmax+fhout, fhout)
+#           print (fhrs)
+        else:
+            fhrs = range(fhmin, fhmax+fhout, fhout)
+#           print (fhrs)
 
     npostgrp = post['NPOSTGRP']
     ngrps = npostgrp if len(fhrs) > npostgrp else len(fhrs)

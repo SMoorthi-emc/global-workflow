@@ -711,14 +711,13 @@ export warm_start=${warm_start:-.true.}   # for warm_start need to set FHMIN (i.
  export OCN_AVG=${OCN_AVG:-NO}
 
 
-#BL2018
-export FHMAX_HF_GFS=$FHMAX_GFS_00
-export FHOUT_HF_GFS=$FHOUT_GFS
+export FHMAX_HF_GFS=${FHMAX_HF_GFS:-$FHMAX_GFS_00}
+export FHOUT_HF_GFS=${FHOUT_HF_GFS:-$FHOUT_GFS}
 
-#if [ $NSOUT -gt 0 ] ; then
-# export FHOUT_HF_GFS=0
-# export FHOUT_HF_GFS=-1
-#fi
+if [ $NSOUT -gt 0 ] ; then
+ export FHMAX_HF_GFS=0
+ export FHOUT_HF_GFS=1
+fi
 
 # Output for coldstart only 1 hour
 export FHMAX_COLD=1
