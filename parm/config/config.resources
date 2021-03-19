@@ -119,10 +119,12 @@ elif [ $step = "fcst" ]; then
 #     export WRTTASK_MIN=7
       export WRTTASK_MIN=10
       export WRTTASK_MIN=20
-      export WRTTASK_MIN=14
+#     export WRTTASK_MIN=14
+#     export WRTTASK_MIN=12
       if [ $machine == HERA ] ; then
 #       export npe_ocn=200
         export npe_ice=48
+        export npe_ice=36
         export WRTTASK_MIN=${WRTTASK_MIN:-10}
       fi
     fi
@@ -173,7 +175,8 @@ elif [ $step = "fcst" ]; then
         if [ $xx -gt $alltasks ] ; then
           nodes=$((nodes+1))
         elif [ $xx -eq $alltasks ] ; then
-          nodes=$((nodes+WRITE_GROUP))
+#         nodes=$((nodes+WRITE_GROUP))
+          nodes=$((nodes+1))
         fi
         export WRTTASK_PER_GROUP=$(((nodes*npe_node_fcst-ttasks)/WRITE_GROUP))
         
