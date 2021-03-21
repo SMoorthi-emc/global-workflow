@@ -128,6 +128,9 @@ elif [ $step = "fcst" ]; then
         export WRTTASK_MIN=${WRTTASK_MIN:-10}
       fi
     fi
+    if [ $WRTTASK_MIN -lt $((npe_node_max/nth_fcst)) ] ; then
+      WRTTASK_MIN=$((npe_node_max/nth_fcst))
+    fi
     export ICE_WW3_OVERLAP=${ICE_WW3_OVERLAP:-NO}
     if [ $CPLDWAV = YES ] ; then
       if [ $machine == HERA ] ; then
