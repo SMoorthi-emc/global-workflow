@@ -56,7 +56,7 @@ RES=$(echo $CASE|cut -c 2-)
 ATMRES=${6:-${ATMRES:-$RES}}
 
 # $PSLOT is the name of your experiment
- expt=_phyag
+ expt=_phybe
 #expt=_phyxd
 #expt=_phyai    # cmeps run
 
@@ -175,6 +175,7 @@ cd $CWD
 #export app=ufs-weather-model_Jan14
 #export app=ufs-weather-model_Feb02
  export app=ufs-weather-model_Mar12
+#export app=ufs-weather-model_Mar12_prev
  export CPLPREPSC=prep_coupled_emcufs.sh
  export appdate=Oct10
  export DONST=YES
@@ -182,7 +183,7 @@ cd $CWD
 #export RUN_CCPP=NO
  export RUN_CCPP=${RUN_CCPP:-YES}
 
- export satmedmf=.false.
+#export satmedmf=.false.
  export satmedmf=${satmedmf:-.true.}
 #export v17sas=YES
 #export v17ras=NO
@@ -247,8 +248,8 @@ fi
 #export FHMAX_GFS_00=360
 #export FHMAX_GFS_00=120
 #export FHMAX_GFS_00=48
-#export FHMAX_GFS_00=240
- export FHMAX_GFS_00=24
+ export FHMAX_GFS_00=240
+#export FHMAX_GFS_00=24
  export FHMAX_GFS_00=6
 #export FHMAX_GFS_00=3
 
