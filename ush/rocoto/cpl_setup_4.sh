@@ -56,7 +56,7 @@ RES=$(echo $CASE|cut -c 2-)
 ATMRES=${6:-${ATMRES:-$RES}}
 
 # $PSLOT is the name of your experiment
- expt=_phybe
+ expt=_phydg
 #expt=_phyxd
 #expt=_phyai    # cmeps run
 
@@ -249,8 +249,8 @@ fi
 #export FHMAX_GFS_00=120
 #export FHMAX_GFS_00=48
  export FHMAX_GFS_00=240
-#export FHMAX_GFS_00=24
- export FHMAX_GFS_00=6
+ export FHMAX_GFS_00=24
+#export FHMAX_GFS_00=6
 #export FHMAX_GFS_00=3
 
  export FHMAX_GFS_06=0

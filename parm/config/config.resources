@@ -120,19 +120,22 @@ elif [ $step = "fcst" ]; then
 #     export WRTTASK_MIN=7
       export WRTTASK_MIN=10
       export WRTTASK_MIN=20
-#     export WRTTASK_MIN=14
+      export WRTTASK_MIN=14
 #     export WRTTASK_MIN=12
       if [ $machine == HERA ] ; then
 #       export npe_ocn=200
-        export npe_ocn=80
+#       export npe_ocn=60
+#       export npe_ocn=80
+        export npe_ocn=100
+#       export npe_ocn=112
         export npe_ice=48
-        export npe_ice=36
+#       export npe_ice=36
         export WRTTASK_MIN=${WRTTASK_MIN:-10}
       fi
     fi
-    if [ $WRTTASK_MIN -lt $((npe_node_max/nth_fcst)) ] ; then
-      WRTTASK_MIN=$((npe_node_max/nth_fcst))
-    fi
+#   if [ $WRTTASK_MIN -lt $((npe_node_max/nth_fcst)) ] ; then
+#     WRTTASK_MIN=$((npe_node_max/nth_fcst))
+#   fi
     export ICE_WW3_OVERLAP=${ICE_WW3_OVERLAP:-NO}
     if [ $CPLDWAV = YES ] ; then
       if [ $machine == HERA ] ; then
