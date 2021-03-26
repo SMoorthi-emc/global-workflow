@@ -696,6 +696,11 @@ export warm_start=${warm_start:-.true.}   # for warm_start need to set FHMIN (i.
 #export FHMAX_GFS_06=0
 #export FHMAX_GFS_18=0
 
+ export FHMAX_GFS_00=${FHMAX_GFS_00:-24}
+ export FHMAX_GFS_06=${FHMAX_GFS_06:-00}
+ export FHMAX_GFS_12=${FHMAX_GFS_12:-00}
+ export FHMAX_GFS_18=${FHMAX_GFS_18:-00}
+
  export FHMAX_GFS=$(eval echo \${FHMAX_GFS_$cyc})
  export FH_CHUNK=${FH_CHUNK:-$FHMAX_GFS}
 
