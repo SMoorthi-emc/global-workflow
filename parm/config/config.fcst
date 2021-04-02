@@ -363,6 +363,8 @@ fi
  n_sponge=${n_sponge:-$((LEVS/3))}
  fv_sg_adj=${fv_sg_adj:-$((DELTIM*2))}
  n_sponge=42
+ if [ $LEVS -lt 66 ] ; then export n_sponge=12 ; fi
+#nudge_qv=.false.
 
  if [ $RUN_CCPP = YES ] ; then
    dz_min=${dz_min:-2.0}

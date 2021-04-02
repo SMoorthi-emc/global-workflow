@@ -61,7 +61,7 @@ def main():
 
     dict_configs['base']['CDUMP'] = args.cdump
     dict_configs['base']['FHMIN'] = args.fhmin
-    dict_configs['base']['RARM_START'] = args.warm_start
+    dict_configs['base']['WARM_START'] = args.warm_start
     dict_configs['base']['FHCYC'] = args.fhcyc
 
     # First create workflow XML
