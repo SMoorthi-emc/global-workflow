@@ -12,16 +12,17 @@ import os
 import sys
 import glob
 import shutil
-from datetime import datetime
+import socket
+from datetime import datetime, timedelta
 from argparse import ArgumentParser, ArgumentDefaultsHelpFormatter
 import workflow_utils as wfu
 
 
-global machines
+#global machines
 global expdir, configdir, comrot, pslot, res, idate, edate, gfs_cyc, fhmin, warm_start, cdump, envars
 
 
-machines = ['HERA', 'WCOSS_C', 'WCOSS_DELL_P3', 'WCOSS']
+#machines = ['HERA', 'ORION' 'WCOSS_C', 'WCOSS_DELL_P3', 'WCOSS']
 
 
 def makedirs_if_missing(d):
@@ -66,12 +67,14 @@ def edit_baseconfig():
                 line = line.replace('@MACHINE@', machine.upper())   \
                     .replace('@PSLOT@', pslot)                      \
                     .replace('@SDATE@', idate.strftime('%Y%m%d%H')) \
+                    .replace('@FDATE@', fdate.strftime('%Y%m%d%H')) \
                     .replace('@EDATE@', edate.strftime('%Y%m%d%H')) \
                     .replace('@CASECTL@', 'C%d' % res)   \
                     .replace('@HOMEgfs@', top)           \
                     .replace('@BASE_GIT@', base_git)     \
                     .replace('@DMPDIR@', dmpdir)         \
                     .replace('@NWPROD@', nwprod)         \
+                    .replace('@COMROOT@', comroot) \
                     .replace('@HOMEDIR@', homedir)       \
                     .replace('@STMP@', stmp)             \
                     .replace('@PTMP@', ptmp)             \
@@ -79,7 +82,12 @@ def edit_baseconfig():
                     .replace('@EXECBASE@', execbase)     \
                     .replace('@ACCOUNT@', account)       \
                     .replace('@QUEUE@', queue)           \
-                    .replace('@QUEUE_ARCH@', queue_arch) \
+                    .replace('@QUEUE_SERVICE@', queue_service)     \
+                    .replace('@PARTITION_BATCH@', partition_batch) \
+                    .replace('@EXP_WARM_START@', exp_warm_start)   \
+                    .replace('@CHGRP_RSTPROD@', chgrp_rstprod)     \
+                    .replace('@CHGRP_CMD@', chgrp_cmd)             \
+                    .replace('@HPSSARCH@', hpssarch)               \
                     .replace('@gfs_cyc@', '%d' % gfs_cyc)
                 if expdir is not None:
                     line = line.replace('@EXPDIR@', os.path.dirname(expdir))
@@ -130,6 +138,7 @@ Create COMROT experiment directory structure'''
     parser.add_argument('--fhmin',help='starting forecast hour', type=str, default='0', required=False)
     parser.add_argument('--warm_start',help='warm start of forecasts', type=str, choices=['.false.', '.true.'], default='.false.', required=False)
     parser.add_argument('--envars',help='environmental variables', type=str, default='None', required=False)
+    parser.add_argument('--start', help='restart mode: warm or cold', type=str, choices=['warm', 'cold'], required=False, default='cold')
 
     args = parser.parse_args()
 
@@ -150,14 +159,25 @@ Create COMROT experiment directory structure'''
     cdump      = args.cdump
     fhmin      = args.fhmin
     warm_start = args.warm_start
-    envars    = args.envars
+    envars     = args.envars
+    start      = args.start
+
+    # Set restart setting in config.base
+    if start == 'cold':
+      exp_warm_start = '.false.'
+    elif start == 'warm':
+      exp_warm_start = '.true.'
+
+    # Set FDATE (first full cycle)
+    fdate = idate + timedelta(hours=6)
 
     # Set machine defaults
     if machine == 'WCOSS_DELL_P3':
       base_git = '/gpfs/dell2/emc/modeling/noscrub/emc.glopara/git'
       base_svn = '/gpfs/dell2/emc/modeling/noscrub/emc.glopara/git'
       dmpdir   = '/gpfs/dell3/emc/global/dump'
-      nwprod   = '/gpfs/dell1/nco/ops/nwprod'
+      nwprod   = '${NWROOT:-"/gpfs/dell1/nco/ops/nwprod"}'
+      comroot  = '${COMROOT:-"/gpfs/dell1/nco/ops/com"}'
       homedir  = '/gpfs/dell2/emc/modeling/noscrub/$USER'
       stmp     = '/gpfs/dell2/stmp/$USER'
       ptmp     = '/gpfs/dell2/ptmp/$USER'
@@ -166,15 +186,20 @@ Create COMROT experiment directory structure'''
       account  = 'GFS-DEV'
       queue    = 'dev'
       queue    = 'debug'
-      queue_arch = 'dev_transfer'
+      queue_service = 'dev_transfer'
+      partition_batch = ''
       if partition in ['3p5']:
         queue = 'dev2'
-        queue_arch = 'dev2_transfer'
+        queue_service = 'dev2_transfer'
+      chgrp_rstprod = 'YES'
+      chgrp_cmd = 'chgrp rstprod'
+      hpssarch = 'YES'
     elif machine == 'WCOSS_C':
       base_git = '/gpfs/hps3/emc/global/noscrub/emc.glopara/git'
       base_svn = '/gpfs/hps3/emc/global/noscrub/emc.glopara/svn'
       dmpdir   = '/gpfs/dell3/emc/global/dump'
-      nwprod   = '/gpfs/hps/nco/ops/nwprod'
+      nwprod = '${NWROOT:-"/gpfs/hps/nco/ops/nwprod"}'
+      comroot = '${COMROOT:-"/gpfs/hps/nco/ops/com"}'
       homedir  = '/gpfs/hps3/emc/global/noscrub/$USER'
       stmp     = '/gpfs/hps2/stmp/$USER'
       ptmp     = '/gpfs/hps2/ptmp/$USER'
@@ -183,12 +208,17 @@ Create COMROT experiment directory structure'''
       account  = 'GFS-DEV'
       queue    = 'dev'
 #     queue    = 'debug'
-      queue_arch = 'dev_transfer'
+      queue_service = 'dev_transfer'
+      partition_batch = ''
+      chgrp_rstprod = 'YES'
+      chgrp_cmd = 'chgrp rstprod'
+      hpssarch = 'YES'
     elif machine == 'HERA':
-      base_git = '/scratch1/NCEPDEV/global/save/glopara/git'
-      base_svn = '/scratch1/NCEPDEV/global/save/glopara/svn'
+      base_git = '/scratch1/NCEPDEV/global/glopara/git'
+      base_svn = '/scratch1/NCEPDEV/global/glopara/svn'
       dmpdir   = '/scratch1/NCEPDEV/global/glopara/dump'
       nwprod   = '/scratch1/NCEPDEV/global/glopara/nwpara'
+      comroot  = '/scratch1/NCEPDEV/global/glopara/com'
       homedir  = '/scratch1/NCEPDEV/global/$USER'
       stmp     = '/scratch1/NCEPDEV/stmp2/$USER'
       ptmp     = '/scratch1/NCEPDEV/stmp4/$USER'
@@ -197,10 +227,33 @@ Create COMROT experiment directory structure'''
       account  = 'fv3-cpu'
       queue    = 'batch'
       queue    = 'debug'
-      queue_arch = 'service'
+      queue_service = 'service'
+      partition_batch = ''
+      chgrp_rstprod = 'YES'
+      chgrp_cmd = 'chgrp rstprod'
+      hpssarch = 'YES'
+    elif machine == 'ORION':
+      base_git = '/work/noaa/global/glopara/git'
+      base_svn = '/work/noaa/global/glopara/svn'
+      dmpdir = '/work/noaa/global/glopara/dump'
+      nwprod = '/work/noaa/global/glopara/nwpara'
+      comroot = '/work/noaa/global/glopara/com'
+      homedir = '/work/noaa/global/$USER'
+      stmp = '/work/noaa/stmp/$USER'
+      ptmp = '/work/noaa/stmp/$USER'
+      noscrub = '$HOMEDIR'
+      account = 'fv3-cpu'
+      queue = 'batch'
+      queue_service = 'service'
+      partition_batch = 'orion'
+      chgrp_rstprod = 'NO'          # No rstprod on Orion
+      chgrp_cmd = 'ls'
+      hpssarch = 'NO'
 
     print (" comrot=",comrot)
     print (" fhmin=", fhmin)
+    print (" queue_service=", queue_service)
+
     # COMROT directory
     create_comrot = True
     if os.path.exists(comrot):

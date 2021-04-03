@@ -4,7 +4,7 @@
 ###############################################################
 # Setup runtime environment by loading modules
 ulimit_s=$( ulimit -S -s )
-ulimit -S -s 10000
+#ulimit -S -s 10000
 
 # Find module command and purge:
 source "$HOMEgfs/modulefiles/module-setup.sh.inc" 
@@ -17,10 +17,11 @@ if [[ -d /lfs3 ]] ; then
 	module load module_base.jet 
 elif [[ -d /scratch1 ]] ; then
     # We are on NOAA Hera
-	module load module_base.hera$1
-elif [[ -d /scratch3 ]] ; then
-    # We are on NOAA Theia
-	module load module_base.theia 
+#	module load module_base.hera$1
+	module load module_base.hera
+elif [[ -d /work ]] ; then
+    # We are on MSU Orion
+	module load module_base.orion
 elif [[ -d /gpfs/hps && -e /etc/SuSE-release ]] ; then
     # We are on NOAA Luna or Surge
 	module load module_base.wcoss_c 

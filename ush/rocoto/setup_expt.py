@@ -12,16 +12,12 @@ import os
 import sys
 import glob
 import shutil
-from datetime import datetime
+import socket
+from datetime import datetime, timedelta
 from argparse import ArgumentParser, ArgumentDefaultsHelpFormatter
+import workflow_utils as wfu
 
-
-global machines
 global expdir, configdir, comrot, pslot, resdet, resens, nens, cdump, idate, edate, gfs_cyc
-
-
-machines = ['HERA', 'WCOSS_C', 'WCOSS_DELL_P3']
-
 
 def makedirs_if_missing(d):
     if not os.path.exists(d):
@@ -50,7 +46,7 @@ def create_COMROT():
     makedirs_if_missing(comrot)
 
     # Link ensemble member initial conditions
-    enkfdir = 'enkf.%s.%s/%s' % (cdump, cymd, chh)
+    enkfdir = 'enkf%s.%s/%s' % (cdump, cymd, chh)
     makedirs_if_missing(os.path.join(comrot, enkfdir))
     for i in range(1, nens + 1):
         makedirs_if_missing(os.path.join(comrot, enkfdir, 'mem%03d' % i))
@@ -79,21 +75,38 @@ def edit_baseconfig():
     top = os.path.abspath(os.path.join(
         os.path.abspath(here), '../..'))
 
-    # make a copy of the default before editing
-    shutil.copy(base_config, base_config + '.default')
+    if os.path.exists(base_config):
+        os.unlink(base_config)
 
     print '\nSDATE = %s\nEDATE = %s' % (idate, edate)
-    with open(base_config + '.default', 'rt') as fi:
-        with open(base_config + '.new', 'wt') as fo:
+    with open(base_config + '.emc.dyn', 'rt') as fi:
+        with open(base_config, 'wt') as fo:
             for line in fi:
                 line = line.replace('@MACHINE@', machine.upper()) \
                     .replace('@PSLOT@', pslot) \
                     .replace('@SDATE@', idate.strftime('%Y%m%d%H')) \
+                    .replace('@FDATE@', fdate.strftime('%Y%m%d%H')) \
                     .replace('@EDATE@', edate.strftime('%Y%m%d%H')) \
                     .replace('@CASEENS@', 'C%d' % resens) \
                     .replace('@CASECTL@', 'C%d' % resdet) \
                     .replace('@NMEM_ENKF@', '%d' % nens) \
                     .replace('@HOMEgfs@', top) \
+                    .replace('@BASE_GIT@', base_git) \
+                    .replace('@DMPDIR@', dmpdir) \
+                    .replace('@NWPROD@', nwprod) \
+                    .replace('@COMROOT@', comroot) \
+                    .replace('@HOMEDIR@', homedir) \
+                    .replace('@STMP@', stmp) \
+                    .replace('@PTMP@', ptmp) \
+                    .replace('@NOSCRUB@', noscrub) \
+                    .replace('@ACCOUNT@', account) \
+                    .replace('@QUEUE@', queue) \
+                    .replace('@QUEUE_SERVICE@', queue_service) \
+                    .replace('@PARTITION_BATCH@', partition_batch) \
+                    .replace('@EXP_WARM_START@', exp_warm_start) \
+                    .replace('@CHGRP_RSTPROD@', chgrp_rstprod) \
+                    .replace('@CHGRP_CMD@', chgrp_cmd) \
+                    .replace('@HPSSARCH@', hpssarch) \
                     .replace('@gfs_cyc@', '%d' % gfs_cyc)
                 if expdir is not None:
                     line = line.replace('@EXPDIR@', os.path.dirname(expdir))
@@ -102,12 +115,10 @@ def edit_baseconfig():
                 if 'ICSDIR' in line:
                     continue
                 fo.write(line)
-    os.unlink(base_config)
-    os.rename(base_config + '.new', base_config)
 
     print ''
     print 'EDITED:  %s/config.base as per user input.' % expdir
-    print 'DEFAULT: %s/config.base.default is for reference only.' % expdir
+    print 'DEFAULT: %s/config.base.emc.dyn is for reference only.' % expdir
     print 'Please verify and delete the default file before proceeding.'
     print ''
 
@@ -129,24 +140,30 @@ link initial condition files from $ICSDIR to $COMROT'''
     parser.add_argument('--expdir', help='full path to EXPDIR', type=str, required=False, default=None)
     parser.add_argument('--idate', help='starting date of experiment, initial conditions must exist!', type=str, required=True)
     parser.add_argument('--edate', help='end date experiment', type=str, required=True)
-    parser.add_argument('--icsdir', help='full path to initial condition directory', type=str, required=True)
+    parser.add_argument('--icsdir', help='full path to initial condition directory', type=str, required=False)
     parser.add_argument('--configdir', help='full path to directory containing the config files', type=str, required=False, default=None)
     parser.add_argument('--nens', help='number of ensemble members', type=int, required=False, default=20)
     parser.add_argument('--cdump', help='CDUMP to start the experiment', type=str, required=False, default='gdas')
     parser.add_argument('--gfs_cyc', help='GFS cycles to run', type=int, choices=[0, 1, 2, 4], default=1, required=False)
     parser.add_argument('--partition', help='partition on machine', type=str, required=False, default=None)
 
+#   args = parser.parse_args()
+
+#   if os.path.exists('/scratch1'):
+#       machine = 'HERA'
+#   elif os.path.exists('/gpfs') and os.path.exists('/etc/SuSE-release'):
+#       machine = 'WCOSS_C'
+#   elif os.path.exists('/gpfs/dell2'):
+#       machine = 'WCOSS_DELL_P3'
+#   else:
+#       print 'workflow is currently only supported on: %s' % ' '.join(machines)
+#       raise NotImplementedError('Cannot auto-detect platform, ABORT!')
+
+    parser.add_argument('--start', help='restart mode: warm or cold', type=str, choices=['warm', 'cold'], required=False, default='cold')
+
     args = parser.parse_args()
 
-    if os.path.exists('/scratch1'):
-        machine = 'HERA'
-    elif os.path.exists('/gpfs') and os.path.exists('/etc/SuSE-release'):
-        machine = 'WCOSS_C'
-    elif os.path.exists('/gpfs/dell2'):
-        machine = 'WCOSS_DELL_P3'
-    else:
-        print 'workflow is currently only supported on: %s' % ' '.join(machines)
-        raise NotImplementedError('Cannot auto-detect platform, ABORT!')
+    machine = wfu.detectMachine()
 
     configdir = args.configdir
     if not configdir:
@@ -165,63 +182,108 @@ link initial condition files from $ICSDIR to $COMROT'''
     gfs_cyc = args.gfs_cyc
     partition = args.partition
 
+    start = args.start
+
+    # Set restart setting in config.base
+    if start == 'cold':
+      exp_warm_start = '.false.'
+    elif start == 'warm':
+      exp_warm_start = '.true.'
+
+    # Set FDATE (first full cycle)
+    fdate = idate + timedelta(hours=6)
+
     # Set machine defaults
     if machine == 'WCOSS_DELL_P3':
       base_git = '/gpfs/dell2/emc/modeling/noscrub/emc.glopara/git'
       base_svn = '/gpfs/dell2/emc/modeling/noscrub/emc.glopara/git'
       dmpdir = '/gpfs/dell3/emc/global/dump'
-      nwprod = '/gpfs/dell1/nco/ops/nwprod'
+      nwprod = '${NWROOT:-"/gpfs/dell1/nco/ops/nwprod"}'
+      comroot = '${COMROOT:-"/gpfs/dell1/nco/ops/com"}'
       homedir = '/gpfs/dell2/emc/modeling/noscrub/$USER'
       stmp = '/gpfs/dell3/stmp/$USER'
       ptmp = '/gpfs/dell3/ptmp/$USER'
       noscrub = '/gpfs/dell2/emc/modeling/noscrub/$USER'
       account = 'GFS-DEV'
       queue = 'dev'
-      queue_arch = 'dev_transfer'
+      queue_service = 'dev_transfer'
+      partition_batch = ''
       if partition in ['3p5']:
         queue = 'dev2'
-        queue_arch = 'dev2_transfer'
+        queue_service = 'dev2_transfer'
+      chgrp_rstprod = 'YES'
+      chgrp_cmd = 'chgrp rstprod'
+      hpssarch = 'YES'
     elif machine == 'WCOSS_C':
       base_git = '/gpfs/hps3/emc/global/noscrub/emc.glopara/git'
       base_svn = '/gpfs/hps3/emc/global/noscrub/emc.glopara/svn'
       dmpdir = '/gpfs/dell3/emc/global/dump'
-      nwprod = '/gpfs/hps/nco/ops/nwprod'
+      nwprod = '${NWROOT:-"/gpfs/hps/nco/ops/nwprod"}'
+      comroot = '${COMROOT:-"/gpfs/hps/nco/ops/com"}'
       homedir = '/gpfs/hps3/emc/global/noscrub/$USER'
       stmp = '/gpfs/hps2/stmp/$USER'
       ptmp = '/gpfs/hps2/ptmp/$USER'
       noscrub = '/gpfs/hps3/emc/global/noscrub/$USER'
       account = 'GFS-DEV'
       queue = 'dev'
-      queue_arch = 'dev_transfer'
+      queue_service = 'dev_transfer'
+      partition_batch = ''
+      chgrp_rstprod = 'YES'
+      chgrp_cmd = 'chgrp rstprod'
+      hpssarch = 'YES'
     elif machine == 'HERA':
       base_git = '/scratch1/NCEPDEV/global/glopara/git'
       base_svn = '/scratch1/NCEPDEV/global/glopara/svn'
       dmpdir = '/scratch1/NCEPDEV/global/glopara/dump'
       nwprod = '/scratch1/NCEPDEV/global/glopara/nwpara'
+      comroot = '/scratch1/NCEPDEV/global/glopara/com'
       homedir = '/scratch1/NCEPDEV/global/$USER'
       stmp = '/scratch1/NCEPDEV/stmp2/$USER'
       ptmp = '/scratch1/NCEPDEV/stmp4/$USER'
       noscrub = '$HOMEDIR'
       account = 'fv3-cpu'
       queue = 'batch'
-      queue_arch = 'service'
+      queue_service = 'service'
+      partition_batch = ''
+      chgrp_rstprod = 'YES'
+      chgrp_cmd = 'chgrp rstprod'
+      hpssarch = 'YES'
+    elif machine == 'ORION':
+      base_git = '/work/noaa/global/glopara/git'
+      base_svn = '/work/noaa/global/glopara/svn'
+      dmpdir = '/work/noaa/global/glopara/dump'
+      nwprod = '/work/noaa/global/glopara/nwpara'
+      comroot = '/work/noaa/global/glopara/com'
+      homedir = '/work/noaa/global/$USER'
+      stmp = '/work/noaa/stmp/$USER'
+      ptmp = '/work/noaa/stmp/$USER'
+      noscrub = '$HOMEDIR'
+      account = 'fv3-cpu'
+      queue = 'batch'
+      queue_service = 'service'
+      partition_batch = 'orion'
+      chgrp_rstprod = 'NO'
+      chgrp_cmd = 'ls'
+      hpssarch = 'NO'
 
-
-#   if args.icsdir is not None and not os.path.exists(icsdir):
-    if not os.path.exists(icsdir):
+    if args.icsdir is not None and not os.path.exists(icsdir):
+#   if not os.path.exists(icsdir):
         msg = 'Initial conditions do not exist in %s' % icsdir
         raise IOError(msg)
 
     # COMROT directory
-    create_comrot = True
-    if os.path.exists(comrot):
-        print
-        print 'COMROT already exists in %s' % comrot
-        print
-        overwrite_comrot = raw_input('Do you wish to over-write COMROT [y/N]: ')
-        create_comrot = True if overwrite_comrot in ['y', 'yes', 'Y', 'YES'] else False
-        if create_comrot:
-            shutil.rmtree(comrot)
+    if args.icsdir is None:
+       create_comrot = False
+    else:
+       create_comrot = True
+       if os.path.exists(comrot):
+           print
+           print 'COMROT already exists in %s' % comrot
+           print
+           overwrite_comrot = raw_input('Do you wish to over-write COMROT [y/N]: ')
+           create_comrot = True if overwrite_comrot in ['y', 'yes', 'Y', 'YES'] else False
+           if create_comrot:
+              shutil.rmtree(comrot)
 
     if create_comrot:
         create_COMROT()

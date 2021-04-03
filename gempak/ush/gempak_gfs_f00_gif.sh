@@ -1,6 +1,5 @@
 #!/bin/sh
 
-
 #########################################################################
 #
 #   Script:  gempak_gfs_f00_gif.sh
@@ -16,15 +15,10 @@
 #
 #########################################################################
 
-
-
-
    msg=" Make GEMPAK GIFS utility"
    postmsg "$jlogfile" "$msg"
 
-
   set -x
-
 
   MAPAREA="normal"
 
@@ -33,7 +27,6 @@
   pixels="1728;1472"
 
   cp $FIXgempak/coltbl.spc coltbl.xwp
-
 
 #################################################################
 #                       ANALYSIS CHARTS                         # 
@@ -44,10 +37,10 @@
 
   echo 0000${PDY}${cyc} > dates
   export FORT55="title.output"
-  $WEBTITLE < dates
+#  $WEBTITLE < dates
+  ${UTILgfs}/exec/webtitle < dates
   export TITLE=`cat title.output`
   echo "\n\n TITLE = $TITLE \n"
-
 
 # Define labels and file names for analysis charts
 
@@ -100,23 +93,19 @@
   prswshtroplab="TROPOPAUSE PRESSURE/WIND SHEAR"
   prswshtropdev="gfs_trop_prs_wsh_nh_anl_${cyc}.gif"
 
-
 # Set grid date and input file name
 
   gdattim=`echo ${PDY} | cut -c3-8`/${cyc}00F000
   gdfile=gem_grids${fhr}.gem
 
-
-
 #  Execute the GEMPAK program
 
   $GEMEXE/gdplot2_gif << EOF
 
-
 ! 700MB HEIGHTS/TEMPERATURES
 
-  restore $NTS/base_nh
-  restore $NTS/700_hgt_tmp
+  restore $NTS/base_nh.nts
+  restore $NTS/700_hgt_tmp.nts
 
   CLEAR   = yes
   GDFILE  = $gdfile
@@ -144,8 +133,8 @@
 
 ! 500MB HEIGHTS/TEMPERATURES
 
-  restore $NTS/base_nh
-  restore $NTS/500_hgt_tmp
+  restore $NTS/base_nh.nts
+  restore $NTS/500_hgt_tmp.nts
 
   CLEAR   = yes
   GDFILE  = $gdfile
@@ -173,8 +162,8 @@
 
 ! 300MB HEIGHTS/ISOTACHS
 
-  restore $NTS/base_nh
-  restore $NTS/300_hgt_iso
+  restore $NTS/base_nh.nts
+  restore $NTS/300_hgt_iso.nts
 
   CLEAR   = yes
   GDFILE  = $gdfile
@@ -202,8 +191,8 @@
 
 ! 250MB HEIGHTS/TEMPERATURES
 
-  restore $NTS/base_nh
-  restore $NTS/250_hgt_tmp
+  restore $NTS/base_nh.nts
+  restore $NTS/250_hgt_tmp.nts
 
   CLEAR   = yes
   GDFILE  = $gdfile
@@ -231,8 +220,8 @@
 
 ! 250MB ANALYSIS HEIGHTS/ISOTACHS
 
-  restore $NTS/base_nh
-  restore $NTS/250_hgt_iso
+  restore $NTS/base_nh.nts
+  restore $NTS/250_hgt_iso.nts
 
   CLEAR   = yes 
   GDFILE  = ${gdfile}
@@ -261,8 +250,8 @@
 
 ! 200MB HEIGHTS/ISOTACHS
 
-  restore $NTS/base_nh
-  restore $NTS/200_hgt_iso
+  restore $NTS/base_nh.nts
+  restore $NTS/200_hgt_iso.nts
 
   CLEAR   = yes
   GDFILE  = $gdfile
@@ -290,8 +279,8 @@
 
 ! 100MB HEIGHTS/TEMPERATURES
 
-  restore $NTS/base_nh
-  restore $NTS/100_hgt_tmp
+  restore $NTS/base_nh.nts
+  restore $NTS/100_hgt_tmp.nts
 
   CLEAR   = yes
   GDFILE  = $gdfile
@@ -319,8 +308,8 @@
 
 ! 100MB HEIGHTS/ISOTACHS
 
-  restore $NTS/base_nh
-  restore $NTS/100_hgt_iso
+  restore $NTS/base_nh.nts
+  restore $NTS/100_hgt_iso.nts
 
   CLEAR   = yes
   GDFILE  = $gdfile
@@ -348,8 +337,8 @@
 
 ! ANALYSIS MSLP/1000-500 THICKNESS
 
-  restore $NTS/base_nh
-  restore $NTS/sfc_mslp_thk
+  restore $NTS/base_nh.nts
+  restore $NTS/sfc_mslp_thk.nts
 
   CLEAR   = yes
   GDFILE  = ${gdfile}
@@ -378,8 +367,8 @@
 
 ! ANALYSIS MSLP/1000-500 THICKNESS (US/CANADA)
 
-  restore $NTS/base_uscan
-  restore $NTS/sfc_mslp_thk
+  restore $NTS/base_uscan.nts
+  restore $NTS/sfc_mslp_thk.nts
 
   CLEAR   = yes
   GDFILE  = ${gdfile}
@@ -405,12 +394,10 @@
   l
   r
 
-
-
 ! 500MB ANALYSIS  HEIGHTS/VORTICITY
 
-  restore $NTS/base_nh
-  restore $NTS/500_hgt_vor
+  restore $NTS/base_nh.nts
+  restore $NTS/500_hgt_vor.nts
 
   CLEAR   = yes
   GDFILE  = ${gdfile}
@@ -436,12 +423,10 @@
   l
   r
 
-
-
 ! 500MB ANALYSIS  HEIGHTS/VORTICITY (US/CANADA)
 
-  restore $NTS/base_uscan
-  restore $NTS/500_hgt_vor
+  restore $NTS/base_uscan.nts
+  restore $NTS/500_hgt_vor.nts
 
   CLEAR   = yes
   GDFILE  = ${gdfile}
@@ -468,8 +453,8 @@
 
 ! ANALYSIS  LIFTED INDEX
 
-  restore $NTS/base_nh
-  restore $NTS/100_lift
+  restore $NTS/base_nh.nts
+  restore $NTS/100_lift.nts
 
   CLEAR   = yes
   GDFILE  = ${gdfile}
@@ -497,8 +482,8 @@
 
 ! ANALYSIS  TROPOPAUSE PRESSURE/WIND SHEAR
 
-  restore $NTS/base_nh
-  restore $NTS/trop_pres_wshr
+  restore $NTS/base_nh.nts
+  restore $NTS/trop_pres_wshr.nts
 
   CLEAR   = yes
   GDFILE  = ${gdfile}
@@ -526,8 +511,8 @@
 
 ! ANALYSIS 700MB RELATIVE HUMIDITY AND VERTICAL VELOCITY
 
-  restore $NTS/base_nh
-  restore $NTS/700_rel_vvel
+  restore $NTS/base_nh.nts
+  restore $NTS/700_rel_vvel.nts
 
   CLEAR   = yes
   GDFILE  = ${gdfile}
@@ -579,12 +564,9 @@ if [ $SENDCOM = YES ]; then
   cp ${prswshtropdev}   ${COMOUT}
   cp ${rhvvel700dev}    ${COMOUT}
 
-
-
 # Copy the GIF images onto the NCDC area on the public ftp server
 
  if [ $SENDDBN = YES ]; then
-
 
   $DBNROOT/bin/dbn_alert MODEL NCDCGIF ${job} ${COMOUT}/${hgttmp700dev}
   $DBNROOT/bin/dbn_alert MODEL NCDCGIF ${job} ${COMOUT}/${hgttmp500dev}
@@ -611,10 +593,8 @@ if [ $SENDCOM = YES ]; then
   export input=${COMOUT}/${hgttmp500dev}
   export HEADER=YES
   export OUTPATH=$DATA/gfs_500_hgt_tmp_nh_anl_${cyc}.tif
-  make_tif.sh
+  ${UTILgfs}/ush/make_tif.sh
 fi 
-
-
 
    msg=" GEMPAK_GIF ${fhr} hour completed normally"
    postmsg "$jlogfile" "$msg"

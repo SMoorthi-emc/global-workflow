@@ -8,23 +8,40 @@ echo "BEGIN: config.vrfy"
 # Get task specific resources
 . $EXPDIR/config.resources vrfy
 
-export VDUMP="gfs"       # verifying dump
-export CDUMPFCST="gdas"  # Fit-to-obs with GDAS/GFS prepbufr
-export CDFNL="gdas"      # Scores verification against GDAS/GFS analysis
+export DO_VSDB=${DO_VSDB:-"NO"}   # Switch to run VSDB package; set in config.base
 
-export MKPGB4PRCP="NO"  # make 0.25-deg pgb files in ARCDIR for precip verification
-export VRFYFITS="NO"    # Fit to observations
-export VSDB_STEP1="NO"  # populate VSDB database
+#<<<<<<< HEAD
+#export MKPGB4PRCP="NO"  # make 0.25-deg pgb files in ARCDIR for precip verification
+#export VRFYFITS="NO"    # Fit to observations
+#export VSDB_STEP1="NO"  # populate VSDB database
+#export VSDB_STEP2="NO"
+#export VRFYG2OBS="NO"   # Grid to observations, see note below if turning ON
+#export VRFYPRCP="NO"    # Precip threat scores
+#export VRFYRAD="NO"     # Radiance data assimilation monitoring
+#export VRFYOZN="NO"     # Ozone data assimilation monitoring
+#export VRFYMINMON="NO"  # GSI minimization monitoring
+#export VRFYTRAK="NO"     # Hurricane track verification
+#export VRFYGENESIS="NO"  # Cyclone genesis verification
+#export RUNMOS="NO"       # whether to run entire MOS package
+#=======
+export VDUMP="gfs"                # Verifying dump
+export CDUMPFCST="gdas"           # Fit-to-obs with GDAS/GFS prepbufr
+export CDFNL="gdas"               # Scores verification against GDAS/GFS analysis
+#>>>>>>> upstream/develop
+
+export MKPGB4PRCP="YES"           # Make 0.25-deg pgb files in ARCDIR for precip verification
+export VRFYFITS="YES"             # Fit to observations
+export VSDB_STEP1="YES"           # Populate VSDB database
 export VSDB_STEP2="NO"
-export VRFYG2OBS="NO"   # Grid to observations, see note below if turning ON
-export VRFYPRCP="NO"    # Precip threat scores
-export VRFYRAD="NO"     # Radiance data assimilation monitoring
-export VRFYOZN="NO"     # Ozone data assimilation monitoring
-export VRFYMINMON="NO"  # GSI minimization monitoring
-export VRFYTRAK="NO"     # Hurricane track verification
-export VRFYGENESIS="NO"  # Cyclone genesis verification
-export RUNMOS="NO"       # whether to run entire MOS package
-
+export VRFYG2OBS="YES"            # Grid to observations, see note below if turning ON
+export VRFYPRCP="YES"             # Precip threat scores
+export VRFYRAD="YES"              # Radiance data assimilation monitoring
+export VRFYOZN="YES"              # Ozone data assimilation monitoring
+export VRFYMINMON="YES"           # GSI minimization monitoring
+export VRFYTRAK="YES"             # Hurricane track verification
+export VRFYGENESIS="YES"          # Cyclone genesis verification
+export VRFYFSU="NO"               # Cyclone genesis verification (FSU)
+export RUNMOS="NO"                # whether to run entire MOS package
 
 #-------------------------------------------------
 # Fit to Observations
@@ -32,23 +49,33 @@ export RUNMOS="NO"       # whether to run entire MOS package
 
 if [ $VRFYFITS = "YES" ]; then
 
+    export fit_ver="newm.1.3"
+    export fitdir="$BASE_GIT/verif/global/Fit2Obs/${fit_ver}/batrun"
     export PRVT=$HOMEgfs/fix/fix_gsi/prepobs_errtable.global
-    export HYBLEVS=$HOMEgfs/fix/fix_am/global_hyblev.l65.txt
+    export HYBLEVS=$HOMEgfs/fix/fix_am/global_hyblev.l${LEVS}.txt
     export CUE2RUN=$QUEUE
 
+    export VBACKUP_FITS=24
+
+    export CONVNETC="NO"
+    if [ ${netcdf_diag:-".false."} = ".true." ]; then
+        export CONVNETC="YES"
+    fi
+
     if [ $machine = "WCOSS_C" ]; then
-        export fitdir="$BASE_SVN/verif/global/parafits.fv3nems/batrun"
+        export fitdir="$BASE_GIT/verif/global/parafits.fv3nems/batrun"
         export PREPQFITSH="$fitdir/subfits_cray_nems"
     elif [ $machine = "WCOSS_DELL_P3" ]; then
-        export fitdir="$BASE_SVN/verif/global/parafits.fv3nems/batrun"
         export PREPQFITSH="$fitdir/subfits_dell_nems"
-    elif [ $machine = "THEIA" ]; then
-        export fitdir="$BASE_SVN/verif/global/parafits.fv3nems/batrun"
-        export PREPQFITSH="$fitdir/subfits_theia_nems"
+    elif [ $machine = "HERA" ]; then
+        export PREPQFITSH="$fitdir/subfits_hera_slurm"
+    elif [ $machine = "ORION" ]; then
+        export PREPQFITSH="$fitdir/subfits_orion_netcdf"
+    else
+        echo "Fit2Obs NOT supported on this machine"
     fi
 
 fi
-
 
 #----------------------------------------------------------
 # VSDB STEP1, Verify Precipipation and Grid To Obs options
@@ -65,6 +92,7 @@ if [ "$CDUMP" = "gfs" ] ; then
         export vsdbsave="$NOSCRUB/archive/vsdb_data"    # place to save vsdb database
         export vsdbhome=$BASE_VERIF                     # location of global verification scripts
         export VSDBSH="$vsdbhome/vsdbjob.sh"            # VSDB job script
+        export VSDBJOBSH=$SCRgfs/vsdbjob_submit.sh      # VSDB submission job
         export vlength=$FHMAX_GFS                       # verification length
         export vhr_rain=$FHMAX_GFS                      # verification length for precip
         export ftyplist="pgbq"                          # verif. files used for computing QPF ETS scores
@@ -95,12 +123,7 @@ if [ $VRFYRAD = "YES" -o $VRFYMINMON = "YES" -o $VRFYOZN = "YES" ]; then
 
         export RADMON_SUFFIX=$PSLOT
         export TANKverf="$NOSCRUB/monitor/radmon"
-        if [ $machine = "WCOSS_C" -o $machine = "WCOSS_DELL_P3" -o $machine = "THEIA" ]; then
-            export VRFYRADSH="$HOMEgfs/jobs/JGDAS_VERFRAD"
-        else
-            echo "WARNING: Radiance monitoring is not enabled on $machine!"
-            export VRFYRAD="NO"
-        fi
+        export VRFYRADSH="$HOMEgfs/jobs/JGDAS_ATMOS_VERFRAD"
 
     fi
 
@@ -109,15 +132,10 @@ if [ $VRFYRAD = "YES" -o $VRFYMINMON = "YES" -o $VRFYOZN = "YES" ]; then
 
         export MINMON_SUFFIX=$PSLOT
         export M_TANKverf="$NOSCRUB/monitor/minmon"
-        if [ $machine = "WCOSS_C" -o $machine = "WCOSS_DELL_P3" -o $machine = "THEIA" ]; then
-            if [[ "$CDUMP" = "gdas" ]] ; then
-                export VRFYMINSH="$HOMEgfs/jobs/JGDAS_VMINMON"
-            elif [[ "$CDUMP" = "gfs" ]] ; then
-                export VRFYMINSH="$HOMEgfs/jobs/JGFS_VMINMON"
-            fi
-        else
-            echo "WARNING: Minimization monitoring is not enabled on $machine!"
-            export VRFYMINMON="NO"
+        if [[ "$CDUMP" = "gdas" ]] ; then
+            export VRFYMINSH="$HOMEgfs/jobs/JGDAS_ATMOS_VMINMON"
+        elif [[ "$CDUMP" = "gfs" ]] ; then
+            export VRFYMINSH="$HOMEgfs/jobs/JGFS_ATMOS_VMINMON"
         fi
 
     fi
@@ -128,12 +146,7 @@ if [ $VRFYRAD = "YES" -o $VRFYMINMON = "YES" -o $VRFYOZN = "YES" ]; then
         export HOMEgfs_ozn="$HOMEgfs"
         export OZNMON_SUFFIX=$PSLOT
         export TANKverf_ozn="$NOSCRUB/monitor/oznmon"
-        if [ $machine = "WCOSS_C" -o $machine = "WCOSS_DELL_P3" -o $machine = "THEIA" ]; then
-            export VRFYOZNSH="$HOMEgfs/jobs/JGDAS_VERFOZN"
-        else
-            echo "WARNING: Ozone monitoring is not enabled on $machine!"
-            export VRFYOZN="NO"
-        fi
+        export VRFYOZNSH="$HOMEgfs/jobs/JGDAS_ATMOS_VERFOZN"
 
     fi
 
@@ -144,25 +157,18 @@ fi
 # Cyclone genesis and cyclone track verification
 #-------------------------------------------------
 
-if [ $machine = "WCOSS_C" ] ; then
-    export ens_tracker_ver=v1.1.13.1
-    export HOMEens_tracker=/gpfs/hps3/emc/global/noscrub/emc.glopara/git/ens_tracker.${ens_tracker_ver}
-elif [ $machine = "WCOSS_DELL_P3" ] ; then
-    export ens_tracker_ver=v1.1.13.1
-    export HOMEens_tracker=/gpfs/dell2/emc/modeling/noscrub/emc.glopara/git/ens_tracker.${ens_tracker_ver}
-elif [ $machine = "THEIA" ] ; then
-    export ens_tracker_ver=v2.0.1
-    export HOMEens_tracker=/scratch4/NCEPDEV/global/save/glopara/svn/gfs/branches/gfs_q3fy17/ens_tracker.${ens_tracker_ver}
-else
-    echo "WARNING: Genesis and cyclone verifications are not enabled on $machine!"
-    export VRFYGENESIS="NO"
-    export VRFYTRAK="NO"
+export ens_tracker_ver=v1.1.15.1
+if [ $machine = "WCOSS_DELL_P3" ] ; then
+    export ens_tracker_ver=v1.1.15.3
 fi
-
+export HOMEens_tracker=$BASE_GIT/tracker/ens_tracker.${ens_tracker_ver}
+if [ $machine = "ORION" ] ; then
+    export HOMEens_tracker=$BASE_GIT/tracker/TC_tracker.v1.1.15.2
+fi
 
 if [ "$VRFYTRAK" = "YES" ]; then
 
-    export TRACKERSH="$HOMEgfs/jobs/JGFS_CYCLONE_TRACKER"
+    export TRACKERSH="$HOMEgfs/jobs/JGFS_ATMOS_CYCLONE_TRACKER"
     if [ "$CDUMP" = "gdas" ]; then
         export FHOUT_CYCLONE=3            
         export FHMAX_CYCLONE=$FHMAX
@@ -170,26 +176,18 @@ if [ "$VRFYTRAK" = "YES" ]; then
         export FHOUT_CYCLONE=6            
         export FHMAX_CYCLONE=$(( FHMAX_GFS<240 ? FHMAX_GFS : 240 ))
     fi
-    if [ $machine = "THEIA" ]; then
-       export COMROOTp1="/scratch4/NCEPDEV/rstprod/com"
-       export COMINsyn="$COMROOTp1/arch/prod/syndat"
-    fi
+    export COMINsyn=${COMINsyn:-${COMROOT}/gfs/prod/syndat}
 fi
 
 
 if [[ "$VRFYGENESIS" == "YES" && "$CDUMP" == "gfs" ]]; then
 
-    if [ $machine = "WCOSS_C" -o $machine = "WCOSS_DELL_P3" ] ; then
-        export GENESISSH="$HOMEgfs/jobs/JGFS_CYCLONE_GENESIS"
-    elif [ $machine = "THEIA" ] ; then
-        export GENESISSH="$HOMEens_tracker/gfs_genesis_para_fv3gfs.sh"	
-        export UTILROOT="/scratch4/NCEPDEV/global/save/glopara/nwpara/prod_util.v1.0.15"
-        export GETTX_GEN="$NWROOTGENESIS/ens_tracker.v2.0.1/exec/gettrk_gen_g2_theia"
-    else
-        echo "WARNING: Genesis verification is not enabled on $machine!"
-        export VRFYGENESIS="NO"
-        export GENESISSH=""
-    fi
+    export GENESISSH="$HOMEgfs/jobs/JGFS_ATMOS_CYCLONE_GENESIS"
+fi
+
+if [[ "$VRFYFSU" == "YES" && "$CDUMP" == "gfs" ]]; then
+
+    export GENESISFSU="$HOMEgfs/jobs/JGFS_ATMOS_FSU_GENESIS"
 fi
 
 if [[ "$RUNMOS" == "YES" && "$CDUMP" == "gfs" ]]; then
@@ -198,6 +196,8 @@ if [[ "$RUNMOS" == "YES" && "$CDUMP" == "gfs" ]]; then
         export RUNGFSMOSSH="$HOMEgfs/scripts/run_gfsmos_master.sh.cray"
     elif [ $machine = "WCOSS_DELL_P3" ] ; then
         export RUNGFSMOSSH="$HOMEgfs/scripts/run_gfsmos_master.sh.dell"
+    elif [ $machine = "HERA" ] ; then
+        export RUNGFSMOSSH="$HOMEgfs/scripts/run_gfsmos_master.sh.hera"
     else
         echo "WARNING: MOS package is not enabled on $machine!"
         export RUNMOS="NO"

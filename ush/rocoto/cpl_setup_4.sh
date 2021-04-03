@@ -28,7 +28,7 @@ CWD=${3:-${ROCODIR:-$(pwd)}}
 #IDATE=2011100100
 
 #CDATE=2018031500
-#LEVS=65
+ LEVS=65
 
 #CDATE=2012040100
  export IDATE=${4:-${CDATE:-2013010100}}
@@ -56,7 +56,7 @@ RES=$(echo $CASE|cut -c 2-)
 ATMRES=${6:-${ATMRES:-$RES}}
 
 # $PSLOT is the name of your experiment
- expt=_phydg
+ expt=_phyde
 #expt=_phyxd
 #expt=_phyai    # cmeps run
 
@@ -72,7 +72,7 @@ export CPLSCRIPT=cpl_setup_4.sh     # this should be the name of this script
 #FHMIN=${FHMIN:-0}
 #WARM_START=${WARM_START:-.false.}
 #FHCYC=0
-#FHCYC=6
+ FHCYC=6
 FHCYC=${FHCYC:-24}
 
 export LEVS=${LEVS:-65}
@@ -85,7 +85,9 @@ export LEVS=${LEVS:-65}
 export IC_FROM=bench5
 export IC_FROM=${IC_FROM:-bench1}
 if [ $IC_FROM = bench5 ] ; then
- frac=fracL$((LEVS-1))
+ if [ $LEVS -gt 65 ] ; then
+   frac=fracL$((LEVS-1))
+ fi
  frac=${frac:-""}
 fi
 
@@ -143,15 +145,15 @@ cd $CWD
 
 # turn on some options
 # --------------------
-#export cplflx=.false.                     # turn on to run in uncoupled modeDcupule model
+ export cplflx=.false.                     # turn on to run in uncoupled modeDcupule model
  export cplflx=${cplflx:-.true.}           # default is to run in coupled mode
  export CPLD_APP=YES                       # use coupled app
-#export INLINE_POST=NO                     # turn off inline post
+ export INLINE_POST=NO                     # turn off inline post
  export INLINE_POST=${INLINE_POST:-YES}    # turn on inline post
  export USE_COLDSTART=.false.              # uncomment this line to turn on cold start step
-#export frac_grid=.false.
+ export frac_grid=.false.
  export frac_grid=${frac_grid:-.true.}
- export OUTPUT_FILE=netcdf                 # to turn on netcdf output (default nemsio)
+#export OUTPUT_FILE=netcdf                 # to turn on netcdf output (default nemsio)
  export OUTPUT_FILE=${OUTPUT_FILE:-nemsio} # to turn on netcdf output (default nemsio)
 #export QUILTING=.false.
  export QUILTING=${QUILTING:-.true.}
@@ -203,9 +205,9 @@ cd $CWD
 #export restart_interval=86400
 #export restart_interval=432000
 #export restart_interval=$((86400*2))
-#export restart_interval=43200
+ export restart_interval=43200
 #export restart_interval=21600
-#export restart_interval=10800
+ export restart_interval=10800
 #export restart_interval=3600
 
 #export tau_rayl=5
@@ -247,9 +249,10 @@ fi
 #export FHMAX_GFS_00=480
 #export FHMAX_GFS_00=360
 #export FHMAX_GFS_00=120
-#export FHMAX_GFS_00=48
- export FHMAX_GFS_00=240
- export FHMAX_GFS_00=24
+ export FHMAX_GFS_00=48
+#export FHMAX_GFS_00=240
+ export FHMAX_GFS_00=27
+#export FHMAX_GFS_00=24
 #export FHMAX_GFS_00=6
 #export FHMAX_GFS_00=3
 
@@ -266,8 +269,8 @@ fi
 #export OCN_AVG=YES
  export OCN_AVG=${OCN_AVG:-NO}
 
- export nth_f=2
- export HYPT=on
+#export nth_f=2
+#export HYPT=on
  export nth_f=${nth_f:-1}
  export HYPT=${HYPT:-off}
  export FSICS=0

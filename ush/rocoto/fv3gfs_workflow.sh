@@ -17,10 +17,14 @@ edate="2017080112"
 # USER NEED NOT MODIFY BELOW THIS LINE
 ######################################
 
+<<<<<<< HEAD
 if [ -d /scratch1/NCEPDEV ]; then
     machine="hera"
     icsdir="/scratch4/NCEPDEV/global/noscrub/glopara/ICS/FV3GFS"
 elif [ -d /gpfs/hps3 ]; then
+=======
+if [ -d /gpfs/hps3 ]; then
+>>>>>>> upstream/develop
     machine="cray"
     icsdir="/gpfs/hps3/emc/global/noscrub/emc.glopara/ICS"
 else

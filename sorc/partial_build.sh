@@ -1,19 +1,14 @@
 #
 # define the array of the name of build program
 #
- declare -a Build_prg=("Build_libs" "Build_fv3gfs" \
-                       "Build_gsi" "Build_ncep_post" \
-                       "Build_gdas" "Build_nems_util" \
-                       "Build_chgres" "Build_cycle" \
-                       "Build_sfcanl_nsttfchg" \
-                       "Build_orog" "Build_tropcy" \
-                       "Build_nctools" "Build_enkf_chgres_recenter" \
-                       "Build_gfs_fbwndgfs" "Build_gfs_overpdtg2" \
-                       "Build_gfs_wintemv" "Build_gfs_cnvgrib21_gfs" \
-                       "Build_gfs_bufrsnd" "Build_emcsfc" \
-                       "Build_fv3nc2nemsio" "Build_regrid_nemsio" \
-                       "Build_prod_util" \
-                       "Build_grib_util")
+ declare -a Build_prg=("Build_fv3gfs" \
+                       "Build_gsi" \
+                       "Build_gldas" \
+                       "Build_ncep_post" \
+                       "Build_ufs_utils" \
+                       "Build_gfs_wafs" \
+                       "Build_workflow_utils" \
+                       "Build_gfs_util")
 
 #
 # function parse_cfg: read config file and retrieve the values
@@ -149,8 +144,10 @@
        echo "Usage: $0 [ALL|config=config_file|[select=][prog1[,prog2[,...]]]" 2>&1
        exit 2
      }
-     ( [[ $1 == "-v" ]] || [[ ${1,,} == "--verbose" ]] ) && {
-       verbose=true
+     ( [[ $1 == "-v" ]] || [[ ${1,,} == "--verbose" ]] || [[ $1 == "-c" ]] ) && {
+       if [[ $1 == "-v" ]]; then
+         verbose=true
+       fi
        num_arg=0
      } || {
        echo "Usage: $0 [ALL|config=config_file|[select=][prog1[,prog2[,...]]]" 2>&1

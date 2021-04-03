@@ -14,7 +14,8 @@ export RUN_ENVIR=emc
 # Account, queue, etc.
 export ACCOUNT="@ACCOUNT@"
 export QUEUE="@QUEUE@"
-export QUEUE_ARCH="@QUEUE_ARCH@"
+#export QUEUE_ARCH="@QUEUE_ARCH@"
+export QUEUE_SERVICE="@QUEUE_SERVICE@"
 
  export envars="@envars@"
 

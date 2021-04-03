@@ -33,10 +33,14 @@ done
 status=$?
 [[ $status -ne 0 ]] && exit $status
 
+# Set component
+export COMPONENT=${COMPONENT:-atmos}
+
 # Temporary runtime directory
 export DATA="$RUNDIR/$CDATE/$CDUMP/fv3ic$$"
 [[ -d $DATA ]] && rm -rf $DATA
 
+#<<<<<<< HEAD
 # Input GFS initial condition files
 if [ $cpl = ".true." ] ; then
 
@@ -70,8 +74,12 @@ else
     export NSTANL="$ICSDIR/$CDATE/$CDUMP/nstanl.${CDUMP}.$CDATE"
   fi
 fi
+#=======
+# Input GFS initial condition directory
+#export INIDIR="$ICSDIR/$CDATE/$CDUMP/$CDUMP.$PDY/$cyc"
+#>>>>>>> upstream/develop
 
-# Output FV3 initial condition files
+# Output FV3 initial condition directory
 export OUTDIR="$ICSDIR/$CDATE/$CDUMP/$CASE/INPUT"
 
 export OMP_NUM_THREADS_CH=$NTHREADS_CHGRES
@@ -86,7 +94,7 @@ if [ $status -ne 0 ]; then
 fi
 
 # Stage the FV3 initial conditions to ROTDIR
-COMOUT="$ROTDIR/$CDUMP.$PDY/$cyc"
+COMOUT="$ROTDIR/$CDUMP.$PDY/$cyc/$COMPONENT"
 [[ ! -d $COMOUT ]] && mkdir -p $COMOUT
 cd $COMOUT || exit 99
 rm -rf INPUT

@@ -14,6 +14,12 @@ echo "BEGIN: config.post"
 # No. of concurrent post jobs [0 implies sequential]
 export NPOSTGRP=10
 export NPOSTGRP=1
+#export NPOSTGRP=42
+export OUTTYP=4
+export MODEL_OUT_FORM=binarynemsiompiio
+if [ $OUTPUT_FILE = "netcdf" ]; then 
+    export MODEL_OUT_FORM=netcdfpara
+fi
 
 # Post driver job that calls gfs_nceppost.sh and downstream jobs
 if [ $machine = "WCOSS_DELL_P3" ] ; then
@@ -32,6 +38,7 @@ export POSTJJOBSH=${POSTJJOBSH:-${POSTDIR:-$HOMEpost}/jobs/JGLOBAL_NCEPPOST}
 export GFSDOWNSH="$HOMEpost/ush/fv3gfs_downstream_nems.sh"
 export GFSDWNSH="$HOMEpost/ush/fv3gfs_dwn_nems.sh"
 
+#<<<<<<< HEAD
 #export POSTGPSH="$HOMEpost/ush/gfs_nceppost.sh"
 #export POSTGPEXEC="$HOMEpost/exec/gfs_ncep_post"
 
@@ -49,20 +56,36 @@ export PGB1F=NO
 export PGBS=YES
 export FHOUT_PGBS=6
 #BL2018
+#=======
+#export POSTGPSH="$HOMEpost/ush/gfs_nceppost.sh"
+#export POSTGPEXEC="$HOMEpost/exec/gfs_ncep_post"
+#export GOESF=YES                              # goes image
+#export FLXF=YES                               # grib2 flux file written by post
+#>>>>>>> upstream/develop
 
 export npe_postgp=$npe_post
 export nth_postgp=${nth_postgp:-2}
 REDO_PGB=${REDO_PGB:-NO}
 
 export GFS_DOWNSTREAM="YES"
+#<<<<<<< HEAD
 #export downset=1
 #BL2018
 export downset=2
 export npe_dwn=24
+#=======
+export downset=2
+if [ $machine = "WCOSS_DELL_P3" ]; then
+    export npe_dwn=28
+else
+    export npe_dwn=24
+fi
+#>>>>>>> upstream/develop
 
 export GRIBVERSION='grib2'
 export SENDCOM="YES"
 
+#<<<<<<< HEAD
 KPO=${KPO:-57}
 if [ $KPO -eq 47 ] ; then
  export POSTGPVARS=${POSTGPVARS:-"KPO=47,PO=1000.,975.,950.,925.,900.,875.,850.,825.,800.,775.,750.,725.,700.,675.,650.,625.,600.,575.,550.,525.,500.,475.,450.,425.,400.,375.,350.,325.,300.,275.,250.,225.,200.,175.,150.,125.,100.,70.,50.,30.,20.,10.,7.,5.,3.,2.,1.,"}
@@ -104,4 +127,6 @@ else
     echo "UPP using CRTM_FIX = $CRTM_FIX"
 fi
 
+#=======
+#>>>>>>> upstream/develop
 echo "END: config.post"

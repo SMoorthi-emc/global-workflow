@@ -1160,7 +1160,7 @@ C ... NO CONVERSION NECESSARY SINCE THIS SUBSEQUENT LOGIC EXPECTS THIS
          PRINT '(a,a,a)', '==> Read in RECORD from tcvitals file -- ',
      $    ' contains a 4-digit year "',OVRREC(MAXOVR-NRECHO)(20:23),'"'
          PRINT *, ' '
-         PRINT '(a,i,a,a)',
+         PRINT '(a,i2,a,a)',
      $    'From unit ',iuntho,'; OVRREC(MAXOVR-NRECHO)-2: ',
      $    OVRREC(MAXOVR-NRECHO)
          PRINT *, ' '
@@ -4236,6 +4236,8 @@ c                  be created
 c       The new id will be transferred to all records. It must be a bang
 c       record with only one observing rsmc. It must also be entered int
 c       the alias file.
+
+      istidn=0     ! Qingfu added to skip the changes of storm ID number
 
       if(istidn .eq. 1)  then
 
@@ -11989,13 +11991,41 @@ c     Interpret the abbreviations
 
          IF(CACCES(NF) .NE. 'DIRECT')  THEN
             if(cpos(nf) .eq. ' ')  then
-               OPEN(UNIT=IUNIT(NF),FORM=cform(nf),STATUS=cstat(nf),
-     1              ACCESS=cacces(nf),FILE=FILNAM(NF)(1:LENGTH),
-     2              ERR=95,IOSTAT=IOS)
+               if (cstat(nf).eq.'OLD') then
+                  OPEN(UNIT=IUNIT(NF),FORM=cform(nf),STATUS='OLD',
+     1                 ACCESS=cacces(nf),FILE=FILNAM(NF)(1:LENGTH),
+     2                 ERR=95,IOSTAT=IOS)
+               elseif (cstat(nf).eq.'NEW') then
+                  OPEN(UNIT=IUNIT(NF),FORM=cform(nf),STATUS='NEW',
+     1                 ACCESS=cacces(nf),FILE=FILNAM(NF)(1:LENGTH),
+     2                 ERR=95,IOSTAT=IOS)
+               elseif (cstat(nf).eq.'UNKNOWN') then
+                  OPEN(UNIT=IUNIT(NF),FORM=cform(nf),STATUS='UNKNOWN',
+     1                 ACCESS=cacces(nf),FILE=FILNAM(NF)(1:LENGTH),
+     2                 ERR=95,IOSTAT=IOS)
+               else
+                  OPEN(UNIT=IUNIT(NF),FORM=cform(nf),STATUS=cstat(nf),
+     1                 ACCESS=cacces(nf),
+     2                 ERR=95,IOSTAT=IOS)
+               endif
             else
-               open(unit=iunit(nf),form=cform(nf),status=cstat(nf),
-     1              access=cacces(nf),position=cpos(nf),
-     2              file=filnam(nf)(1:length),err=95,iostat=ios)
+               if (cstat(nf).eq.'OLD') then
+                  open(unit=iunit(nf),form=cform(nf),status='OLD',
+     1                 access=cacces(nf),position=cpos(nf),
+     2                 file=filnam(nf)(1:length),err=95,iostat=ios)
+               elseif (cstat(nf).eq.'NEW') then
+                  open(unit=iunit(nf),form=cform(nf),status='NEW',
+     1                 access=cacces(nf),position=cpos(nf),
+     2                 file=filnam(nf)(1:length),err=95,iostat=ios)
+               elseif (cstat(nf).eq.'UNKNOWN') then
+                  open(unit=iunit(nf),form=cform(nf),status='UNKNOWN',
+     1                 access=cacces(nf),position=cpos(nf),
+     2                 file=filnam(nf)(1:length),err=95,iostat=ios)
+               else
+                  open(unit=iunit(nf),form=cform(nf),status=cstat(nf),
+     1                 access=cacces(nf),position=cpos(nf),
+     2                 err=95,iostat=ios)
+               endif
             endif
          ELSE
             read(filnam(nf)(length+2:length+2+idgmax-1),37) lrec
@@ -12003,13 +12033,41 @@ c     Interpret the abbreviations
             write(6,39)  lrec
    39       format('...Direct access record length:',i7,'...')
             if(cpos(nf) .eq. ' ')  then
-               OPEN(UNIT=IUNIT(NF),FORM=CFORM(NF),STATUS=CSTAT(NF),
-     1              ACCESS=CACCES(NF),FILE=FILNAM(NF)(1:LENGTH),
-     2              ERR=95,IOSTAT=IOS,RECL=lrec)
+               if (cstat(nf).eq.'OLD') then
+                  OPEN(UNIT=IUNIT(NF),FORM=CFORM(NF),STATUS='OLD',
+     1                 ACCESS=CACCES(NF),FILE=FILNAM(NF)(1:LENGTH),
+     2                 ERR=95,IOSTAT=IOS,RECL=lrec)
+               elseif (cstat(nf).eq.'NEW') then
+                  OPEN(UNIT=IUNIT(NF),FORM=CFORM(NF),STATUS='NEW',
+     1                 ACCESS=CACCES(NF),FILE=FILNAM(NF)(1:LENGTH),
+     2                 ERR=95,IOSTAT=IOS,RECL=lrec)
+               elseif (cstat(nf).eq.'UNKNOWN') then
+                  OPEN(UNIT=IUNIT(NF),FORM=CFORM(NF),STATUS='UNKNOWN',
+     1                 ACCESS=CACCES(NF),FILE=FILNAM(NF)(1:LENGTH),
+     2                 ERR=95,IOSTAT=IOS,RECL=lrec)
+               else
+                  OPEN(UNIT=IUNIT(NF),FORM=CFORM(NF),STATUS=CSTAT(NF),
+     1                 ACCESS=CACCES(NF),
+     2                 ERR=95,IOSTAT=IOS,RECL=lrec)
+               endif
             else
-               open(unit=iunit(nf),form=cform(nf),status=cstat(nf),
-     1              access=cacces(nf),file=filnam(nf)(1:length),
-     2              position=cpos(nf),err=95,iostat=ios,recl=lrec)
+               if (cstat(nf).eq.'OLD') then
+                  open(unit=iunit(nf),form=cform(nf),status='OLD',
+     1                 access=cacces(nf),file=filnam(nf)(1:length),
+     2                 position=cpos(nf),err=95,iostat=ios,recl=lrec)
+               elseif (cstat(nf).eq.'NEW') then
+                  open(unit=iunit(nf),form=cform(nf),status='NEW',
+     1                 access=cacces(nf),file=filnam(nf)(1:length),
+     2                 position=cpos(nf),err=95,iostat=ios,recl=lrec)
+               elseif (cstat(nf).eq.'UNKNOWN') then
+                  open(unit=iunit(nf),form=cform(nf),status='UNKNOWN',
+     1                 access=cacces(nf),file=filnam(nf)(1:length),
+     2                 position=cpos(nf),err=95,iostat=ios,recl=lrec)
+               else
+                  open(unit=iunit(nf),form=cform(nf),status=cstat(nf),
+     1                 access=cacces(nf),
+     2                 position=cpos(nf),err=95,iostat=ios,recl=lrec)
+               endif
             endif
          ENDIF
       ENDDO

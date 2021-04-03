@@ -80,6 +80,10 @@
 000 001 006 008 Evaporation                      kg m**-2             EVAP             0  -9999.00
 000 001 007 000 Precipitation rate               kg m**-2 s**-1       PR--             0  -9999.00
 000 001 007 008 Precipitation rate               kg m**-2 s**-1       PR--             0  -9999.00
+!
+000 001 037 000 Convective precip rate           kg m**-2 s**-1       CPR--            0  -9999.00
+!000 001 037 008 Convective precip rate           kg m**-2 s**-1       CPR--            0  -9999.00
+!
 000 001 008 008 Total precipitation              kg m**-2             P--M             0     -0.01
 000 001 008 009 Precipitation Probability        %                    PP--             0  -9999.00
 000 001 008 011 Total precipitation              kg m**-2             P--M             0     -0.01
@@ -424,7 +428,7 @@
 010 001 002 000 u-component of current           m s-1                URELC            0  -9999.00
 010 001 003 000 v-component of current           m s-1                VRELC            0  -9999.00
 !
-010 002 000 000 Ice cover                        Proportion           ICE              0  -9999.00
+010 002 000 000 Ice cover                        Proportion           ICEC             0  -9999.00
 010 002 001 000 Ice thickness                    m                    ICET             0  -9999.00
 010 002 002 000 Direction of ice drift           Degree true          DRCTI            0  -9999.00
 010 002 003 000 Speed of ice drift               m s-1                SPEDI            0  -9999.00

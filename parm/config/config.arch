@@ -22,4 +22,9 @@ export FHMAX_FITS=132
 #BL2018
 export RMOLDEND=840
 
+#--keep forcing data for running gldas step
+if [[ "$DO_GLDAS" == "YES" && "$CDUMP" == "gdas" ]]; then
+     [[ $RMOLDSTD -lt 144 ]] && export RMOLDSTD=144   
+fi
+
 echo "END: config.arch"

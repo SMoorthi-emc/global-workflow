@@ -14,11 +14,13 @@
 set -x
 #
 export PS4='MAR_COMP_F${fend}:$SECONDS + '
-rm -Rf $DATA/GEMPAK_META
-mkdir -p -m 775 $DATA/GEMPAK_META $DATA/MAR_COMP
+rm -Rf $DATA/GEMPAK_META_MAR
+mkdir -p -m 775 $DATA/GEMPAK_META_MAR $DATA/MAR_COMP
 
 cd $DATA/MAR_COMP
 cp $FIXgempak/datatype.tbl datatype.tbl
+
+export COMPONENT=${COMPONENT:-atmos}
 
 mdl=gfs
 MDL="GFS"
@@ -30,30 +32,30 @@ PDY2=`echo $PDY | cut -c3-`
 # BV export MODEL=/com/nawips/prod
 #XXW export HPCGFS=${MODEL}/${mdl}.$PDY
 # BV export HPCGFS=${COMROOT}/nawips/${envir}/${mdl}.$PDY
-export HPCGFS=${COMINgempak}/${mdl}.${PDY}/${cyc}/nawips
-export COMIN00=${COMINgempak}/${mdl}.${PDY}/00/nawips
-export COMIN06=${COMINgempak}/${mdl}.${PDY}/06/nawips
-export COMIN12=${COMINgempak}/${mdl}.${PDY}/12/nawips
-export COMIN18=${COMINgempak}/${mdl}.${PDY}/18/nawips
+export HPCGFS=${COMINgempak}/${mdl}.${PDY}/${cyc}/${COMPONENT}/gempak
+export COMIN00=${COMINgempak}/${mdl}.${PDY}/00/${COMPONENT}/gempak
+export COMIN06=${COMINgempak}/${mdl}.${PDY}/06/${COMPONENT}/gempak
+export COMIN12=${COMINgempak}/${mdl}.${PDY}/12/${COMPONENT}/gempak
+export COMIN18=${COMINgempak}/${mdl}.${PDY}/18/${COMPONENT}/gempak
 if [ ${cyc} -eq 00 ] ; then
-   cp $COMIN00/gfs_${PDY}00f* $DATA/GEMPAK_META
+   cp $COMIN00/gfs_${PDY}00f* $DATA/GEMPAK_META_MAR
 elif [ ${cyc} -eq 06 ] ; then
-   cp $COMIN00/gfs_${PDY}00f* $DATA/GEMPAK_META
-   cp $COMIN06/gfs_${PDY}06f* $DATA/GEMPAK_META
+   cp $COMIN00/gfs_${PDY}00f* $DATA/GEMPAK_META_MAR
+   cp $COMIN06/gfs_${PDY}06f* $DATA/GEMPAK_META_MAR
 elif [ ${cyc} -eq 12 ] ; then
-   cp $COMIN00/gfs_${PDY}00f* $DATA/GEMPAK_META
-   cp $COMIN06/gfs_${PDY}06f* $DATA/GEMPAK_META
-   cp $COMIN12/gfs_${PDY}12f* $DATA/GEMPAK_META
+   cp $COMIN00/gfs_${PDY}00f* $DATA/GEMPAK_META_MAR
+   cp $COMIN06/gfs_${PDY}06f* $DATA/GEMPAK_META_MAR
+   cp $COMIN12/gfs_${PDY}12f* $DATA/GEMPAK_META_MAR
 elif [ ${cyc} -eq 18 ] ; then
-   cp $COMIN00/gfs_${PDY}00f* $DATA/GEMPAK_META
-   cp $COMIN06/gfs_${PDY}06f* $DATA/GEMPAK_META
-   cp $COMIN12/gfs_${PDY}12f* $DATA/GEMPAK_META
-   cp $COMIN18/gfs_${PDY}18f* $DATA/GEMPAK_META
+   cp $COMIN00/gfs_${PDY}00f* $DATA/GEMPAK_META_MAR
+   cp $COMIN06/gfs_${PDY}06f* $DATA/GEMPAK_META_MAR
+   cp $COMIN12/gfs_${PDY}12f* $DATA/GEMPAK_META_MAR
+   cp $COMIN18/gfs_${PDY}18f* $DATA/GEMPAK_META_MAR
 fi
-export COMIN=$DATA/GEMPAK_META
+export COMIN=$DATA/GEMPAK_META_MAR
 
 # export HPCNAM=${COMINnam}.$PDY
-export HPCNAM=${COMINnam}.$PDY
+export HPCNAM=${COMINnam}.$PDY/gempak
 
 # export HPCNGM=${MODEL}/ngm.$PDY
 #
@@ -259,7 +261,7 @@ export err=$?;err_chk
         done
         # COMPARE THE 1200 UTC GFS MODEL TO THE 1200 UTC ECMWF FROM YESTERDAY
         grid="F-${MDL} | ${PDY2}/${cyc}00"
-        grid2=${COMINecmwf}.${PDYm1}/ecmwf_glob_${PDYm1}12 
+        grid2=${COMINecmwf}.${PDYm1}/gempak/ecmwf_glob_${PDYm1}12 
         for gfsfhr in 00 24 48 72 96 120
         do
             ecmwffhr=F`expr ${gfsfhr} + 24`
@@ -436,7 +438,7 @@ if [ ${cyc} = "00" ] ; then
                 cyc2="18"
 		#XXW export HPCGFS=${MODEL}/${mdl}.${PDYm1}
 		# BV export HPCGFS=$COMROOT/nawips/${envir}/${mdl}.${PDYm1}
-                export HPCGFS=${COMINgempak}/${mdl}.${PDYm1}/${cyc2}/nawips
+                export HPCGFS=${COMINgempak}/${mdl}.${PDYm1}/${cyc2}/${COMPONENT}/gempak
 
                 grid2="F-GFSHPC | ${PDY2m1}/1800"
                 add="06"
@@ -444,7 +446,7 @@ if [ ${cyc} = "00" ] ; then
             elif [ ${runtime} = "12" ] ; then
                 cyc2="12"
 		#XXW export HPCGFS=${MODEL}/${mdl}.${PDYm1}
-                export HPCGFS=${COMINgempak}/${mdl}.${PDYm1}/${cyc2}/nawips
+                export HPCGFS=${COMINgempak}/${mdl}.${PDYm1}/${cyc2}/${COMPONENT}/gempak
 
                 grid2="F-GFSHPC | ${PDY2m1}/1200"
                 add="12"
@@ -612,7 +614,7 @@ export err=$?;err_chk
         done
         # COMPARE THE 0000 UTC GFS MODEL TO THE 1200 UTC ECMWF FROM YESTERDAY
         grid="F-${MDL} | ${PDY2}/${cyc}00"
-        grid2="${COMINecmwf}.${PDYm1}/ecmwf_glob_${PDYm1}12"
+        grid2="${COMINecmwf}.${PDYm1}/gempak/ecmwf_glob_${PDYm1}12"
         for gfsfhr in 12 36 60 84 108
         do
             ecmwffhr=F`expr ${gfsfhr} + 12`
@@ -905,7 +907,7 @@ if [ ${cyc} -eq "06" ] ; then
             elif [ ${runtime} = "18" ] ; then
                 cyc2="18"
 		#XXW export HPCGFS=${MODEL}/${mdl}.${PDYm1}
-                export HPCGFS=${COMINgempak}/${mdl}.${PDYm1}/${cyc2}/nawips
+                export HPCGFS=${COMINgempak}/${mdl}.${PDYm1}/${cyc2}/${COMPONENT}/gempak
                 grid2="F-GFSHPC | ${PDY2m1}/1800"
                 add="12"
                 testgfsfhr="72"

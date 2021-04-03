@@ -28,6 +28,8 @@ for config in $configs; do
     [[ $status -ne 0 ]] && exit $status
 done
 
+export COMPONENT=${COMPONENT:-atmos}
+
 n=$((ENSGRP))
 
 # ICS are restarts and always lag INC by $assim_freq hours.
@@ -40,15 +42,15 @@ fi
 # EnKF update in GFS, GDAS or both
 CDUMP_ENKF=$(echo ${EUPD_CYC:-"gdas"} | tr a-z A-Z)
 
-ARCH_LIST="$ROTDIR/enkf.${CDUMP}.$PDY/$cyc/earc$ENSGRP"
+ARCH_LIST="$ROTDIR/enkf${CDUMP}.$PDY/$cyc/$COMPONENT/earc$ENSGRP"
 [[ -d $ARCH_LIST ]] && rm -rf $ARCH_LIST
 mkdir -p $ARCH_LIST
 cd $ARCH_LIST
 
-$HOMEgfs/ush/hpssarch_gen.sh enkf.${CDUMP}
+$HOMEgfs/ush/hpssarch_gen.sh enkf${CDUMP}
 status=$?
 if [ $status -ne 0 ]; then
-   echo "$HOMEgfs/ush/hpssarch_gen.sh enkf.${CDUMP} failed, ABORT!"
+   echo "$HOMEgfs/ush/hpssarch_gen.sh enkf${CDUMP} failed, ABORT!"
    exit $status
 fi
 
@@ -57,12 +59,12 @@ cd $ROTDIR
 
 ###################################################################
 # ENSGRP > 0 archives a group of ensemble members
+firstday=$($NDATE +24 $SDATE)
 if [[ $ENSGRP -gt 0 ]] && [[ $HPSSARCH = "YES" ]]; then
 
 #--determine when to save ICs for warm start
    SAVEWARMICA="NO"
    SAVEWARMICB="NO"
-   firstday=$($NDATE +24 $SDATE)
    mm=`echo $CDATE|cut -c 5-6`
    dd=`echo $CDATE|cut -c 7-8`
    nday=$(( (mm-1)*30+dd ))
@@ -80,30 +82,34 @@ if [[ $ENSGRP -gt 0 ]] && [[ $HPSSARCH = "YES" ]]; then
        if [ $CDATE -eq $SDATE -a $cyc -eq $EARCICS_CYC ] ; then SAVEWARMICB="YES" ; fi
    fi
 
-   htar -P -cvf $ATARDIR/$CDATE/enkf.${CDUMP}_grp${ENSGRP}.tar `cat $ARCH_LIST/enkf.${CDUMP}_grp${n}.txt`
-   status=$?
-   if [ $status -ne 0  -a $CDATE -ge $firstday ]; then
-       echo "HTAR $CDATE enkf.${CDUMP}_grp${ENSGRP}.tar failed"
-       exit $status
-   fi
+   if [ $CDATE -gt $SDATE ]; then # Don't run for first half cycle
 
-   if [ $SAVEWARMICA = "YES" -a $cyc -eq $EARCINC_CYC ]; then
-       htar -P -cvf $ATARDIR/$CDATE/enkf.${CDUMP}_restarta_grp${ENSGRP}.tar `cat $ARCH_LIST/enkf.${CDUMP}_restarta_grp${n}.txt`
+     htar -P -cvf $ATARDIR/$CDATE/enkf${CDUMP}_grp${ENSGRP}.tar `cat $ARCH_LIST/enkf${CDUMP}_grp${n}.txt`
+     status=$?
+     if [ $status -ne 0  -a $CDATE -ge $firstday ]; then
+         echo "HTAR $CDATE enkf${CDUMP}_grp${ENSGRP}.tar failed"
+         exit $status
+     fi
+
+     if [ $SAVEWARMICA = "YES" -a $cyc -eq $EARCINC_CYC ]; then
+       htar -P -cvf $ATARDIR/$CDATE/enkf${CDUMP}_restarta_grp${ENSGRP}.tar `cat $ARCH_LIST/enkf${CDUMP}_restarta_grp${n}.txt`
        status=$?
        if [ $status -ne 0 ]; then
-           echo "HTAR $CDATE enkf.${CDUMP}_restarta_grp${ENSGRP}.tar failed"
+           echo "HTAR $CDATE enkf${CDUMP}_restarta_grp${ENSGRP}.tar failed"
            exit $status
        fi
-   fi
+     fi
 
-   if [ $SAVEWARMICB = "YES"  -a $cyc -eq $EARCICS_CYC ]; then
-       htar -P -cvf $ATARDIR/$CDATE/enkf.${CDUMP}_restartb_grp${ENSGRP}.tar `cat $ARCH_LIST/enkf.${CDUMP}_restartb_grp${n}.txt`
+     if [ $SAVEWARMICB = "YES"  -a $cyc -eq $EARCICS_CYC ]; then
+       htar -P -cvf $ATARDIR/$CDATE/enkf${CDUMP}_restartb_grp${ENSGRP}.tar `cat $ARCH_LIST/enkf${CDUMP}_restartb_grp${n}.txt`
        status=$?
        if [ $status -ne 0 ]; then
-           echo "HTAR $CDATE enkf.${CDUMP}_restartb_grp${ENSGRP}.tar failed"
+           echo "HTAR $CDATE enkf${CDUMP}_restartb_grp${ENSGRP}.tar failed"
            exit $status
        fi
-   fi
+     fi
+
+   fi # CDATE>SDATE
 
 fi
 
@@ -114,10 +120,10 @@ if [ $ENSGRP -eq 0 ]; then
 
     if [ $HPSSARCH = "YES" ]; then
 
-        htar -P -cvf $ATARDIR/$CDATE/enkf.${CDUMP}.tar `cat $ARCH_LIST/enkf.${CDUMP}.txt`
+        htar -P -cvf $ATARDIR/$CDATE/enkf${CDUMP}.tar `cat $ARCH_LIST/enkf${CDUMP}.txt`
         status=$?
         if [ $status -ne 0  -a $CDATE -ge $firstday ]; then
-            echo "HTAR $CDATE enkf.${CDUMP}.tar failed"
+            echo "HTAR $CDATE enkf${CDUMP}.tar failed"
             exit $status
         fi
     fi
@@ -126,12 +132,12 @@ if [ $ENSGRP -eq 0 ]; then
     [[ ! -d $ARCDIR ]] && mkdir -p $ARCDIR
     cd $ARCDIR
 
-    $NCP $ROTDIR/enkf.${CDUMP}.$PDY/$cyc/${CDUMP}.t${cyc}z.enkfstat       enkfstat.${CDUMP}.$CDATE
-    $NCP $ROTDIR/enkf.$CDUMP.$PDY/$cyc/${CDUMP}.t${cyc}z.gsistat.ensmean  gsistat.${CDUMP}.${CDATE}.ensmean
+    $NCP $ROTDIR/enkf${CDUMP}.$PDY/$cyc/$COMPONENT/${CDUMP}.t${cyc}z.enkfstat         enkfstat.${CDUMP}.$CDATE
+    $NCP $ROTDIR/enkf${CDUMP}.$PDY/$cyc/$COMPONENT/${CDUMP}.t${cyc}z.gsistat.ensmean  gsistat.${CDUMP}.${CDATE}.ensmean
 
-    if [ $CDUMP_ENKF != "gdas" ]; then
-		$NCP $ROTDIR/enkf.gfs.$PDY/$cyc/${CDUMP}.t${cyc}z.enkfstat         enkfstat.gfs.$CDATE
-		$NCP $ROTDIR/enkf.gfs.$PDY/$cyc/${CDUMP}.t${cyc}z.gsistat.ensmean  gsistat.gfs.${CDATE}.ensmean
+    if [ $CDUMP_ENKF != "GDAS" ]; then
+		$NCP $ROTDIR/enkfgfs.$PDY/$cyc/$COMPONENT/${CDUMP}.t${cyc}z.enkfstat         enkfstat.gfs.$CDATE
+		$NCP $ROTDIR/enkfgfs.$PDY/$cyc/$COMPONENT/${CDUMP}.t${cyc}z.gsistat.ensmean  gsistat.gfs.${CDATE}.ensmean
 	fi
 
 fi
@@ -144,33 +150,35 @@ fi
 ###############################################################
 # ENSGRP 0 also does clean-up
 if [ $ENSGRP -eq 0 ]; then
-    ###############################################################
-    # Clean up previous cycles; various depths
-    # PRIOR CYCLE: Leave the prior cycle alone
-    GDATE=$($NDATE -$assim_freq $CDATE)
 
-    # PREVIOUS to the PRIOR CYCLE
-    # Now go 2 cycles back and remove the directory
-    GDATE=$($NDATE -$assim_freq $GDATE)
-    gPDY=$(echo $GDATE | cut -c1-8)
-    gcyc=$(echo $GDATE | cut -c9-10)
+    # Start start and end dates to remove
+    GDATEEND=$($NDATE -${RMOLDEND_ENKF:-24}  $CDATE)
+    GDATE=$($NDATE -${RMOLDSTD_ENKF:-120} $CDATE)
+    while [ $GDATE -le $GDATEEND ]; do
+
+	gPDY=$(echo $GDATE | cut -c1-8)
+	gcyc=$(echo $GDATE | cut -c9-10)
 
 	# Handle GDAS and GFS EnKF directories separately
-    COMIN_ENS="$ROTDIR/enkf.gdas.$gPDY/$gcyc"
-    [[ -d $COMIN_ENS ]] && rm -rf $COMIN_ENS
-    COMIN_ENS="$ROTDIR/enkf.gfs.$gPDY/$gcyc"
-    [[ -d $COMIN_ENS ]] && rm -rf $COMIN_ENS
+	COMIN_ENS="$ROTDIR/enkfgdas.$gPDY/$gcyc/$COMPONENT"
+	[[ -d $COMIN_ENS ]] && rm -rf $COMIN_ENS
+	COMIN_ENS="$ROTDIR/enkfgfs.$gPDY/$gcyc/$COMPONENT"
+	[[ -d $COMIN_ENS ]] && rm -rf $COMIN_ENS
 
-    # PREVIOUS day 00Z remove the whole day
-    GDATE=$($NDATE -48 $CDATE)
-    gPDY=$(echo $GDATE | cut -c1-8)
-    gcyc=$(echo $GDATE | cut -c9-10)
+	# Remove any empty directories
+	COMIN_ENS="$ROTDIR/enkfgdas.$gPDY/$COMPONENT"
+	if [ -d $COMIN_ENS ] ; then
+	    [[ ! "$(ls -A $COMIN_ENS)" ]] && rm -rf $COMIN_ENS
+	fi
+	COMIN_ENS="$ROTDIR/enkfgfs.$gPDY/$COMPONENT"
+	if [ -d $COMIN_ENS ] ; then
+	    [[ ! "$(ls -A $COMIN_ENS)" ]] && rm -rf $COMIN_ENS
+	fi
 
-	# Handle GDAS and GFS EnKF directories separately
-    COMIN_ENS="$ROTDIR/enkf.gdas.$gPDY"
-    [[ -d $COMIN_ENS ]] && rm -rf $COMIN_ENS
-    COMIN_ENS="$ROTDIR/enkf.gfs.$gPDY"
-    [[ -d $COMIN_ENS ]] && rm -rf $COMIN_ENS
+	# Advance to next cycle
+	GDATE=$($NDATE +$assim_freq $GDATE)
+
+    done
 
 fi
 

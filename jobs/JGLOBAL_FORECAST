@@ -10,6 +10,7 @@ date
 # Source relevant config files
 #############################
 configs="base fcst"
+export EXPDIR=${EXPDIR:-$HOMEgfs/parm/config}
 config_path=${EXPDIR:-$NWROOT/gfs.${gfs_ver}/parm/config}
 for config in $configs; do
     . $config_path/config.$config
@@ -22,6 +23,16 @@ if [ ${MODULES_TO_USE:-none} != none ] ; then
   module purge
   module load $MODULES_TO_USE 2>/dev/null
   module list
+#=======
+# Source additional configs
+#if [ ${DO_WAVE:-"NO"} = "YES" ]; then
+#  configs="wave"
+#  for config in $configs; do
+#    . $config_path/config.$config
+#    status=$?
+#    [[ $status -ne 0 ]] && exit $status
+#  done
+
 fi
 
 ##########################################
@@ -31,6 +42,23 @@ fi
 status=$?
 [[ $status -ne 0 ]] && exit $status
 
+
+##############################################
+# Run setpdy and initialize PDY variables
+##############################################
+export cycle="t${cyc}z"
+setpdy.sh
+. ./PDY
+
+##############################################
+# Set variables used in the exglobal script
+##############################################
+export CDATE=${CDATE:-${PDY}${cyc}}
+export CDUMP=${CDUMP:-${RUN:-"gfs"}}
+if [ $RUN_ENVIR = "nco" ]; then
+    export ROTDIR=${COMROOT:?}/$NET/$envir
+    export RSTDIR=${GESROOT:?}/$envir
+fi
 
 ##############################################
 # Obtain unique process id (pid) and make temp directory
@@ -51,18 +79,9 @@ cd $DATA
 
 
 ##############################################
-# Run setpdy and initialize PDY variables
-##############################################
-export cycle="t${cyc}z"
-setpdy.sh
-. ./PDY
-
-
-##############################################
 # Define the Log File directory
 ##############################################
 export jlogfile=${jlogfile:-$COMROOT/logs/jlogfiles/jlogfile.${job}.${pid}}
-
 
 ##############################################
 # Determine Job Output Name on System
@@ -71,16 +90,13 @@ export pgmout="OUTPUT.${pid}"
 export pgmerr=errfile
 
 
-##############################################
-# Set variables used in the exglobal script
-##############################################
-export CDATE=${CDATE:-${PDY}${cyc}}
-export CDUMP=${CDUMP:-${RUN:-"gfs"}}
-if [ $RUN_ENVIR = "nco" ]; then
-    export ROTDIR=${COMROOT:?}/$NET/$envir
-    export RSTDIR=${GESROOT:?}/$envir
-fi
-
+# Set wave variables
+#if [ ${DO_WAVE:-"NO"} = "YES" ]; then
+#  # WAVE component directory
+#  export CDUMPwave=${CDUMPwave:-${CDUMP}wave}
+#  export COMINwave=${COMINwave:-${ROTDIR}/${CDUMP}.${PDY}/${cyc}/wave}
+#  export COMOUTwave=${COMOUTwave:-${ROTDIR}/${CDUMP}.${PDY}/${cyc}/wave}
+#fi
 
 ##############################################
 # Begin JOB SPECIFIC work
@@ -140,6 +156,7 @@ if [ $CPLDFV3_MOM6_CICE = YES ] ; then
     status=$?
     [[ $status -ne 0 ]] && exit $status
 
+#<<<<<<< HEAD
   else                                           # set up coupled warm or one step start or restaart run
                                                  #------------------------------------------------------
     export FHMAX=$FHMAX_GFS
@@ -169,6 +186,9 @@ fi
 
 #${FORECASTSH:-$SCRgfs/exglobal_fcst_nemsfv3gfs.sh.ecf}
 ${FORECASTSH:-$SCRgfs/exglobal_fcst_emcufs.sh}
+#=======
+#${FORECASTSH:-$SCRgfs/exglobal_forecast.sh}
+#>>>>>>> upstream/develop
 status=$?
 [[ $status -ne 0 ]] && exit $status
 
@@ -186,7 +206,6 @@ fi
 
 msg="ENDED NORMALLY."
 postmsg "$jlogfile" "$msg"
-
 
 ##########################################
 # Remove the Temporary working directory

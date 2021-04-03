@@ -1,0 +1,14 @@
+#!/bin/ksh -x
+
+########## config.wavepostbndpnt ##########
+# Wave steps specific
+
+echo "BEGIN: config.wavepostbndpnt"
+
+# Get task specific resources
+. $EXPDIR/config.resources wavepostbndpnt
+
+export FHMAX_WAV_IBP=180
+if [[ "$FHMAX_GFS" -lt "$FHMAX_WAV_IBP" ]] ; then export FHMAX_WAV_IBP=$FHMAX_GFS ; fi
+
+echo "END: config.wavepostbndpnt"
