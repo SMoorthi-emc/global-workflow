@@ -393,6 +393,8 @@ fi
  n_sponge=${n_sponge:-$((LEVS/3))}
  fv_sg_adj=${fv_sg_adj:-$((DELTIM*2))}
  n_sponge=42
+ if [ $LEVS -lt 66 ] ; then export n_sponge=12 ; fi
+#nudge_qv=.false.
 
  if [ $RUN_CCPP = YES ] ; then
    dz_min=${dz_min:-2.0}
@@ -449,7 +451,7 @@ export do_ugwp=".false."
 export do_tofd=".true."
 export launch_level=$(echo "$LEVS/2.35" |bc)
 
-export  n_sponge=42
+#export  n_sponge=42
 export  d2_bg_k1=0.20
 export  d2_bg_k2=0.04
 

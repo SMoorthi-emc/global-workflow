@@ -220,6 +220,7 @@ export MOM6_RIVER_RUNOF=${MOM6_RIVER_RUNOF:-False}
 export FIX_LAKE_ORO=$NOSCRUB/oro_lake
  export use_lake_oro=YES
 #export use_lake_oro=NO
+ if [ $frac_grid = .false. ] ; then export use_lake_oro=NO ; fi
 if [ $IC_FROM = bench1 -o $IC_FROM = bench2 ] ; then export use_lake_oro=YES ; fi
 
 #export NSOUT=1

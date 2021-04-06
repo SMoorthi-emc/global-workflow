@@ -820,7 +820,6 @@ cat > ice_in <<eof
     dSdt_slow_mode    = -5.0e-8
     phi_c_slow_mode   =    0.05
     phi_i_mushy       =    0.85
-    sw_redist         = ${sw_redist:-.true.}
 /
 
 &dynamics_nml
@@ -841,8 +840,6 @@ cat > ice_in <<eof
     e_ratio         = 2.
     Ktens           = 0.
     Cf              = 17.
-    basalstress     = .false.
-    k1              = 8.
     ssh_stress      = ${ssh_stress:-'coupled'}
 /
 
@@ -860,6 +857,7 @@ cat > ice_in <<eof
     dT_mlt          = 1.5
     rsnw_mlt        = 1500.
     kalg            = 0.0
+    sw_redist       = ${sw_redist:-.true.}
 /
 
 &ponds_nml
