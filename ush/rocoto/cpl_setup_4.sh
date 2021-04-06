@@ -71,8 +71,8 @@ export CPLSCRIPT=cpl_setup_4.sh     # this should be the name of this script
 
 #FHMIN=${FHMIN:-0}
 #WARM_START=${WARM_START:-.false.}
- FHCYC=0
- FHCYC=6
+#FHCYC=0
+#FHCYC=6
 FHCYC=${FHCYC:-24}
 
 export LEVS=${LEVS:-65}
@@ -145,7 +145,7 @@ cd $CWD
 
 # turn on some options
 # --------------------
- export cplflx=.false.                     # turn on to run in uncoupled modeDcupule model
+#export cplflx=.false.                     # turn on to run in uncoupled modeDcupule model
  export cplflx=${cplflx:-.true.}           # default is to run in coupled mode
  export CPLD_APP=YES                       # use coupled app
  export INLINE_POST=NO                     # turn off inline post
@@ -206,8 +206,8 @@ cd $CWD
 #export restart_interval=432000
 #export restart_interval=$((86400*2))
  export restart_interval=43200
-#export restart_interval=21600
- export restart_interval=10800
+ export restart_interval=21600
+#export restart_interval=10800
 #export restart_interval=3600
 
 #export tau_rayl=5
@@ -252,7 +252,7 @@ fi
 #export FHMAX_GFS_00=120
  export FHMAX_GFS_00=48
 #export FHMAX_GFS_00=240
- export FHMAX_GFS_00=27
+#export FHMAX_GFS_00=27
 #export FHMAX_GFS_00=6
 #export FHMAX_GFS_00=3
 
@@ -269,8 +269,8 @@ fi
 #export OCN_AVG=YES
  export OCN_AVG=${OCN_AVG:-NO}
 
-#export nth_f=2
-#export HYPT=on
+ export nth_f=2
+ export HYPT=on
  export nth_f=${nth_f:-1}
  export HYPT=${HYPT:-off}
  export FSICS=0

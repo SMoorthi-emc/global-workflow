@@ -773,11 +773,21 @@ cat > ice_in <<eof
     kdyn            = 1
   , ndte            = 120
   , revised_evp     = .false.
+  , kevp_kernel     = 0
+  , brlx            = 300.0
+  , arlx            = 300.0
+  , ssh_stress      = 'coupled'
   , advection       = 'remap'
   , kstrength       = 1
   , krdg_partic     = 1
   , krdg_redist     = 1
   , mu_rdg          = 3
+  , Cf              = 17.
+  , Ktens           = 0.
+  , e_ratio         = 2.
+  , coriolis        = 'latitude'
+  , kridge          = 1
+  , ktransport      = 1
 /
 
 &shortwave_nml
@@ -793,6 +803,8 @@ cat > ice_in <<eof
   , R_snw           = 1.5
   , dT_mlt          = 1.5
   , rsnw_mlt        = 1500.
+  , kalg            = 0.0
+  , sw_redist       = .true.
 /
 
 &ponds_nml
@@ -832,7 +844,7 @@ cat > ice_in <<eof
   , atmbndy         = 'default'
   , fyear_init      = 1997
   , ycycle          = 1
-  , atm_data_format = 'bin'
+  , atm_data_format = 'nc'
   , atm_data_type   = 'none'
   , atm_data_dir    = ${atm_data_dir:-$ROTDIR/lanl_cice_data}
   , calc_strair     = .true.
