@@ -1138,6 +1138,10 @@ fi
 #    fhmaxhf      = $FHMAX_HF
 #    fhout        = $FHOUT
 
+#      iau_delthrs    = ${iau_delthrs:-${IAU_DELTHRS:-6}}
+#      iaufhrs        = ${iaufhrs:-${IAUFHRS:-30}}
+#      iau_inc_files  = ${iau_inc_files:-${IAU_INC_FILES:-''}}
+
 cat > input.nml << EOF
  &amip_interp_nml
      interp_oi_sst = .true.
@@ -1372,9 +1376,6 @@ cat > input.nml << EOF
        cplwav2atm     = ${cplwav2atm:-${CPLWAV2ATM:-.false.}}
        cplchm         = ${cplchm:-${CPLCHM:-.false.}}
 
-       iau_delthrs    = ${iau_delthrs:-6}
-       iaufhrs        = ${iaufhrs:-30}
-       iau_inc_files  = ${iau_inc_files:-''}
        lheatstrg      = ${lheatstrg:-.true.}
        lgfdlmprad     = ${lgfdlmprad:-.true.}
 

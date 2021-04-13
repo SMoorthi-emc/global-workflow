@@ -847,7 +847,7 @@ if [ $CPLDFV3_MOM6_CICE = YES ] ; then
     fi
     export CMEPS_DIR=${CMEPS_DIR:-$EXECBASE/$appdir/$app/${CMEPS_NAME:-CMEPS}}
   else
-    export CPLPREPSH=$HOMEgfs/scripts/prep_coupled_fcst_emcufs.sh
+    export CPLPREPSH=$HOMEgfs/scripts/prep_coupled_fcst_emcufs.sh        # for Apr model
   fi
 # export CPLPREPSH=$HOMEgfs/scripts/prep_coupled_fcst_res.sh
 # export CPLPREPSH=$HOMEgfs/scripts/prep_coupled_fcst.sh

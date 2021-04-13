@@ -28,7 +28,7 @@ CWD=${3:-${ROCODIR:-$(pwd)}}
 #IDATE=2011100100
 
 #CDATE=2018031500
- LEVS=65
+#LEVS=65
 
 #CDATE=2012040100
  export IDATE=${4:-${CDATE:-2013010100}}
@@ -56,7 +56,7 @@ RES=$(echo $CASE|cut -c 2-)
 ATMRES=${6:-${ATMRES:-$RES}}
 
 # $PSLOT is the name of your experiment
- expt=_phydd
+ expt=_phyd1
 #expt=_phyxd
 #expt=_phyai    # cmeps run
 
@@ -151,9 +151,9 @@ cd $CWD
  export INLINE_POST=NO                     # turn off inline post
  export INLINE_POST=${INLINE_POST:-YES}    # turn on inline post
  export USE_COLDSTART=.false.              # uncomment this line to turn on cold start step
- export frac_grid=.false.
+#export frac_grid=.false.
  export frac_grid=${frac_grid:-.true.}
-#export OUTPUT_FILE=netcdf                 # to turn on netcdf output (default nemsio)
+ export OUTPUT_FILE=netcdf                 # to turn on netcdf output (default nemsio)
  export OUTPUT_FILE=${OUTPUT_FILE:-nemsio} # to turn on netcdf output (default nemsio)
 #export QUILTING=.false.
  export QUILTING=${QUILTING:-.true.}
@@ -179,6 +179,11 @@ cd $CWD
  export app=ufs-weather-model_Mar12
 #export app=ufs-weather-model_Mar12_prev
  export CPLPREPSC=prep_coupled_emcufs.sh
+
+#export app=ufs-weather-model_Apr10
+#export CPLPREPSC=prep_coupled_emcufs.sh_Mar26
+ export app=ufs-weather-model_Apr12
+
  export appdate=Oct10
  export DONST=YES
  export DONST=${DONST:-NO}
@@ -203,10 +208,10 @@ cd $CWD
  export restart_interval=864000
 #export restart_interval=1296000
 #export restart_interval=86400
-#export restart_interval=432000
+ export restart_interval=432000
 #export restart_interval=$((86400*2))
  export restart_interval=43200
- export restart_interval=21600
+#export restart_interval=21600
 #export restart_interval=10800
 #export restart_interval=3600
 
@@ -220,8 +225,8 @@ cd $CWD
 #if [ $LEVS -lt 66 ] ; then export n_sponge=${n_sponge:-$((LEVS/5))} ; fi
 
 if [ $satmedmf = .false. ] ; then
- export tau_rayl=5
- export hord_opt=6
+#export tau_rayl=5
+#export hord_opt=6
  export d4_bg=0.16
  export v17sas=NO
  export v17ras=NO
@@ -248,7 +253,7 @@ fi
 #export FHMAX_GFS_00=960
 #export FHMAX_GFS_00=720
 #export FHMAX_GFS_00=480
-#export FHMAX_GFS_00=360
+ export FHMAX_GFS_00=360
 #export FHMAX_GFS_00=120
  export FHMAX_GFS_00=48
 #export FHMAX_GFS_00=240
