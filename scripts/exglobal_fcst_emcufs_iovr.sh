@@ -259,6 +259,7 @@ fi
 export nthreads=${NTHREADS_FV3:-${NTHREADS_FCST:-${nth_f:-1}}}
 export OMP_NUM_THREADS=${OMP_NUM_THREADS:-$nthreads}
 export cores_per_node=${cores_per_node:-${npe_node_f:-28}}
+if [ $OMP_NUM_THREADS -gt 1 ] ; then export I_MPI_PIN_DOMAIN=omp ; fi
 ntiles=${ntiles:-6}
 #
 export WRITE_GROUP=${WRITE_GROUP:-0}

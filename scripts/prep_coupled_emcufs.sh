@@ -377,6 +377,7 @@ OCN_attributes::
   Restart_Prefix = $Restart_Prefix
   ProfileMemory = ${ProfileMemory:-False}
   dbug_flag = ${dbug_flag_OCN:-0}
+  use_mommesh = ${use_mommesh:-False}
 ::
 
 eof

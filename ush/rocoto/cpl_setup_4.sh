@@ -56,7 +56,7 @@ RES=$(echo $CASE|cut -c 2-)
 ATMRES=${6:-${ATMRES:-$RES}}
 
 # $PSLOT is the name of your experiment
- expt=_phyd1
+ expt=_phyd4h
 #expt=_phyxd
 #expt=_phyai    # cmeps run
 
@@ -148,7 +148,7 @@ cd $CWD
 #export cplflx=.false.                     # turn on to run in uncoupled modeDcupule model
  export cplflx=${cplflx:-.true.}           # default is to run in coupled mode
  export CPLD_APP=YES                       # use coupled app
- export INLINE_POST=NO                     # turn off inline post
+#export INLINE_POST=NO                     # turn off inline post
  export INLINE_POST=${INLINE_POST:-YES}    # turn on inline post
  export USE_COLDSTART=.false.              # uncomment this line to turn on cold start step
 #export frac_grid=.false.
@@ -182,7 +182,7 @@ cd $CWD
 
 #export app=ufs-weather-model_Apr10
 #export CPLPREPSC=prep_coupled_emcufs.sh_Mar26
- export app=ufs-weather-model_Apr12
+#export app=ufs-weather-model_Apr12
 
  export appdate=Oct10
  export DONST=YES
@@ -210,7 +210,7 @@ cd $CWD
 #export restart_interval=86400
  export restart_interval=432000
 #export restart_interval=$((86400*2))
- export restart_interval=43200
+#export restart_interval=43200
 #export restart_interval=21600
 #export restart_interval=10800
 #export restart_interval=3600
