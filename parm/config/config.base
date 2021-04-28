@@ -198,6 +198,7 @@ export FIXgrid=$HOMEgfs/fix/fix_fv3grid
 # For coupled ocnpost
 export OCNFIXDIR=$HOMEgfs/fix/fix_ocnice
 export OCNPOSTsrc=$HOMEgfs/fix/ocean_ice_post
+#export THERMO_SPANS_COUPLING=${THERMO_SPANS_COUPLING:-True}
 #
 #For WW3
 #export USE_WAVES=True

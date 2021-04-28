@@ -56,7 +56,7 @@ RES=$(echo $CASE|cut -c 2-)
 ATMRES=${6:-${ATMRES:-$RES}}
 
 # $PSLOT is the name of your experiment
- expt=_phyd4h
+ expt=_phyd4ce
 #expt=_phyxd
 #expt=_phyai    # cmeps run
 
@@ -151,7 +151,7 @@ cd $CWD
 #export INLINE_POST=NO                     # turn off inline post
  export INLINE_POST=${INLINE_POST:-YES}    # turn on inline post
  export USE_COLDSTART=.false.              # uncomment this line to turn on cold start step
-#export frac_grid=.false.
+ export frac_grid=.false.
  export frac_grid=${frac_grid:-.true.}
  export OUTPUT_FILE=netcdf                 # to turn on netcdf output (default nemsio)
  export OUTPUT_FILE=${OUTPUT_FILE:-nemsio} # to turn on netcdf output (default nemsio)
@@ -185,7 +185,7 @@ cd $CWD
 #export app=ufs-weather-model_Apr12
 
  export appdate=Oct10
- export DONST=YES
+#export DONST=YES
  export DONST=${DONST:-NO}
 #export RUN_CCPP=NO
  export RUN_CCPP=${RUN_CCPP:-YES}
@@ -258,6 +258,7 @@ fi
  export FHMAX_GFS_00=48
 #export FHMAX_GFS_00=240
 #export FHMAX_GFS_00=27
+#export FHMAX_GFS_00=24
 #export FHMAX_GFS_00=6
 #export FHMAX_GFS_00=3
 

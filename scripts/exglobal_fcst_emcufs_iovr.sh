@@ -259,7 +259,7 @@ fi
 export nthreads=${NTHREADS_FV3:-${NTHREADS_FCST:-${nth_f:-1}}}
 export OMP_NUM_THREADS=${OMP_NUM_THREADS:-$nthreads}
 export cores_per_node=${cores_per_node:-${npe_node_f:-28}}
-if [ $OMP_NUM_THREADS -gt 1 ] ; then export I_MPI_PIN_DOMAIN=omp ; fi
+#if [ $OMP_NUM_THREADS -gt 1 ] ; then export I_MPI_PIN_DOMAIN=omp ; fi
 ntiles=${ntiles:-6}
 #
 export WRITE_GROUP=${WRITE_GROUP:-0}
@@ -616,7 +616,8 @@ fi
 
 export iaer_clm=${iaer_clm:-.false.}
 if [ $iaerclm = .true. ] ; then
- export MERRA_AER=${MERRA_AER:-merra2C.aerclim.2003-2014}   # default low resolution
+#export MERRA_AER=${MERRA_AER:-merra2C.aerclim.2003-2014}   # default low  resolution
+ export MERRA_AER=${MERRA_AER:-merra2.aerclim.2003-2014}    # default high resolution
  for n in 01 02 03 04 05 06 07 08 09 10 11 12 ; do
    $NLN $FIX_AER/$MERRA_AER.m${n}.nc  $DATA/aeroclim.m${n}.nc
  done
