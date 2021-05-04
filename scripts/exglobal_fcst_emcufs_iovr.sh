@@ -614,7 +614,7 @@ fi
 #----------------------
 #export aero_in=${aero_in:-.false.}
 
-export iaer_clm=${iaer_clm:-.false.}
+export iaerclm=${iaerclm:-.false.}
 if [ $iaerclm = .true. ] ; then
 #export MERRA_AER=${MERRA_AER:-merra2C.aerclim.2003-2014}   # default low  resolution
  export MERRA_AER=${MERRA_AER:-merra2.aerclim.2003-2014}    # default high resolution
@@ -625,7 +625,8 @@ fi
 
 ## ccn/in climo
 #--------------
-if [ $iccn -gt 1 -a $iaerclm = .true. ] ; then
+#if [ $iccn -ge 1 -a $iaerclm = .true. ] ; then
+if [ $iaerclm = .true. ] ; then
 
  $NLN $FIX_LUT/optics_BC.v1_3.dat  $DATA/optics_BC.dat
  $NLN $FIX_LUT/optics_OC.v1_3.dat  $DATA/optics_OC.dat
