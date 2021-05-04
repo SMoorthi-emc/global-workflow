@@ -53,8 +53,8 @@ module use -a /usrx/local/nceplibs/dev/NCEPLIBS/modulefiles
  module use /gpfs/dell2/emc/modeling/noscrub/emc.nemspara/soft/modulefiles
 #module load esmf/8.1.0bs27
 #module load pio/2.5.1
- module load pio/2.5.2
- module load esmf/8_1_0_beta_snapshot_47
+#module load pio/2.5.2
+#module load esmf/8_1_0_beta_snapshot_47
 
 setenv USE_CFP YES
 

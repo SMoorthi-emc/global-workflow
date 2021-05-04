@@ -56,7 +56,7 @@ RES=$(echo $CASE|cut -c 2-)
 ATMRES=${6:-${ATMRES:-$RES}}
 
 # $PSLOT is the name of your experiment
- expt=_phyd4ce
+ expt=_phyd2
 #expt=_phyxd
 #expt=_phyai    # cmeps run
 
@@ -183,6 +183,8 @@ cd $CWD
 #export app=ufs-weather-model_Apr10
 #export CPLPREPSC=prep_coupled_emcufs.sh_Mar26
 #export app=ufs-weather-model_Apr12
+#export app=ufs-weather-model_May01
+ export app=ufs-weather-model_May04
 
  export appdate=Oct10
 #export DONST=YES
