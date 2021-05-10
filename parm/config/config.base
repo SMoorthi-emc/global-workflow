@@ -214,7 +214,9 @@ export ww3_grid=${ww3_grid:-'glo_30m'}
 export WAVE_METHOD=${WAVE_METHOD:-\"SURFACE_BANDS\"}
 export MOM6_RIVER_RUNOF=True
 export MOM6_RIVER_RUNOF=${MOM6_RIVER_RUNOF:-False}
-
+export USE_MOMMESH=${USE_MOMMESH:-true}
+export MESH_OCN=${MESH_OCN:-mesh.mx$OCNRES.nc}
+export MESH_ICE=${MESH_ICE:-mesh.mx$OCNRES.nc}
 
 #g0nosc=/gpfs/dell2/emc/modeling/noscrub
 export FIX_LAKE_ORO=$NOSCRUB/oro_lake

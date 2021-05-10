@@ -193,10 +193,10 @@ RESTART_CHECKSUMS_REQUIRED=${RESTART_CHECKSUMS_REQUIRED:-False}
 # -------------------------------------
 export CICEGRID=${CICEGRID:-grid_cice_NEMS_mx$ICERES.nc}
 export CICEMASK=${CICEMASK:-kmtu_cice_NEMS_mx$ICERES.nc}
-export MESHICE=${MESHICE:-mesh.mx$ICERES.nc}
+export MESH_ICE=${MESH_ICE:-mesh.mx$ICERES.nc}
 $NCP $FIXcice/$CICEMASK .
 $NCP $FIXcice/$CICEGRID .
-$NCP $FIXcice/$MESHICE  .
+$NCP $FIXcice/$MESH_ICE  .
 
 cd INPUT
 
@@ -377,7 +377,7 @@ OCN_attributes::
   Restart_Prefix = $Restart_Prefix
   ProfileMemory = ${ProfileMemory:-False}
   dbug_flag = ${dbug_flag_OCN:-0}
-  use_mommesh = ${use_mommesh:-False}
+  mesh_ocn  = ${MESH_OCN:-mesh.mx$OCNRES.nc}
 ::
 
 eof
@@ -393,7 +393,7 @@ ICE_attributes::
   DumpFields     = ${DumpFields_ICE:-false}
   OverwriteSlice = ${OverwriteSlice_ICE:-true}
   ProfileMemory = ${ProfileMemory:-False}
-  mesh_ice = ${MESHICE:-mesh.mx$OCNRES.nc}
+  mesh_ice = ${MESH_ICE:-mesh.mx$OCNRES.nc}
   stop_n = $FHMAX
   stop_option = nhours
   stop_ymd = -999
@@ -662,7 +662,8 @@ ALLCOMP_attributes::
       restart_option = nhours
       restart_ymd   = -999
       dbug_flag     = ${cap_dbug_flag:-1}
-      use_coldstart = ${USE_COLDSTART:-.false.}
+      use_coldstart = ${USE_COLDSTART:-false}
+      use_mommesh   = ${USE_MOMMESH:-true}
 ::
 eof
 
