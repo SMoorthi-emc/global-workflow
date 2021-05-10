@@ -365,6 +365,7 @@ if [ ${RUN_CCPP:-YES} = YES ] ; then
   else
    export CCPP_SUITE=FV3_GFS_cpld_rasmgshocnsst
   fi
+  if [ ${lkm:-0} -gt 0 ] ; then export CCPP_SUITE=FV3_GFS_cpld_rasmgshocnsst_flake ; fi
   if [ $satmedmf = .true. ] ; then
     if [ $v17ras = YES ] ; then
       export CCPP_SUITE=FV3_GFS_v17_cpldnsstras
@@ -378,6 +379,7 @@ if [ ${RUN_CCPP:-YES} = YES ] ; then
 #     if [ $cplflx = .false. ] ; then export CCPP_SUITE=FV3_GFS_v17_sas ; fi
 #     if [ $cplflx = .false. ] ; then export CCPP_SUITE=FV3_GFS_v16beta ; fi
     fi
+    if [ ${lkm:-0} -gt 0 ] ; then export CCPP_SUITE=FV3_GFS_v17_cpldnsstras_flake ; fi
   fi
   export CCPP_SUITE=${CCPP_SUITE:-FV3_GFS_v15_rasmgshoc}
   if [ $CPLD_APP = NO ] ; then

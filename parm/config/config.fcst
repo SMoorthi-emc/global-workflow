@@ -995,6 +995,11 @@ lheatstrg=${lheatstrg:-.true.}
 #if [ lheatstrg = .true. ] ; then
 # gfs_physics_nml="$gfs_physics_nml 'lheatstrg = .true.'"
 #fi
+
+lkm=${lkm:-0}
+if [ $lkm -gt 0 ] ; then
+  gfs_physics_nml="$gfs_physics_nml lkm = $lkm"
+fi
 #
 #   to output as netcdf files on six tiles
 #output_grid=cubed_sphere_grid

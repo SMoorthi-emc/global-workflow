@@ -306,8 +306,8 @@ export CPLDWAV=${CPLDWAV:-NO}
 
 export ATM_model=${ATM_model:-fv3}
 if [ $CPLDFV3_MOM6_CICE = YES ] ; then
-#export MED_model=${MED_model:-cmeps}
- export MED_model=nems
+ export MED_model=${MED_model:-cmeps}
+#export MED_model=nems
  export OCN_model=${OCN_model:-mom6}
  export ICE_model=${ICE_model:-cice6}
  if [ $CPLDWAV = NO ] ; then
