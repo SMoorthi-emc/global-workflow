@@ -56,7 +56,7 @@ RES=$(echo $CASE|cut -c 2-)
 ATMRES=${6:-${ATMRES:-$RES}}
 
 # $PSLOT is the name of your experiment
- expt=_phya2
+ expt=_phya2a
 #expt=_phyxd
 #expt=_phyai    # cmeps run
 
@@ -100,6 +100,8 @@ if [ $(echo $CWD | cut -c1-8) = "/scratch" ] ; then
 #  FROM_HPSS=/scratch1/NCEPDEV/global/Shrinivas.Moorthi/noscrub/S2S/IC/CFSR${frac}
 # fi
  fi
+ export USE_GEFSIC=YES
+ GEFS_IC=/scratch2/NCEPDEV/stmp3/Bing.Fu/o/p7ic/com/gens/dev/merge/${CASE}_025
  COMROT=/scratch1/NCEPDEV/stmp4/$LOGNAME/CFV3/$IDATE
 #COMROT=/scratch2/NCEPDEV/stmp3/$LOGNAME/CFV3/$IDATE
  EXPDIR=$NOSCRUB/$LOGNAME/CFV3/$IDATE/EXPFV3
@@ -118,6 +120,8 @@ elif [ $(echo $CWD | cut -c1-9) = "/gpfs/hps" ] ; then
  EXPDIR=$NOSCRUB/$LOGNAME/CFV3/$IDATE/EXPFV3
 fi
 
+export USE_GEFSIC=${USE_GEFSIC:-NO}
+
 mkdir -p $COMROT
 mkdir -p $EXPDIR
 
@@ -132,7 +136,11 @@ CONFIGDIR=${CONFIGDIR:-../../parm/config}
 if [ $FHMIN -eq 0 ] ; then
   cd $COMROT
   mkdir -p FV3ICS
-  ln -fs $FROM_HPSS/$IDATE FV3ICS/
+  if [ $USE_GEFSIC = YES ] ; then
+    ln -fs $GEFS_IC/$IDATE FV3ICS/
+  else
+    ln -fs $FROM_HPSS/$IDATE FV3ICS/
+  fi
   if [ $IC_FROM = bench5 ] ; then
     mkdir -p OCNICS ICEICS WAVICS
     ln -fs $FROM_HPSS/../CPC3Dvar/$IDATE OCNICS/
@@ -192,7 +200,7 @@ cd $CWD
 #export RUN_CCPP=NO
  export RUN_CCPP=${RUN_CCPP:-YES}
 
-#export satmedmf=.false.
+#4export satmedmf=.false.
  export satmedmf=${satmedmf:-.true.}
 #export v17sas=YES
 #export v17ras=NO
@@ -284,6 +292,7 @@ fi
  export FSICS=0
  export FSICL=0
 
+#export IAER=1011    # turn off background valcanc aerosols with Merra2
  export IAER=1111
  export iaerclm=.true.
 #export iccn=1
