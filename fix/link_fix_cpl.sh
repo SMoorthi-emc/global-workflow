@@ -28,6 +28,7 @@ ln -sf $FV3_FIX/fix_am            fix_am
 ln -sf $FV3_FIX/fix_orog          fix_orog
 ln -sf $FV3_FIX/fix_verif         fix_verif
 ln -sf $FV3_FIX/fix_fv3           fix_fv3
+ln -sf $FV3_FIX/fix_fv3_fracoro   fix_fv3_fracoro
 ln -sf $FV3_FIX/fix_fv3_gmted2010 fix_fv3_gmted2010
 
 ln -sf $CPL_FIX/fix_ocnice        fix_ocnice

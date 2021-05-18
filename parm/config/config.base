@@ -48,6 +48,15 @@ export UTILgfs=$HOMEgfs/util
 export EXECgfs=$HOMEgfs/exec
 export SCRgfs=$HOMEgfs/scripts
 
+export CASE="@CASECTL@"
+export CASE_ENKF="@CASEENS@"
+
+if [ $frac_grid = .true. ] ; then
+  export FIX_FV3=$FIXgfs/fix_fv3_fracoro/${CASE}.mx${OCNRES}_frac
+  export use_fix_tiles=YES
+  export FIX_LAKE_ORO=$FIX_FV3
+fi
+
 
 ########################################################################
 
@@ -219,7 +228,7 @@ export MESH_OCN=${MESH_OCN:-mesh.mx$OCNRES.nc}
 export MESH_ICE=${MESH_ICE:-mesh.mx$OCNRES.nc}
 
 #g0nosc=/gpfs/dell2/emc/modeling/noscrub
-export FIX_LAKE_ORO=$NOSCRUB/oro_lake
+export FIX_LAKE_ORO=${FIX_LAKE_ORO:-$NOSCRUB/oro_lake}
  export use_lake_oro=YES
 #export use_lake_oro=NO
  if [ $frac_grid = .false. ] ; then export use_lake_oro=NO ; fi
@@ -576,8 +585,6 @@ export SENDSDM=NO
 
 # Resolution specific parameters
 if [ $LEVS -eq 128 ] ; then  export LVER=C ; fi
-export CASE="@CASECTL@"
-export CASE_ENKF="@CASEENS@"
 
 # Surface cycle update frequency
 if [ "$CDUMP" == gdas ] ; then
@@ -809,7 +816,8 @@ export SCRDIR=$HOMEgfs/scripts
  export FORECASTSH=${FORECASTSH:-"$SCRDIR/exglobal_fcst_emcufs.sh$V16"}    # with    UGW
  export USE_IOVR=${USE_IOVR:-NO}
  if [ $USE_IOVR = YES ] ; then
-   export FORECASTSH=$SCRDIR/exglobal_fcst_emcufs_iovr.sh    # with    iovr instead of iver_lw and iovr_sw
+   export FORECASTSH=$SCRDIR/exglobal_fcst_emcufs_iovr.sh    # with iovr instead of iver_lw and iovr_sw
+#  export FORECASTSH=$SCRDIR/exglobal_fcst_emcufs_iovr.sh_May14 # with ncld 
  fi
 if [ $CPLD_APP = YES ] ; then
 # export FCSTEXECDIR="$HOMEgfs/exec"

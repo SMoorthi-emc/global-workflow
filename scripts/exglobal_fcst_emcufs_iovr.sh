@@ -95,7 +95,7 @@ export NWPROD=${NWPROD:-${NWROOT:-$pwd}}
 export HOMEgfs=${HOMEgfs:-$NWPROD}
 export FIX_DIR=${FIX_DIR:-$HOMEgfs/fix}
 export FIX_AM=${FIX_AM:-$FIX_DIR/fix_am}
-export FIX_FV3=${FIX_FV3:-${FIXfv3:-$FIX_DIR/fix_fv3_gmted2010}}
+export FIX_FV3=${FIX_FV3:-${FIXfv3:-$FIX_DIR/fix_fv3_gmted2010/$CASE}}
 
 DATA=${DATA:-$pwd/ufstmp$$}    # temporary running directory
 ROTDIR=${ROTDIR:-$pwd}         # rotating archive directory
@@ -579,13 +579,17 @@ else
 fi
 
 for n in $(seq 1 $ntiles) ; do
- $NCP $FIX_FV3/$CASE/${CASE}_grid.tile${n}.nc     $DATA/INPUT/${CASE}_grid.tile${n}.nc
- $NCP $ORO_DIR/$CASE/${CASE}_oro_data.tile${n}.nc $DATA/INPUT/oro_data.tile${n}.nc
+ $NCP $FIX_FV3/${CASE}_grid.tile${n}.nc     $DATA/INPUT/${CASE}_grid.tile${n}.nc
+ if [ ${use_fix_tiles:-NO} = YES ] ; then
+   $NCP $ORO_DIR/oro_${CASE}.mx${OCNRES}.tile${n}.nc $DATA/INPUT/oro_data.tile${n}.nc
+ else
+   $NCP $ORO_DIR/${CASE}_oro_data.tile${n}.nc       $DATA/INPUT/oro_data.tile${n}.nc
+ fi
 done
 
 # Coupled model uses a different grid_spec that includes MOM6 and FV3
 if [ $cplflx = .false. ] ; then
-  $NCP $FIX_FV3/$CASE/${CASE}_mosaic.nc  $DATA/INPUT/grid_spec.nc
+  $NCP $FIX_FV3/${CASE}_mosaic.nc  $DATA/INPUT/grid_spec.nc
 fi
 
 # GFS standard input data
@@ -1287,7 +1291,6 @@ cat > input.nml << EOF
        use_ufo        = ${use_ufo:-.true.}
        pre_rad        = ${pre_rad:-.false.}
        crtrh          = ${crtrh:-"0.90,0.90,0.90"}
-       ncld           = ${ncld:-1}
        imp_physics    = ${imp_physics:-99}
        levr           = ${levr:-${LEVR:-$npz}}
        fhswr          = ${fhswr:-3600.}
