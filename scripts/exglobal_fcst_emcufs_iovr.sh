@@ -1414,18 +1414,18 @@ if [ ${lsm:-${LSM:-1}} -eq 2 ] ; then
 
 # add noahMP related namelist variables
   cat >> input.nml << EOF
-       iopt_dveg      = ${opt_dveg:-1}  # 4 -> off (use table lai; use maximum vegetation fraction)
-       iopt_crs       = ${opt_btr:- 1}  #canopy stomatal resistance (1-> ball-berry; 2->jarvis)
+       iopt_dveg      = ${iopt_dveg:-4} # 4 -> off (use table lai; use maximum vegetation fraction)
+       iopt_crs       = ${iopt_crs:- 2} #canopy stomatal resistance (1-> ball-berry; 2->jarvis)
        iopt_btr       = ${iopt_btr:-1}  #soil moisture factor for stomatal resistance (1-> noah; 2-> clm; 3-> ssib)
        iopt_run       = ${iopt_run:-1}  #runoff and groundwater (1->simgm; 2->simtop; 3->schaake96; 4->bats)
-       iopt_sfc       = ${iopt_frz:-1}  #surface layer drag coeff (ch & cm) (1->m-o; 2->chen97)
-       iopt_frz       = ${iopt_inf:-1}  #supercooled liquid water (1-> ny06; 2->koren99)
-       iopt_inf       = ${iopt_rad:-1}  #frozen soil permeability (1-> ny06; 2->koren99)
-       iopt_rad       = ${iopt_alb:-1}  #radiation transfer (1->gap=f(3d,cosz); 2->gap=0; 3->gap=1-fveg)
-       iopt_alb       = ${iopt_alb:-2}  #snow surface albedo (1->bats; 2->class)
+       iopt_sfc       = ${iopt_sfc:-1}  #surface layer drag coeff (ch & cm) (1->m-o; 2->chen97)
+       iopt_frz       = ${iopt_frz:-1}  #supercooled liquid water (1-> ny06; 2->koren99)
+       iopt_inf       = ${iopt_inf:-1}  #frozen soil permeability (1-> ny06; 2->koren99)
+       iopt_rad       = ${iopt_rad:-3}  #radiation transfer (1->gap=f(3d,cosz); 2->gap=0; 3->gap=1-fveg)
+       iopt_alb       = ${iopt_alb:-1}  #snow surface albedo (1->bats; 2->class)
        iopt_snf       = ${iopt_snf:-4}  #rainfall & snowfall (1-jordan91; 2->bats; 3->noah)
        iopt_tbot      = ${iopt_tbot:-2} #lower boundary of soil temperature (1->zero-flux; 2->noah)
-       iopt_stc       = ${iopt_stc:-1}  #snow/soil temperature time scheme (only layer 1)
+       iopt_stc       = ${iopt_stc:-3}  #snow/soil temperature time scheme (only layer 1)
 EOF
 fi
 if [ $CCPPDIR != none ] ; then
