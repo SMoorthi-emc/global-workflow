@@ -49,6 +49,15 @@ export UTILgfs=$HOMEgfs/util
 export EXECgfs=$HOMEgfs/exec
 export SCRgfs=$HOMEgfs/scripts
 
+export CASE="@CASECTL@"
+export CASE_ENKF="@CASEENS@"
+
+if [ $frac_grid = .true. ] ; then
+  export FIX_FV3=$FIXgfs/fix_fv3_fracoro/${CASE}.mx${OCNRES}_frac
+  export use_fix_tiles=YES
+  export FIX_LAKE_ORO=$FIX_FV3
+fi
+
 
 ########################################################################
 
@@ -199,6 +208,7 @@ export FIXgrid=$HOMEgfs/fix/fix_fv3grid
 # For coupled ocnpost
 export OCNFIXDIR=$HOMEgfs/fix/fix_ocnice
 export OCNPOSTsrc=$HOMEgfs/fix/ocean_ice_post
+#export THERMO_SPANS_COUPLING=${THERMO_SPANS_COUPLING:-True}
 #
 #For WW3
 #export USE_WAVES=True
@@ -214,10 +224,12 @@ export ww3_grid=${ww3_grid:-'glo_30m'}
 export WAVE_METHOD=${WAVE_METHOD:-\"SURFACE_BANDS\"}
 export MOM6_RIVER_RUNOF=True
 export MOM6_RIVER_RUNOF=${MOM6_RIVER_RUNOF:-False}
-
+export USE_MOMMESH=${USE_MOMMESH:-true}
+export MESH_OCN=${MESH_OCN:-mesh.mx$OCNRES.nc}
+export MESH_ICE=${MESH_ICE:-mesh.mx$OCNRES.nc}
 
 #g0nosc=/gpfs/dell2/emc/modeling/noscrub
-export FIX_LAKE_ORO=$NOSCRUB/oro_lake
+export FIX_LAKE_ORO=${FIX_LAKE_ORO:-$NOSCRUB/oro_lake}
  export use_lake_oro=YES
 #export use_lake_oro=NO
  if [ $frac_grid = .false. ] ; then export use_lake_oro=NO ; fi
@@ -365,6 +377,7 @@ if [ ${RUN_CCPP:-YES} = YES ] ; then
   else
    export CCPP_SUITE=FV3_GFS_cpld_rasmgshocnsst
   fi
+  if [ ${lkm:-0} -gt 0 ] ; then export CCPP_SUITE=FV3_GFS_cpld_rasmgshocnsst_flake ; fi
   if [ $satmedmf = .true. ] ; then
     if [ $v17ras = YES ] ; then
       export CCPP_SUITE=FV3_GFS_v17_cpldnsstras
@@ -378,6 +391,7 @@ if [ ${RUN_CCPP:-YES} = YES ] ; then
 #     if [ $cplflx = .false. ] ; then export CCPP_SUITE=FV3_GFS_v17_sas ; fi
 #     if [ $cplflx = .false. ] ; then export CCPP_SUITE=FV3_GFS_v16beta ; fi
     fi
+    if [ ${lkm:-0} -gt 0 ] ; then export CCPP_SUITE=FV3_GFS_v17_cpldnsstras_flake ; fi
   fi
   export CCPP_SUITE=${CCPP_SUITE:-FV3_GFS_v15_rasmgshoc}
   if [ $CPLD_APP = NO ] ; then
@@ -572,8 +586,6 @@ export SENDSDM=NO
 
 # Resolution specific parameters
 if [ $LEVS -eq 128 ] ; then  export LVER=C ; fi
-export CASE="@CASECTL@"
-export CASE_ENKF="@CASEENS@"
 
 # Surface cycle update frequency
 if [ "$CDUMP" == gdas ] ; then
@@ -805,7 +817,8 @@ export SCRDIR=$HOMEgfs/scripts
  export FORECASTSH=${FORECASTSH:-"$SCRDIR/exglobal_fcst_emcufs.sh$V16"}    # with    UGW
  export USE_IOVR=${USE_IOVR:-NO}
  if [ $USE_IOVR = YES ] ; then
-   export FORECASTSH=$SCRDIR/exglobal_fcst_emcufs_iovr.sh    # with    iovr instead of iver_lw and iovr_sw
+   export FORECASTSH=$SCRDIR/exglobal_fcst_emcufs_iovr.sh    # with iovr instead of iver_lw and iovr_sw
+#  export FORECASTSH=$SCRDIR/exglobal_fcst_emcufs_iovr.sh_May14 # with ncld 
  fi
 if [ $CPLD_APP = YES ] ; then
 # export FCSTEXECDIR="$HOMEgfs/exec"
@@ -848,7 +861,7 @@ if [ $CPLDFV3_MOM6_CICE = YES ] ; then
     fi
     export CMEPS_DIR=${CMEPS_DIR:-$EXECBASE/$appdir/$app/${CMEPS_NAME:-CMEPS}}
   else
-    export CPLPREPSH=$HOMEgfs/scripts/prep_coupled_fcst_emcufs.sh
+    export CPLPREPSH=$HOMEgfs/scripts/prep_coupled_fcst_emcufs.sh        # for Apr model
   fi
 # export CPLPREPSH=$HOMEgfs/scripts/prep_coupled_fcst_res.sh
 # export CPLPREPSH=$HOMEgfs/scripts/prep_coupled_fcst.sh

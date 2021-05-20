@@ -28,7 +28,7 @@ CWD=${3:-${ROCODIR:-$(pwd)}}
 #IDATE=2011100100
 
 #CDATE=2018031500
- LEVS=65
+#LEVS=65
 
 #CDATE=2012040100
  export IDATE=${4:-${CDATE:-2013010100}}
@@ -56,7 +56,7 @@ RES=$(echo $CASE|cut -c 2-)
 ATMRES=${6:-${ATMRES:-$RES}}
 
 # $PSLOT is the name of your experiment
- expt=_phydd
+ expt=_phya3h
 #expt=_phyxd
 #expt=_phyai    # cmeps run
 
@@ -100,6 +100,8 @@ if [ $(echo $CWD | cut -c1-8) = "/scratch" ] ; then
 #  FROM_HPSS=/scratch1/NCEPDEV/global/Shrinivas.Moorthi/noscrub/S2S/IC/CFSR${frac}
 # fi
  fi
+ export USE_GEFSIC=YES
+ GEFS_IC=/scratch2/NCEPDEV/stmp3/Bing.Fu/o/p7ic/com/gens/dev/merge/${CASE}_025
  COMROT=/scratch1/NCEPDEV/stmp4/$LOGNAME/CFV3/$IDATE
 #COMROT=/scratch2/NCEPDEV/stmp3/$LOGNAME/CFV3/$IDATE
  EXPDIR=$NOSCRUB/$LOGNAME/CFV3/$IDATE/EXPFV3
@@ -118,6 +120,8 @@ elif [ $(echo $CWD | cut -c1-9) = "/gpfs/hps" ] ; then
  EXPDIR=$NOSCRUB/$LOGNAME/CFV3/$IDATE/EXPFV3
 fi
 
+export USE_GEFSIC=${USE_GEFSIC:-NO}
+
 mkdir -p $COMROT
 mkdir -p $EXPDIR
 
@@ -132,7 +136,11 @@ CONFIGDIR=${CONFIGDIR:-../../parm/config}
 if [ $FHMIN -eq 0 ] ; then
   cd $COMROT
   mkdir -p FV3ICS
-  ln -fs $FROM_HPSS/$IDATE FV3ICS/
+  if [ $USE_GEFSIC = YES ] ; then
+    ln -fs $GEFS_IC/$IDATE FV3ICS/
+  else
+    ln -fs $FROM_HPSS/$IDATE FV3ICS/
+  fi
   if [ $IC_FROM = bench5 ] ; then
     mkdir -p OCNICS ICEICS WAVICS
     ln -fs $FROM_HPSS/../CPC3Dvar/$IDATE OCNICS/
@@ -148,12 +156,12 @@ cd $CWD
 #export cplflx=.false.                     # turn on to run in uncoupled modeDcupule model
  export cplflx=${cplflx:-.true.}           # default is to run in coupled mode
  export CPLD_APP=YES                       # use coupled app
- export INLINE_POST=NO                     # turn off inline post
+#export INLINE_POST=NO                     # turn off inline post
  export INLINE_POST=${INLINE_POST:-YES}    # turn on inline post
  export USE_COLDSTART=.false.              # uncomment this line to turn on cold start step
- export frac_grid=.false.
+#export frac_grid=.false.
  export frac_grid=${frac_grid:-.true.}
-#export OUTPUT_FILE=netcdf                 # to turn on netcdf output (default nemsio)
+ export OUTPUT_FILE=netcdf                 # to turn on netcdf output (default nemsio)
  export OUTPUT_FILE=${OUTPUT_FILE:-nemsio} # to turn on netcdf output (default nemsio)
 #export QUILTING=.false.
  export QUILTING=${QUILTING:-.true.}
@@ -179,13 +187,21 @@ cd $CWD
  export app=ufs-weather-model_Mar12
 #export app=ufs-weather-model_Mar12_prev
  export CPLPREPSC=prep_coupled_emcufs.sh
+
+#export app=ufs-weather-model_Apr10
+#export CPLPREPSC=prep_coupled_emcufs.sh_Mar26
+#export app=ufs-weather-model_Apr12
+#export app=ufs-weather-model_May01
+#export app=ufs-weather-model_May04
+ export app=ufs-weather-model_May14
+
  export appdate=Oct10
  export DONST=YES
  export DONST=${DONST:-NO}
 #export RUN_CCPP=NO
  export RUN_CCPP=${RUN_CCPP:-YES}
 
- export satmedmf=.false.
+#export satmedmf=.false.
  export satmedmf=${satmedmf:-.true.}
 #export v17sas=YES
 #export v17ras=NO
@@ -203,10 +219,10 @@ cd $CWD
  export restart_interval=864000
 #export restart_interval=1296000
 #export restart_interval=86400
-#export restart_interval=432000
+ export restart_interval=432000
 #export restart_interval=$((86400*2))
- export restart_interval=43200
- export restart_interval=21600
+#export restart_interval=43200
+#export restart_interval=21600
 #export restart_interval=10800
 #export restart_interval=3600
 
@@ -220,8 +236,8 @@ cd $CWD
 #if [ $LEVS -lt 66 ] ; then export n_sponge=${n_sponge:-$((LEVS/5))} ; fi
 
 if [ $satmedmf = .false. ] ; then
- export tau_rayl=5
- export hord_opt=6
+#export tau_rayl=5
+#export hord_opt=6
  export d4_bg=0.16
  export v17sas=NO
  export v17ras=NO
@@ -248,7 +264,7 @@ fi
 #export FHMAX_GFS_00=960
 #export FHMAX_GFS_00=720
 #export FHMAX_GFS_00=480
-#export FHMAX_GFS_00=360
+ export FHMAX_GFS_00=360
 #export FHMAX_GFS_00=120
  export FHMAX_GFS_00=48
 #export FHMAX_GFS_00=240
@@ -277,7 +293,17 @@ fi
  export FSICS=0
  export FSICL=0
 
- export envars="LEVS=$LEVS,FHCYC=$FHCYC,IC_FROM=$IC_FROM,IAER=5111,app=$app,appdate=$appdate,cplflx=$cplflx,CPLD_APP=$CPLD_APP,frac_grid=$frac_grid,INLINE_POST=$INLINE_POST,cplwav=$cplwav,cplwav2atm=$cplwav2atm,CPLDWAV=$CPLDWAV,USE_WAVES=$USE_WAVES,ATMRES=$ATMRES,OCNRES=$OCNRES,DONST=$DONST,satmedmf=$satmedmf,v17sas=$v17sas,v17ras=$v17ras,v17rasnoshal=$v17rasnoshal,FH_CHUNK=$FH_CHUNK,restart_interval=$restart_interval,FHMAX_GFS_00=$FHMAX_GFS_00,FHMAX_GFS_06=$FHMAX_GFS_06,FHMAX_GFS_12=$FHMAX_GFS_12,FHMAX_GFS_18=$FHMAX_GFS_18,FHOUT_GFS=$FHOUT_GFS,nth_f=$nth_f,HYPT=$HYPT,NSOUT=$NSOUT,FHOUT_O=$FHOUT_O,OCN_AVG=$OCN_AVG,USE_COLDSTART=$USE_COLDSTART,FSICS=$FSICS,FSICL=$FSICL,OUTPUT_FILE=$OUTPUT_FILE,CPLSCRIPT=$CPLSCRIPT,CPLPREPSC=$CPLPREPSC,tau_rayl=$tau_rayl,rf_cutoff=$rf_cutoff,hord_opt=$hord_opt,d4_bg=$d4_bg,QUILTING=$QUILTING,RUN_CCPP=$RUN_CCPP"
+#export IAER=1011    # turn off background valcanc aerosols with Merra2
+ export IAER=1111
+ export iaerclm=.true.
+#export iccn=1
+export IAER=${IAER:-5111}
+export iaerclm=${iaerclm:-.false.}
+export iccn=${iccn:-0}
+#export lkm=1
+export lkm=${lkm:-0}
+
+ export envars="LEVS=$LEVS,FHCYC=$FHCYC,IC_FROM=$IC_FROM,IAER=$IAER,iaerclm=$iaerclm,iccn=$iccn,app=$app,appdate=$appdate,cplflx=$cplflx,CPLD_APP=$CPLD_APP,frac_grid=$frac_grid,INLINE_POST=$INLINE_POST,cplwav=$cplwav,cplwav2atm=$cplwav2atm,CPLDWAV=$CPLDWAV,USE_WAVES=$USE_WAVES,ATMRES=$ATMRES,OCNRES=$OCNRES,DONST=$DONST,satmedmf=$satmedmf,v17sas=$v17sas,v17ras=$v17ras,v17rasnoshal=$v17rasnoshal,FH_CHUNK=$FH_CHUNK,restart_interval=$restart_interval,FHMAX_GFS_00=$FHMAX_GFS_00,FHMAX_GFS_06=$FHMAX_GFS_06,FHMAX_GFS_12=$FHMAX_GFS_12,FHMAX_GFS_18=$FHMAX_GFS_18,FHOUT_GFS=$FHOUT_GFS,nth_f=$nth_f,HYPT=$HYPT,NSOUT=$NSOUT,FHOUT_O=$FHOUT_O,OCN_AVG=$OCN_AVG,USE_COLDSTART=$USE_COLDSTART,FSICS=$FSICS,FSICL=$FSICL,OUTPUT_FILE=$OUTPUT_FILE,CPLSCRIPT=$CPLSCRIPT,CPLPREPSC=$CPLPREPSC,tau_rayl=$tau_rayl,rf_cutoff=$rf_cutoff,hord_opt=$hord_opt,d4_bg=$d4_bg,QUILTING=$QUILTING,RUN_CCPP=$RUN_CCPP,lkm=$lkm"
 
 echo $envars
 

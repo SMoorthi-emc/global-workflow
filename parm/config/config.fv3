@@ -129,6 +129,7 @@ case $case_in in
 #       export DT_THERM=$OCNTIM
 #       export DT_THERM=1800
         export DT_THERM=$((OCNTIM*2))
+#       export DT_THERM=$OCNTIM
         export ICETIM=$DELTIM
 #       export ICETIM=300
 

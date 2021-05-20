@@ -95,7 +95,7 @@ export NWPROD=${NWPROD:-${NWROOT:-$pwd}}
 export HOMEgfs=${HOMEgfs:-$NWPROD}
 export FIX_DIR=${FIX_DIR:-$HOMEgfs/fix}
 export FIX_AM=${FIX_AM:-$FIX_DIR/fix_am}
-export FIX_FV3=${FIX_FV3:-${FIXfv3:-$FIX_DIR/fix_fv3_gmted2010}}
+export FIX_FV3=${FIX_FV3:-${FIXfv3:-$FIX_DIR/fix_fv3_gmted2010/$CASE}}
 
 DATA=${DATA:-$pwd/ufstmp$$}    # temporary running directory
 ROTDIR=${ROTDIR:-$pwd}         # rotating archive directory
@@ -259,6 +259,7 @@ fi
 export nthreads=${NTHREADS_FV3:-${NTHREADS_FCST:-${nth_f:-1}}}
 export OMP_NUM_THREADS=${OMP_NUM_THREADS:-$nthreads}
 export cores_per_node=${cores_per_node:-${npe_node_f:-28}}
+#if [ $OMP_NUM_THREADS -gt 1 ] ; then export I_MPI_PIN_DOMAIN=omp ; fi
 ntiles=${ntiles:-6}
 #
 export WRITE_GROUP=${WRITE_GROUP:-0}
@@ -578,13 +579,17 @@ else
 fi
 
 for n in $(seq 1 $ntiles) ; do
- $NCP $FIX_FV3/$CASE/${CASE}_grid.tile${n}.nc     $DATA/INPUT/${CASE}_grid.tile${n}.nc
- $NCP $ORO_DIR/$CASE/${CASE}_oro_data.tile${n}.nc $DATA/INPUT/oro_data.tile${n}.nc
+ $NCP $FIX_FV3/${CASE}_grid.tile${n}.nc     $DATA/INPUT/${CASE}_grid.tile${n}.nc
+ if [ ${use_fix_tiles:-NO} = YES ] ; then
+   $NCP $ORO_DIR/oro_${CASE}.mx${OCNRES}.tile${n}.nc $DATA/INPUT/oro_data.tile${n}.nc
+ else
+   $NCP $ORO_DIR/${CASE}_oro_data.tile${n}.nc       $DATA/INPUT/oro_data.tile${n}.nc
+ fi
 done
 
 # Coupled model uses a different grid_spec that includes MOM6 and FV3
 if [ $cplflx = .false. ] ; then
-  $NCP $FIX_FV3/$CASE/${CASE}_mosaic.nc  $DATA/INPUT/grid_spec.nc
+  $NCP $FIX_FV3/${CASE}_mosaic.nc  $DATA/INPUT/grid_spec.nc
 fi
 
 # GFS standard input data
@@ -613,9 +618,10 @@ fi
 #----------------------
 #export aero_in=${aero_in:-.false.}
 
-export iaer_clm=${iaer_clm:-.false.}
+export iaerclm=${iaerclm:-.false.}
 if [ $iaerclm = .true. ] ; then
- export MERRA_AER=${MERRA_AER:-merra2C.aerclim.2003-2014}   # default low resolution
+#export MERRA_AER=${MERRA_AER:-merra2C.aerclim.2003-2014}   # default low  resolution
+ export MERRA_AER=${MERRA_AER:-merra2.aerclim.2003-2014}    # default high resolution
  for n in 01 02 03 04 05 06 07 08 09 10 11 12 ; do
    $NLN $FIX_AER/$MERRA_AER.m${n}.nc  $DATA/aeroclim.m${n}.nc
  done
@@ -623,7 +629,8 @@ fi
 
 ## ccn/in climo
 #--------------
-if [ $iccn -gt 1 -a $iaerclm = .true. ] ; then
+#if [ $iccn -ge 1 -a $iaerclm = .true. ] ; then
+if [ $iaerclm = .true. ] ; then
 
  $NLN $FIX_LUT/optics_BC.v1_3.dat  $DATA/optics_BC.dat
  $NLN $FIX_LUT/optics_OC.v1_3.dat  $DATA/optics_OC.dat
@@ -1138,6 +1145,10 @@ fi
 #    fhmaxhf      = $FHMAX_HF
 #    fhout        = $FHOUT
 
+#      iau_delthrs    = ${iau_delthrs:-${IAU_DELTHRS:-6}}
+#      iaufhrs        = ${iaufhrs:-${IAUFHRS:-30}}
+#      iau_inc_files  = ${iau_inc_files:-${IAU_INC_FILES:-''}}
+
 cat > input.nml << EOF
  &amip_interp_nml
      interp_oi_sst = .true.
@@ -1280,7 +1291,6 @@ cat > input.nml << EOF
        use_ufo        = ${use_ufo:-.true.}
        pre_rad        = ${pre_rad:-.false.}
        crtrh          = ${crtrh:-"0.90,0.90,0.90"}
-       ncld           = ${ncld:-1}
        imp_physics    = ${imp_physics:-99}
        levr           = ${levr:-${LEVR:-$npz}}
        fhswr          = ${fhswr:-3600.}
@@ -1372,9 +1382,6 @@ cat > input.nml << EOF
        cplwav2atm     = ${cplwav2atm:-${CPLWAV2ATM:-.false.}}
        cplchm         = ${cplchm:-${CPLCHM:-.false.}}
 
-       iau_delthrs    = ${iau_delthrs:-6}
-       iaufhrs        = ${iaufhrs:-30}
-       iau_inc_files  = ${iau_inc_files:-''}
        lheatstrg      = ${lheatstrg:-.true.}
        lgfdlmprad     = ${lgfdlmprad:-.true.}
 

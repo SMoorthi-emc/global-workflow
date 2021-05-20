@@ -7,7 +7,7 @@ if [ $(echo $pwd | cut -c1-8) = "/scratch" ] ; then
  NOSCRUB=/scratch1/NCEPDEV/global
  FV3_FIX=$NOSCRUB/glopara/fix
  CPL_FIX=$NOSCRUB/$LOGNAME/noscrub/coup_fix
- AER_FIX=$NOSCRUB/$LOGNAME/coup_fix/FV3_input_data_INCCN_aeroclim
+ AER_FIX=$NOSCRUB/$LOGNAME/noscrub/coup_fix/FV3_input_data_INCCN_aeroclim
 elif [ $(echo $pwd | cut -c1-11) = "/gpfs/dell2" ] ; then
  NOSCRUB=/gpfs/dell2/emc/modeling/noscrub
  FV3_FIX=$NOSCRUB/emc.glopara/git/fv3gfs/fix
@@ -28,6 +28,7 @@ ln -sf $FV3_FIX/fix_am            fix_am
 ln -sf $FV3_FIX/fix_orog          fix_orog
 ln -sf $FV3_FIX/fix_verif         fix_verif
 ln -sf $FV3_FIX/fix_fv3           fix_fv3
+ln -sf $FV3_FIX/fix_fv3_fracoro   fix_fv3_fracoro
 ln -sf $FV3_FIX/fix_fv3_gmted2010 fix_fv3_gmted2010
 
 ln -sf $CPL_FIX/fix_ocnice        fix_ocnice

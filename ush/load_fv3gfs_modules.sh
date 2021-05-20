@@ -9,8 +9,12 @@ ulimit_s=$( ulimit -S -s )
 # Find module command and purge:
 source "$HOMEgfs/modulefiles/module-setup.sh.inc" 
 
+. $MODULESHOME/init/sh 2>/dev/null
+
+echo $pwd
 # Load our modules:
 module use "$HOMEgfs/modulefiles" 
+
 
 if [[ -d /lfs3 ]] ; then
     # We are on NOAA Jet
