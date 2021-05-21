@@ -8,29 +8,16 @@ machine=${2}
 
 if [ $# -lt 2 ]; then
     echo '***ERROR*** must specify two arguements: (1) RUN_ENVIR, (2) machine'
-<<<<<<< HEAD
-    echo ' Syntax: link_fv3gfs.sh ( nco | emc ) ( cray | dell | wcoss | theia )'
-=======
     echo ' Syntax: link_fv3gfs.sh ( nco | emc ) ( cray | dell | hera | orion )'
->>>>>>> upstream/develop
     exit 1
 fi
 
 if [ $RUN_ENVIR != emc -a $RUN_ENVIR != nco ]; then
-<<<<<<< HEAD
-    echo 'Syntax: link_fv3gfs.sh ( nco | emc ) ( cray | dell | theia | wcoss )'
-    exit 1
-fi
-#if [ $machine != cray -a $machine != theia -a $machine != dell ]; then
-if [ $machine != cray -a $machine != theia -a $machine != dell -a $machine != wcoss ]; then
-    echo 'Syntax: link_fv3gfs.sh ( nco | emc ) ( cray | dell | theia |wcoss )'
-=======
     echo 'Syntax: link_fv3gfs.sh ( nco | emc ) ( cray | dell | hera | orion )'
     exit 1
 fi
 if [ $machine != cray -a $machine != dell -a $machine != hera -a $machine != orion ]; then
     echo 'Syntax: link_fv3gfs.sh ( nco | emc ) ( cray | dell | hera | orion )'
->>>>>>> upstream/develop
     exit 1
 fi
 
@@ -44,60 +31,27 @@ pwd=$(pwd -P)
 #--model fix fields
 #------------------------------
 if [ $machine == "cray" ]; then
-<<<<<<< HEAD
     FIX_DIR="/gpfs/hps3/emc/global/noscrub/emc.glopara/git/fv3gfs/fix"
-    CPLFIX_DIR=""
 elif [ $machine = "dell" ]; then
     FIX_DIR="/gpfs/dell2/emc/modeling/noscrub/emc.glopara/git/fv3gfs/fix"
-elif [ $machine = "wcoss" ]; then   #JW
-    FIX_DIR="/gpfs/dell2/emc/modeling/noscrub/emc.glopara/git/fv3gfs/fix"
-#    CPLFIX_DIR="/global/noscrub/Jiande.Wang/WF/fix_prep_benchmark"  #JW
-#    CPLFIX_DIR="/gpfs/gd1/emc/global/noscrub/Jiande.Wang/WF3/fix_prep_benchmark3"
-     CPLFIX_DIR="/gpfs/td1/emc/global/noscrub/Jiande.Wang/WF3/fix_prep_benchmark3"
-elif [ $machine = "theia" ]; then
-    FIX_DIR="/scratch4/NCEPDEV/global/save/glopara/git/fv3gfs/fix"
-   
-    # For now it is here. Move to emc-nemspara after testing.
-#    CPLFIX_DIR="/scratch4/NCEPDEV/nems/noscrub/Patrick.Tripp/FIXFV3CPL"
-    CPLFIX_DIR="/scratch4/NCEPDEV/nems/save/Bin.Li/fix_prep_benchmark"
-=======
-    FIX_DIR="/gpfs/hps3/emc/global/noscrub/emc.glopara/git/fv3gfs/fix_nco_gfsv16"
-elif [ $machine = "dell" ]; then
-    FIX_DIR="/gpfs/dell2/emc/modeling/noscrub/emc.glopara/git/fv3gfs/fix_nco_gfsv16"
 elif [ $machine = "hera" ]; then
-    FIX_DIR="/scratch1/NCEPDEV/global/glopara/fix_nco_gfsv16"
+    FIX_DIR="/scratch1/NCEPDEV/global/glopara/fix"
 elif [ $machine = "orion" ]; then
-    FIX_DIR="/work/noaa/global/glopara/fix_nco_gfsv16"
->>>>>>> upstream/develop
+    FIX_DIR="/work/noaa/global/glopara/fix"
 fi
 cd ${pwd}/../fix                ||exit 8
-for dir in fix_am fix_fv3_gmted2010 fix_gldas fix_orog fix_verif fix_wave_gfs ; do
+for dir in fix_aer fix_am fix_chem fix_fv3_gmted2010 fix_gldas fix_lut fix_orog fix_sfc_climo fix_verif fix_wave_gfs ; do
     if [ -d $dir ]; then
       [[ $RUN_ENVIR = nco ]] && chmod -R 755 $dir
       rm -rf $dir
     fi
     $LINK $FIX_DIR/$dir .
 done
-<<<<<<< HEAD
-#$LINK $FIX_DIR/* .
-$LINK $FIX_DIR/fix_am .
-$LINK $FIX_DIR/fix_orog .
-$LINK $FIX_DIR/fix_verif .
-
-# Add fixed files needed for coupled fv3-mom6-cice5
-$LINK $CPLFIX_DIR/fix_fv3   .
-$LINK $CPLFIX_DIR/fix_fv3_gmted2010   .
-$LINK $CPLFIX_DIR/fix_ocnice   .
-$LINK $CPLFIX_DIR/fix_cice5    .
-$LINK $CPLFIX_DIR/fix_mom6     .
-$LINK $CPLFIX_DIR/fix_fv3grid  .
-=======
 
 if [ -d ${pwd}/ufs_utils.fd ]; then
   cd ${pwd}/ufs_utils.fd/sorc
   ./link_fixdirs.sh $RUN_ENVIR $machine
 fi
->>>>>>> upstream/develop
 
 #---------------------------------------
 #--add files from external repositories
@@ -112,26 +66,6 @@ cd ${pwd}/../parm               ||exit 8
     [[ -d gldas ]] && rm -rf gldas
     $LINK ../sorc/gldas.fd/parm                              gldas
 cd ${pwd}/../scripts            ||exit 8
-<<<<<<< HEAD
-    $LINK ../sorc/gfs_post.fd/scripts/exgdas_nceppost.sh.ecf .
-if [ $machine = "theia" -o $machine = "wcoss" ]; then
-    $LINK exgfs_nceppost_cpl.sh.ecf exgfs_nceppost.sh.ecf
-else
-    $LINK ../sorc/gfs_post.fd/scripts/exgfs_nceppost.sh.ecf  .
-fi
-#    $LINK ../sorc/gfs_post.fd/scripts/exgfs_nceppost.sh.ecf  .
-    $LINK ../sorc/gfs_post.fd/scripts/exglobal_pmgr.sh.ecf   .
-cd ${pwd}/../ush                ||exit 8
-#    for file in fv3gfs_downstream_nems.sh  fv3gfs_dwn_nems.sh  gfs_nceppost.sh  gfs_transfer.sh  link_crtm_fix.sh  trim_rh.sh fix_precip.sh; do
-    for file in fv3gfs_dwn_nems.sh  gfs_nceppost.sh  gfs_transfer.sh link_crtm_fix.sh trim_rh.sh fix_precip.sh; do
-        $LINK ../sorc/gfs_post.fd/ush/$file                  .
-    done
-if [ $machine = "theia" -o $machine = "wcoss" ]; then
-     $LINK fv3gfs_downstream_nems.cpl.theia.sh fv3gfs_downstream_nems.sh
-else
-     $LINK ../sorc/gfs_post.fd/ush/fv3gfs_downstream_nems.sh
-fi
-=======
     $LINK ../sorc/gfs_post.fd/scripts/exgdas_atmos_nceppost.sh .
     $LINK ../sorc/gfs_post.fd/scripts/exgfs_atmos_nceppost.sh  .
     $LINK ../sorc/gfs_post.fd/scripts/exglobal_atmos_pmgr.sh   .
@@ -174,7 +108,6 @@ if [ -d ${pwd}/gfs_wafs.fd ]; then
     $LINK ../sorc/gfs_wafs.fd/fix/*                          .
 fi
 
->>>>>>> upstream/develop
 
 #------------------------------
 #--add GSI/EnKF file
@@ -264,14 +197,6 @@ cd ${pwd}/../ush                ||exit 8
 
 if [ ! -d $pwd/../exec ]; then mkdir $pwd/../exec ; fi
 cd $pwd/../exec
-<<<<<<< HEAD
-# [[ -s fv3_gfs_nh.prod.32bit.x ]] && rm -f fv3_gfs_nh.prod.32bit.x
-# $LINK ../sorc/fv3gfs.fd/NEMS/exe/fv3_gfs_nh.prod.32bit.x .
-
-# Coupled FV3-MOM6-CICE5
-[[ -s nems_fv3_mom6_cice5.x ]] && rm -f nems_fv3_mom6_cice5.x
-$LINK ../sorc/fv3gfs.fd/NEMS/exe/nems_fv3_mom6_cice5.x .
-=======
 
 [[ -s gaussian_sfcanl.exe ]] && rm -f gaussian_sfcanl.exe
 $LINK ../sorc/install/bin/gaussian_sfcanl.x gaussian_sfcanl.exe
@@ -294,7 +219,6 @@ if [ -d ../sorc/fv3gfs.fd/WW3/exec ]; then # Wave execs
     $LINK ../sorc/fv3gfs.fd/WW3/exec/$waveexe .
   done
 fi
->>>>>>> upstream/develop
 
 [[ -s gfs_ncep_post ]] && rm -f gfs_ncep_post
 $LINK ../sorc/gfs_post.fd/exec/ncep_post gfs_ncep_post
@@ -419,7 +343,6 @@ cd $pwd/../parm/config
 [[ -s config.base ]] && rm -f config.base 
 if [ $RUN_ENVIR = nco ] ; then
  cp -p config.base.nco.static config.base
- cp -p config.resources.nco.static config.resources
 else
  cp -p config.base.emc.dyn config.base
 fi

@@ -8,8 +8,7 @@ echo "BEGIN: config.fcst"
 set -a
 machine=${machine:-WCOSS_DELL_P3}
 #KEEPDATA=YES
-# Source model specific information that is resolution dependent
-. $EXPDIR/config.fv3 $CASE
+. $EXPDIR/config.fv3 $CASE     # Source model specific information that is resolution dependent
 [[ "$CDUMP" == "gfs" ]] && export nth_fv3=$nth_fv3_gfs
 
 ###########################################################################
@@ -161,8 +160,6 @@ if [ $REMAP_GRID = latlon ] ; then
 else
   file_list='fv3_history fv3_history2d'
 fi
-
- . $EXPDIR/config.fv3 $CASE       # Source model specific information that is resolution dependent
 
  . $EXPDIR/config.resources fcst  # Get task specific resources
 
@@ -551,9 +548,10 @@ if [[ $CDUMP == gdas ]] ; then # GDAS cycle specific parameters
   if [ $QUILTING = .true. -a $OUTPUT_GRID = gaussian_grid ]; then
     FVER_diag=_da
 #   DIAG_TABLE="$HOMEgfs/parm/parm_fv3diag/diag_table_da"
+    DIAG_TABLE="$HOMEgfs/parm/parm_fv3diag/diag_table_aod"
   else
     FVER_diag=_da_orig
-#   DIAG_TABLE="$HOMEgfs/parm/parm_fv3diag/diag_table_da_orig"
+    DIAG_TABLE="$HOMEgfs/parm/parm_fv3diag/diag_table_da_orig"
   fi
 
 # Write restart files at next assimilation time
@@ -1095,6 +1093,7 @@ else
 fi
 # Radiation options
 #IAER=1111  #spectral band mapping method for aerosol optical properties
+#IAER=1011  #spectral band mapping method for aerosol optical properties
 iovr_lw=3   #de-correlation length cloud overlap method (Barker, 2008)
 iovr_sw=3   #de-correlation length cloud overlap method (Barker, 2008)
 iovr=3      #de-correlation length cloud overlap method (Barker, 2008)
