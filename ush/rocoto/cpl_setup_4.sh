@@ -56,7 +56,7 @@ RES=$(echo $CASE|cut -c 2-)
 ATMRES=${6:-${ATMRES:-$RES}}
 
 # $PSLOT is the name of your experiment
- expt=_phya3h
+ expt=_phya3i
 #expt=_phyxd
 #expt=_phyai    # cmeps run
 
