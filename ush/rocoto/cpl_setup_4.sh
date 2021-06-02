@@ -56,7 +56,7 @@ RES=$(echo $CASE|cut -c 2-)
 ATMRES=${6:-${ATMRES:-$RES}}
 
 # $PSLOT is the name of your experiment
- expt=_phya3g
+ expt=_phy4e
 #expt=_phyxd
 #expt=_phyai    # cmeps run
 
@@ -71,7 +71,7 @@ export CPLSCRIPT=cpl_setup_4.sh     # this should be the name of this script
 
 #FHMIN=${FHMIN:-0}
 #WARM_START=${WARM_START:-.false.}
-#FHCYC=0
+ FHCYC=0
 #FHCYC=6
 FHCYC=${FHCYC:-24}
 
@@ -161,7 +161,11 @@ cd $CWD
  export USE_COLDSTART=.false.              # uncomment this line to turn on cold start step
 #export frac_grid=.false.
  export frac_grid=${frac_grid:-.true.}
- export OUTPUT_FILE=netcdf                 # to turn on netcdf output (default nemsio)
+
+ export use_fix_tiles=YES                  # uncomment for frac_grid=.true. and tiled fix files
+ export use_fix_tiles=${use_fix_tiles:-NO}
+
+#export OUTPUT_FILE=netcdf                 # to turn on netcdf output (default nemsio)
  export OUTPUT_FILE=${OUTPUT_FILE:-nemsio} # to turn on netcdf output (default nemsio)
 #export QUILTING=.false.
  export QUILTING=${QUILTING:-.true.}
@@ -185,6 +189,7 @@ cd $CWD
 #export app=ufs-weather-model_Jan14
 #export app=ufs-weather-model_Feb02
  export app=ufs-weather-model_Mar12
+#export MED_model=nems   # needed for old code
 #export app=ufs-weather-model_Mar12_prev
  export CPLPREPSC=prep_coupled_emcufs.sh
 
@@ -193,7 +198,12 @@ cd $CWD
 #export app=ufs-weather-model_Apr12
 #export app=ufs-weather-model_May01
 #export app=ufs-weather-model_May04
- export app=ufs-weather-model_May14
+#export app=ufs-weather-model_May14
+#export app=ufs-weather-model_May14_prv
+ export app=ufs-weather-model_May14_prv2
+#export app=ufs-weather-model_for_PR
+ export app=ufs-weather-model_May30
+ export MED_model=${MED_model:-cmeps}
 
  export appdate=Oct10
  export DONST=YES
@@ -201,7 +211,7 @@ cd $CWD
 #export RUN_CCPP=NO
  export RUN_CCPP=${RUN_CCPP:-YES}
 
-#export satmedmf=.false.
+ export satmedmf=.false.
  export satmedmf=${satmedmf:-.true.}
 #export v17sas=YES
 #export v17ras=NO
@@ -221,7 +231,7 @@ cd $CWD
 #export restart_interval=86400
  export restart_interval=432000
 #export restart_interval=$((86400*2))
-#export restart_interval=43200
+ export restart_interval=43200
 #export restart_interval=21600
 #export restart_interval=10800
 #export restart_interval=3600
@@ -266,19 +276,21 @@ fi
 #export FHMAX_GFS_00=480
  export FHMAX_GFS_00=360
 #export FHMAX_GFS_00=120
- export FHMAX_GFS_00=48
+$export FHMAX_GFS_00=48
 #export FHMAX_GFS_00=240
 #export FHMAX_GFS_00=27
-#export FHMAX_GFS_00=24
-#export FHMAX_GFS_00=6
+ export FHMAX_GFS_00=24
+ export FHMAX_GFS_00=6
 #export FHMAX_GFS_00=3
+#export FHMAX_GFS_00=2
+#export FHMAX_GFS_00=1
 
  export FHMAX_GFS_06=0
  export FHMAX_GFS_12=0
  export FHMAX_GFS_18=0
 
-#export NSOUT=1
- export NSOUT=0
+ export NSOUT=1
+#export NSOUT=0
 #export FHOUT_GFS=1
  export FHOUT_GFS=3
  export FHOUT_GFS=${FHOUT_GFS:-6}      # atmos history output frequency
@@ -286,16 +298,16 @@ fi
 #export OCN_AVG=YES
  export OCN_AVG=${OCN_AVG:-NO}
 
- export nth_f=2
- export HYPT=on
+#export nth_f=2
+#export HYPT=on
  export nth_f=${nth_f:-1}
  export HYPT=${HYPT:-off}
  export FSICS=0
  export FSICL=0
 
 #export IAER=1011    # turn off background valcanc aerosols with Merra2
- export IAER=1111
- export iaerclm=.true.
+#export IAER=1111
+#export iaerclm=.true.
 #export iccn=1
 export IAER=${IAER:-5111}
 export iaerclm=${iaerclm:-.false.}
@@ -303,7 +315,7 @@ export iccn=${iccn:-0}
 #export lkm=1
 export lkm=${lkm:-0}
 
- export envars="LEVS=$LEVS,FHCYC=$FHCYC,IC_FROM=$IC_FROM,IAER=$IAER,iaerclm=$iaerclm,iccn=$iccn,app=$app,appdate=$appdate,cplflx=$cplflx,CPLD_APP=$CPLD_APP,frac_grid=$frac_grid,INLINE_POST=$INLINE_POST,cplwav=$cplwav,cplwav2atm=$cplwav2atm,CPLDWAV=$CPLDWAV,USE_WAVES=$USE_WAVES,ATMRES=$ATMRES,OCNRES=$OCNRES,DONST=$DONST,satmedmf=$satmedmf,v17sas=$v17sas,v17ras=$v17ras,v17rasnoshal=$v17rasnoshal,FH_CHUNK=$FH_CHUNK,restart_interval=$restart_interval,FHMAX_GFS_00=$FHMAX_GFS_00,FHMAX_GFS_06=$FHMAX_GFS_06,FHMAX_GFS_12=$FHMAX_GFS_12,FHMAX_GFS_18=$FHMAX_GFS_18,FHOUT_GFS=$FHOUT_GFS,nth_f=$nth_f,HYPT=$HYPT,NSOUT=$NSOUT,FHOUT_O=$FHOUT_O,OCN_AVG=$OCN_AVG,USE_COLDSTART=$USE_COLDSTART,FSICS=$FSICS,FSICL=$FSICL,OUTPUT_FILE=$OUTPUT_FILE,CPLSCRIPT=$CPLSCRIPT,CPLPREPSC=$CPLPREPSC,tau_rayl=$tau_rayl,rf_cutoff=$rf_cutoff,hord_opt=$hord_opt,d4_bg=$d4_bg,QUILTING=$QUILTING,RUN_CCPP=$RUN_CCPP,lkm=$lkm"
+ export envars="LEVS=$LEVS,FHCYC=$FHCYC,IC_FROM=$IC_FROM,IAER=$IAER,iaerclm=$iaerclm,iccn=$iccn,app=$app,appdate=$appdate,cplflx=$cplflx,CPLD_APP=$CPLD_APP,frac_grid=$frac_grid,INLINE_POST=$INLINE_POST,cplwav=$cplwav,cplwav2atm=$cplwav2atm,CPLDWAV=$CPLDWAV,USE_WAVES=$USE_WAVES,ATMRES=$ATMRES,OCNRES=$OCNRES,DONST=$DONST,satmedmf=$satmedmf,v17sas=$v17sas,v17ras=$v17ras,v17rasnoshal=$v17rasnoshal,FH_CHUNK=$FH_CHUNK,restart_interval=$restart_interval,FHMAX_GFS_00=$FHMAX_GFS_00,FHMAX_GFS_06=$FHMAX_GFS_06,FHMAX_GFS_12=$FHMAX_GFS_12,FHMAX_GFS_18=$FHMAX_GFS_18,FHOUT_GFS=$FHOUT_GFS,nth_f=$nth_f,HYPT=$HYPT,NSOUT=$NSOUT,FHOUT_O=$FHOUT_O,OCN_AVG=$OCN_AVG,USE_COLDSTART=$USE_COLDSTART,FSICS=$FSICS,FSICL=$FSICL,OUTPUT_FILE=$OUTPUT_FILE,CPLSCRIPT=$CPLSCRIPT,CPLPREPSC=$CPLPREPSC,tau_rayl=$tau_rayl,rf_cutoff=$rf_cutoff,hord_opt=$hord_opt,d4_bg=$d4_bg,QUILTING=$QUILTING,RUN_CCPP=$RUN_CCPP,lkm=$lkm,use_fix_tiles=$use_fix_tiles,MED_model=$MED_model"
 
 echo $envars
 

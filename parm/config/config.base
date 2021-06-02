@@ -51,9 +51,9 @@ export SCRgfs=$HOMEgfs/scripts
 export CASE="@CASECTL@"
 export CASE_ENKF="@CASEENS@"
 
-if [ $frac_grid = .true. ] ; then
+if [ $frac_grid = .true. -a $use_fix_tiles = YES ] ; then
   export FIX_FV3=$FIXgfs/fix_fv3_fracoro/${CASE}.mx${OCNRES}_frac
-  export use_fix_tiles=YES
+# export use_fix_tiles=YES
   export FIX_LAKE_ORO=$FIX_FV3
 fi
 
@@ -228,7 +228,7 @@ export MESH_OCN=${MESH_OCN:-mesh.mx$OCNRES.nc}
 export MESH_ICE=${MESH_ICE:-mesh.mx$OCNRES.nc}
 
 #g0nosc=/gpfs/dell2/emc/modeling/noscrub
-export FIX_LAKE_ORO=${FIX_LAKE_ORO:-$NOSCRUB/oro_lake}
+export FIX_LAKE_ORO=${FIX_LAKE_ORO:-$NOSCRUB/oro_lake/$CASE}
  export use_lake_oro=YES
 #export use_lake_oro=NO
  if [ $frac_grid = .false. ] ; then export use_lake_oro=NO ; fi
@@ -873,10 +873,14 @@ if [ $CPLDFV3_MOM6_CICE = YES ] ; then
 else
   if [ $mediator = cmeps ] ; then
     export CMEPS_DIR=${CMEPS_DIR:-$EXECBASE/$appdir/$app/CMEPS}
+#   export YAML_DIR=${YAML_DIR:-$CMEPS_DIR/mediator}
   fi
 fi
 # CPL
 #export nst_anl=.false.
+
+ export YAML_DIR=$FCSTEXECDIR/parm
+export YAML_DIR=${YAML_DIR:-$CMEPS_DIR/mediator}
 
 # Analysis increments to zero in CALCINCEXEC
 export INCREMENTS_TO_ZERO="'delz_inc','clwmr_inc','icmr_inc'"

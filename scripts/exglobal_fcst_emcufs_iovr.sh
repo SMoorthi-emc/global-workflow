@@ -278,8 +278,8 @@ restart_interval=$(echo $restart_interval_atm |cut -d " " -f 1)
 if [ $CDUMP = gfs -a $restart_interval -gt 0 ] ; then
   ATM_RESTDIR=${ATM_RESTDIR:-$ROTDIR/${CDUMP}.$PDY/$cyc/ATM_RESTART}
   if [ ! -d $ATM_RESTDIR ] ; then mkdir -p $ATM_RESTDIR ; fi
+  rm $DATA/RESTART
   $NLN $ATM_RESTDIR $DATA/RESTART
-  rm $DATA/RESTART/ATM_RESTART
   export LINK_RESTDIR=YES
 else
   mkdir -p $DATA/RESTART
@@ -679,8 +679,8 @@ fi
 ######################  mediator ########################################
 if [ $mediator = cmeps ] ; then
   CMEPS_DIR=${CMEPS_DIR:-$appdir/CMEPS}
-  $NLN $CMEPS_DIR/mediator/fd_nems.yaml fd_nems.yaml
-  $NLN $CMEPS_DIR/../parm/pio_in        pio_in
+  $NLN ${YAML_DIR:-$CMEPS_DIR/mediator}/fd_nems.yaml fd_nems.yaml
+  $NLN $CMEPS_DIR/../parm/pio_in                      pio_in
 fi
 
 ######################  CCPP ########################################

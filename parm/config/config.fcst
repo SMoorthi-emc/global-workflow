@@ -369,9 +369,13 @@ fi
  if [ $RUN_CCPP = YES ] ; then
    dz_min=${dz_min:-2.0}
    psm_bc=${psm_bc:-1}
-   fv_sg_pbot=${fv_sg_pbot:-200.0e2}
-   fv_sg_pdepth=${fv_sg_pdepth:-100.0e2}
-   fv_core_nml="dz_min=$dz_min,psm_bc=$psm_bc,fv_sg_pbot=$fv_sg_pbot,fv_sg_pdepth=$fv_sg_pdepth"
+   if [ $app = ufs-weather-model_for_PR ] ; then
+     fv_core_nml="dz_min=$dz_min,psm_bc=$psm_bc"
+   else
+     fv_sg_pbot=${fv_sg_pbot:-200.0e2}
+     fv_sg_pdepth=${fv_sg_pdepth:-100.0e2}
+     fv_core_nml="dz_min=$dz_min,psm_bc=$psm_bc,fv_sg_pbot=$fv_sg_pbot,fv_sg_pdepth=$fv_sg_pdepth"
+   fi
  fi
  
 
@@ -996,6 +1000,7 @@ lheatstrg=${lheatstrg:-.true.}
 # gfs_physics_nml="$gfs_physics_nml 'lheatstrg = .true.'"
 #fi
 
+#use_ncld=YES
 use_ncld=${use_ncld:-NO}
 if [ $use_ncld = YES ] ; then
   gfs_physics_nml="$gfs_physics_nml ncld = $ncld"
@@ -1109,7 +1114,7 @@ if [[ $OUTPUT_FILE == netcdf ]] ; then
 fi
 
 if [ ${use_fix_tiles:-NO} = YES ] ; then
-  FIX_FV3=${FIX_FV3:-/FIXgfs}
+  FIX_FV3=${FIX_FV3:-$FIXgfs}
 # FNGLAC="$FIX_FV3/global_glacier.2x2.grb"}
 # FNMXIC="$FIX_FV3/global_maxice.2x2.grb"}
 # FNTSFC="$FIX_FV3/RTGSST.1982.2012.monthly.clim.grb"}
