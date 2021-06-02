@@ -195,6 +195,7 @@ fi
 export cplflx=${cplflx:-.false.}
 export CPLD_APP=${CPLD_APP:-NO}
 export INLINE_POST=${INLINE_POST:-NO}
+if [ $cplflx = .false. ] ; then export CPL_FAST=0 ; fi
 
 # For coupled
 if [ $CICE = CICE5 ] ; then

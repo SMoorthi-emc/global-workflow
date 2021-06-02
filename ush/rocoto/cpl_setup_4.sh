@@ -56,7 +56,7 @@ RES=$(echo $CASE|cut -c 2-)
 ATMRES=${6:-${ATMRES:-$RES}}
 
 # $PSLOT is the name of your experiment
- expt=_phy4e
+ expt=_phyac
 #expt=_phyxd
 #expt=_phyai    # cmeps run
 
@@ -156,13 +156,13 @@ cd $CWD
 #export cplflx=.false.                     # turn on to run in uncoupled modeDcupule model
  export cplflx=${cplflx:-.true.}           # default is to run in coupled mode
  export CPLD_APP=YES                       # use coupled app
-#export INLINE_POST=NO                     # turn off inline post
+ export INLINE_POST=NO                     # turn off inline post
  export INLINE_POST=${INLINE_POST:-YES}    # turn on inline post
  export USE_COLDSTART=.false.              # uncomment this line to turn on cold start step
 #export frac_grid=.false.
  export frac_grid=${frac_grid:-.true.}
 
- export use_fix_tiles=YES                  # uncomment for frac_grid=.true. and tiled fix files
+#export use_fix_tiles=YES                  # uncomment for frac_grid=.true. and tiled fix files
  export use_fix_tiles=${use_fix_tiles:-NO}
 
 #export OUTPUT_FILE=netcdf                 # to turn on netcdf output (default nemsio)
@@ -201,7 +201,7 @@ cd $CWD
 #export app=ufs-weather-model_May14
 #export app=ufs-weather-model_May14_prv
  export app=ufs-weather-model_May14_prv2
-#export app=ufs-weather-model_for_PR
+ export app=ufs-weather-model_for_PR
  export app=ufs-weather-model_May30
  export MED_model=${MED_model:-cmeps}
 
@@ -233,11 +233,11 @@ cd $CWD
 #export restart_interval=$((86400*2))
  export restart_interval=43200
 #export restart_interval=21600
-#export restart_interval=10800
+ export restart_interval=10800
 #export restart_interval=3600
 
-#export tau_rayl=5
- export tau_rayl=10
+ export tau_rayl=5
+#export tau_rayl=10
 #export rf_cutoff=750
 #export tau_rayl=-10
 #export rf_cutoff=200
