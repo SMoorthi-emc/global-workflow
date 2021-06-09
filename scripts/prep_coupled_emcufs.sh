@@ -327,7 +327,7 @@ export WAV_model=${WAV_model:-none}
 
 # restart_dir = $MED_RESTDIR/
 
-cat > nems.configure <<eof
+cat > nems.configure << eof
 #############################################
 ####  NEMS Run-Time Configuration File  #####
 #############################################
@@ -340,7 +340,7 @@ EARTH_attributes::
 
 eof
 if [ $MED_model != none ] ; then
-cat >>nems.configure <<eof
+cat >> nems.configure << eof
 # MED #
 MED_model:                      $MED_model
 MED_petlist_bounds:             $MED_petlist_bounds
@@ -349,7 +349,7 @@ MED_petlist_bounds:             $MED_petlist_bounds
 eof
 fi
 
-cat >>nems.configure <<eof
+cat >> nems.configure << eof
 # ATM #
 ATM_model:                      $ATM_model
 ATM_petlist_bounds:             $ATM_petlist_bounds
@@ -363,7 +363,7 @@ ATM_attributes::
 eof
 
 if [ $OCN_model != none ] ; then
-cat >>nems.configure <<eof
+cat >> nems.configure << eof
 # OCN #
 OCN_model:                      $OCN_model
 OCN_petlist_bounds:             $OCN_petlist_bounds
@@ -384,7 +384,7 @@ eof
 fi
 
 if [ $ICE_model != none ] ; then
-cat >>nems.configure <<eof
+cat >> nems.configure << eof
 # ICE #
 ICE_model:                      $ICE_model
 ICE_petlist_bounds:             $ICE_petlist_bounds
@@ -405,7 +405,7 @@ fi
 # dbug_flag = ${dbug_flag_ICE:-false}
 
 if [ $WAV_model != none ] ; then
-cat >>nems.configure <<eof
+cat >> nems.configure << eof
 # WAV #
   WAV_model:                    ${WAV_model:-ww3}
   WAV_petlist_bounds:           $WAV_petlist_bounds
@@ -426,7 +426,7 @@ if [ $CPLDFV3_MOM6_CICE = YES ] ; then
  if [ $CPLDWAV = NO ] ; then
   if [[ $inistep = cold ]] ; then
 
-cat >> nems.configure <<eof
+cat >> nems.configure << eof
 # CMEPS Coldstart Run Sequence #
 runSeq::
   @$CPL_SLOW
@@ -455,7 +455,7 @@ eof
 
   else   # NOT a coldstart
 
-cat >> nems.configure <<eof
+cat >> nems.configure << eof
 # Forecast Run Sequence #
 runSeq::
   @$CPL_SLOW
@@ -487,7 +487,7 @@ eof
    if [ $USE_WAVES = True ] ; then
      if [[ $inistep = cold ]] ; then
 
-cat >> nems.configure <<eof
+cat >> nems.configure << eof
 # Coldstart Run Sequence #
 runSeq::
   @$CPL_SLOW
@@ -522,7 +522,7 @@ eof
 
      else   # NOT a coldstart
 
-cat >> nems.configure <<eof
+cat >> nems.configure << eof
 # Forecast Run Sequence #
 runSeq::
   @$CPL_SLOW
@@ -558,7 +558,7 @@ eof
    else
      if [[ $inistep = cold ]] ; then
 
-cat >> nems.configure <<eof
+cat >> nems.configure << eof
 # Coldstart Run Sequence #
 runSeq::
   @$CPL_SLOW
@@ -590,7 +590,7 @@ eof
 
      else   # NOT a coldstart
 
-cat >> nems.configure <<eof
+cat >> nems.configure << eof
 # Forecast Run Sequence #
 runSeq::
   @$CPL_SLOW
@@ -638,7 +638,7 @@ fi
 export frac_grid=${frac_grid:-.false.}
 if [ $frac_grid = .true. ] ; then export coupling_mode="nems_frac" ; fi
 
-cat >> nems.configure <<eof
+cat >> nems.configure << eof
 DRIVER_attributes::
       mediator_read_restart = ${mediator_read_restart:-.true.}
 ::
@@ -684,6 +684,12 @@ stepsperhr=$((3600/$ICETIM))
 nhours=$($NHOUR $CDATE ${year}010100)
 steps=$((nhours*stepsperhr))
 npt=$((FHMAX*$stepsperhr))      # Need this in order for dump_last to work
+ 
+USE_STEPS=YES
+USE_STEPS=${USE_STEPS:-NO}
+YEAR_INIT=$(echo $CDATE|cut -c 1-4)
+MONTH_INIT=$(echo $CDATE|cut -c 5-6)
+DAY_INIT=$(echo $CDATE|cut -c 7-8)
 
 if [ $NSOUT -gt 0 ] ; then      # this should output every timestep from the ice model
  histfreq="'1','x','x','x','x'"
@@ -708,6 +714,11 @@ history_dir=${history_dir:-\'$ICE_OUTDIR/\'}
 ktherm=${ktherm:-1}
 if [ $ktherm -eq 1 ] ; then export conduc=MU17 ; fi
 
+#################################################################################
+#ktherm=2
+#TFREEZE_OPTION=mushy
+#################################################################################
+
 # , restart_dir    = ${restart_dir:-'./restart/'}
 # , pointer_file   = ${pointer_file:-'./restart/ice.restart_file'}
 # , history_dir    = ${history_dir:-'./history/'}
@@ -723,19 +734,17 @@ else
 fi
 export max_blocks=-1
 
-cat > ice_in <<eof  
+cat > ice_in << eof  
 &setup_nml
     days_per_year  = 365
     use_leap_years = .true.
-    year_init      = $year
-    istep0         = $steps
+    year_init      = $YEAR_INIT
     dt             = $ICETIM
     npt            = $npt
     ndtd           = 1
     runtype        = ${runtype:-'initial'}
     runid          = ${runid:-'cpcice'}
     ice_ic         = ${iceic:-'$iceic'}
-    pointer_file   = ${pointer_file:-'ice.restart_file'}
     restart        = ${ice_restart:-.false.}
     restart_ext    = ${restart_ext:-.true.}
     use_restart_time = ${use_restart_time:-.false.}
@@ -743,8 +752,9 @@ cat > ice_in <<eof
     lcdf64         = .false.
     numin          = 21
     numax          = 89
-    restart_file   = ${restart_file:-'iced'}
     restart_dir    = ${restart_dir:-'./restart/'}
+    restart_file   = ${restart_file:-'iced'}
+    pointer_file   = ${pointer_file:-'ice.restart_file'}
     dumpfreq       = ${dumpfreq:-'d'}
     dumpfreq_n     = ${dumpfreq_n:- 45}
     dump_last      = .false.  
@@ -758,16 +768,30 @@ cat > ice_in <<eof
     lonpnt(1)      =   0.
     latpnt(2)      = -65.
     lonpnt(2)      = -45.
-    dbug           = .false.
     histfreq       = ${histfreq:-"'m','d','h','x','x'"}
     histfreq_n     = ${histfreq_n:-0,0,6,1,1}
     hist_avg       = ${hist_avg:-.true.}
-    history_file   = ${history_file:-'iceh'}
     history_dir    = ${history_dir:-'./history/'}
+    history_file   = ${history_file:-'iceh'}
     write_ic       = .true.
     incond_dir     = ${incond_dir:-$history_dir}
     incond_file    = 'iceh_ic'
     version_name   = ${version_name:-'CICE_6.0.2'}
+
+eof
+
+if [ ${USE_STEPS:-NO} = YES ] ; then
+  cat >> ice_in << eof  
+    istep0         = $steps
+eof
+else
+  cat >> ice_in << eof  
+    month_init     = $MONTH_INIT
+    day_init       = $DAY_INIT
+eof
+fi
+
+  cat >> ice_in << eof  
 /
 
 &grid_nml
@@ -796,7 +820,7 @@ cat > ice_in <<eof
     n_fep             = 0
     tr_iage           = .true.
     restart_age       = .false.
-    tr_FY             = .true.
+    tr_FY             = .false
     restart_FY        = .false.
     tr_lvl            = .true.
     restart_lvl       = .false.
@@ -831,18 +855,18 @@ cat > ice_in <<eof
     kevp_kernel     = 0
     brlx            = 300.0
     arlx            = 300.0
+    ssh_stress      = ${ssh_stress:-'coupled'}
     advection       = 'remap'
-    coriolis        = 'latitude'
-    kridge          = 1
-    ktransport      = 1
     kstrength       = 1
     krdg_partic     = 1
     krdg_redist     = 1
     mu_rdg          = 3
-    e_ratio         = 2.
-    Ktens           = 0.
     Cf              = 17.
-    ssh_stress      = ${ssh_stress:-'coupled'}
+    Ktens           = 0.
+    e_ratio         = 2.
+    coriolis        = 'latitude'
+    kridge          = 1
+    ktransport      = 1
 /
 
 &shortwave_nml
@@ -885,7 +909,7 @@ cat > ice_in <<eof
     fbot_xfer_type  = 'constant'
     update_ocn_f    = ${FRAZIL_FWSALT:-.true.}
     l_mpond_fresh   = .false.
-    tfrz_option     = 'linear_salt'
+    tfrz_option     = ${TFREEZE_OPTION:-'linear_salt'}
     restart_coszen  = .true.
     restore_ice     = .false.
     restore_ocn     = .false.
@@ -1316,7 +1340,7 @@ eof
 
 echo $(pwd)
 cd $DATA
-cat > med_modelio.nml <<eof  
+cat > med_modelio.nml << eof  
 &pio_inparm
   pio_netcdf_format = "64bit_offset"
   pio_numiotasks = -99

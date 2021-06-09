@@ -369,7 +369,7 @@ fi
  if [ $RUN_CCPP = YES ] ; then
    dz_min=${dz_min:-2.0}
    psm_bc=${psm_bc:-1}
-   if [ $app = ufs-weather-model_for_PR ] ; then
+   if [ $app = ufs-weather-model_for_PR -o $app = ufs-weather-model_for_PR_orig ] ; then
      fv_core_nml="dz_min=$dz_min,psm_bc=$psm_bc"
    else
      fv_sg_pbot=${fv_sg_pbot:-200.0e2}
@@ -1031,8 +1031,9 @@ do_tofd=${do_tofd:-.true.}
 launch_level=${launch_level:-$((LEVS*3/7))}
 
 #min_seaice=1.0e-11
-min_seaice=1.0e-6
+ min_seaice=1.0e-6
 #min_seaice=1.0e-3
+#min_seaice=1.0e-2
 min_seaice=${min_seaice:-0.15}
 min_lakeice=${min_lakeice:-0.15}
 frac_grid=${frac_grid:-.false.}

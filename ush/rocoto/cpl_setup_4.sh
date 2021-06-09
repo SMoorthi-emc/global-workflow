@@ -56,7 +56,7 @@ RES=$(echo $CASE|cut -c 2-)
 ATMRES=${6:-${ATMRES:-$RES}}
 
 # $PSLOT is the name of your experiment
- expt=_phyac
+ expt=_phyaf
 #expt=_phyxd
 #expt=_phyai    # cmeps run
 
@@ -71,7 +71,7 @@ export CPLSCRIPT=cpl_setup_4.sh     # this should be the name of this script
 
 #FHMIN=${FHMIN:-0}
 #WARM_START=${WARM_START:-.false.}
- FHCYC=0
+#FHCYC=0
 #FHCYC=6
 FHCYC=${FHCYC:-24}
 
@@ -156,16 +156,16 @@ cd $CWD
 #export cplflx=.false.                     # turn on to run in uncoupled modeDcupule model
  export cplflx=${cplflx:-.true.}           # default is to run in coupled mode
  export CPLD_APP=YES                       # use coupled app
- export INLINE_POST=NO                     # turn off inline post
+#export INLINE_POST=NO                     # turn off inline post
  export INLINE_POST=${INLINE_POST:-YES}    # turn on inline post
  export USE_COLDSTART=.false.              # uncomment this line to turn on cold start step
 #export frac_grid=.false.
  export frac_grid=${frac_grid:-.true.}
 
-#export use_fix_tiles=YES                  # uncomment for frac_grid=.true. and tiled fix files
+ export use_fix_tiles=YES                  # uncomment for frac_grid=.true. and tiled fix files
  export use_fix_tiles=${use_fix_tiles:-NO}
 
-#export OUTPUT_FILE=netcdf                 # to turn on netcdf output (default nemsio)
+ export OUTPUT_FILE=netcdf                 # to turn on netcdf output (default nemsio)
  export OUTPUT_FILE=${OUTPUT_FILE:-nemsio} # to turn on netcdf output (default nemsio)
 #export QUILTING=.false.
  export QUILTING=${QUILTING:-.true.}
@@ -200,8 +200,9 @@ cd $CWD
 #export app=ufs-weather-model_May04
 #export app=ufs-weather-model_May14
 #export app=ufs-weather-model_May14_prv
- export app=ufs-weather-model_May14_prv2
+#export app=ufs-weather-model_May14_prv2
  export app=ufs-weather-model_for_PR
+#export app=ufs-weather-model_for_PR_orig
  export app=ufs-weather-model_May30
  export MED_model=${MED_model:-cmeps}
 
@@ -233,11 +234,12 @@ cd $CWD
 #export restart_interval=$((86400*2))
  export restart_interval=43200
 #export restart_interval=21600
- export restart_interval=10800
+#export restart_interval=10800
 #export restart_interval=3600
 
- export tau_rayl=5
-#export tau_rayl=10
+#export tau_rayl=5
+#export tau_rayl=7.5
+ export tau_rayl=10
 #export rf_cutoff=750
 #export tau_rayl=-10
 #export rf_cutoff=200
@@ -276,11 +278,11 @@ fi
 #export FHMAX_GFS_00=480
  export FHMAX_GFS_00=360
 #export FHMAX_GFS_00=120
-$export FHMAX_GFS_00=48
+ export FHMAX_GFS_00=48
 #export FHMAX_GFS_00=240
 #export FHMAX_GFS_00=27
- export FHMAX_GFS_00=24
- export FHMAX_GFS_00=6
+#export FHMAX_GFS_00=24
+#export FHMAX_GFS_00=6
 #export FHMAX_GFS_00=3
 #export FHMAX_GFS_00=2
 #export FHMAX_GFS_00=1
@@ -289,8 +291,8 @@ $export FHMAX_GFS_00=48
  export FHMAX_GFS_12=0
  export FHMAX_GFS_18=0
 
- export NSOUT=1
-#export NSOUT=0
+#export NSOUT=1
+ export NSOUT=0
 #export FHOUT_GFS=1
  export FHOUT_GFS=3
  export FHOUT_GFS=${FHOUT_GFS:-6}      # atmos history output frequency
@@ -298,16 +300,16 @@ $export FHMAX_GFS_00=48
 #export OCN_AVG=YES
  export OCN_AVG=${OCN_AVG:-NO}
 
-#export nth_f=2
-#export HYPT=on
+ export nth_f=2
+ export HYPT=on
  export nth_f=${nth_f:-1}
  export HYPT=${HYPT:-off}
  export FSICS=0
  export FSICL=0
 
-#export IAER=1011    # turn off background valcanc aerosols with Merra2
+ export IAER=1011    # turn off background valcanc aerosols with Merra2
 #export IAER=1111
-#export iaerclm=.true.
+ export iaerclm=.true.
 #export iccn=1
 export IAER=${IAER:-5111}
 export iaerclm=${iaerclm:-.false.}
