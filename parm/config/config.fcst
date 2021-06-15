@@ -371,6 +371,8 @@ fi
    psm_bc=${psm_bc:-1}
    if [ $app = ufs-weather-model_for_PR -o $app = ufs-weather-model_for_PR_orig ] ; then
      fv_core_nml="dz_min=$dz_min,psm_bc=$psm_bc"
+     fhouri=1.0
+     fac_n_spl=1
    else
      fv_sg_pbot=${fv_sg_pbot:-200.0e2}
      fv_sg_pdepth=${fv_sg_pdepth:-100.0e2}
@@ -1009,6 +1011,45 @@ fi
 lkm=${lkm:-0}
 if [ $lkm -gt 0 ] ; then
   gfs_physics_nml="$gfs_physics_nml lkm = $lkm"
+fi
+if [ ${do_ca:-.false.} = .true. ] ; then
+  ca_global=${ca_global:-.false.}
+  ca_sgs=${ca_sgs:-.true.}
+  nca=1
+  scells=2600
+  tlives=1800
+  nseed=100
+  nfracseed=0.5
+  rcell=0.72
+  ca_trigger=.True.
+  ca_entr=.False.
+  ca_closure=.False.
+  nca_g=1
+  ncells_g=1
+  nlives_g=100
+  nseed_g=100
+  ca_smooth=.True.
+  nspinup=100
+  iseed_ca=12345
+  nsmooth=100
+  ca_amplitude =0.35
+
+#################### old ca options ####################
+# nca=${nca:-1}
+# ncells=${ncells:-5}
+# nfracseed=${nfracseed:-0.5}
+# nlives=${nlives:-30}
+# nthresh=${nthresh:-0.5}
+# nseed=${nseed:-100000}
+# do_ca=${do_ca:-.false.}
+# ca_global=${ca_global:-.false.}
+# ca_sgs=${ca_sgs:-.true.}
+# ca_smooth=${ca_smooth:-.false.}
+# nspinup=${nspinup:-1000}
+# iseed_ca=${iseed_ca:-0}
+#################### old ca options ####################
+
+  gfs_physics_nml="$gfs_physics_nml do_ca=$do_ca ca_global=$ca_global ca_sgs=$ca_sgs nca=$nca scell=$scells tlives=$tlives nseed=$nseed nfracseed=$nfracseed rcell=$rcell ca_trigger=$ca_trigger ca_entr=$ca_entr ca_closure=$ca_closure nca_g=$nca_g ncells_g=$ncells_g nlives_g=$nlives_g ca_smooth=$ca_smooth nspinup=$nspinup iseed_ca=$iseed_ca nsmooth=$nsmooth ca_amplitude=$ca_amplitude"
 fi
 #
 #   to output as netcdf files on six tiles

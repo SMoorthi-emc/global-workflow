@@ -1385,6 +1385,19 @@ cat > input.nml << EOF
        lheatstrg      = ${lheatstrg:-.true.}
        lgfdlmprad     = ${lgfdlmprad:-.true.}
 
+       nca            = ${nca:-1}
+       ncells         = ${ncells:-5}
+       nfracseed      = ${nfracseed:-0.5}
+       nlives         = ${nlives:-30}
+       nthresh        = ${nthresh:-0.5}
+       nseed          = ${nseed:-100000}
+       do_ca          = ${do_ca:-.false.}
+       ca_global      = ${ca_global:-.false.}
+       ca_sgs         = ${ca_sgs:-.true.}
+       ca_smooth      = ${ca_smooth:-.false.}
+       nspinup        = ${nspinup:-1000}
+       iseed_ca       = ${iseed_ca:-0}
+
        min_seaice     = ${min_seaice:-1.0e-6}
        min_lakeice    = ${min_lakeice:-0.15}
        frac_grid      = ${frac_grid:-.false.}
@@ -1394,8 +1407,6 @@ cat > input.nml << EOF
        do_sppt        = ${do_sppt:-.false.}
        do_shum        = ${do_shum:-.false.}
        do_skeb        = ${do_skeb:-.false.}
-       lndp_type      = ${lndp_type:-0}
-       n_var_lndp     = ${n_var_lndp:-0}
 
 EOF
 #      isppt_deep     = ${isppt_deep:-.false.}
