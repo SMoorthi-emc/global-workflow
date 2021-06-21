@@ -156,7 +156,7 @@ cd $CWD
 #export cplflx=.false.                     # turn on to run in uncoupled modeDcupule model
  export cplflx=${cplflx:-.true.}           # default is to run in coupled mode
  export CPLD_APP=YES                       # use coupled app
- export INLINE_POST=NO                     # turn off inline post
+#export INLINE_POST=NO                     # turn off inline post
  export INLINE_POST=${INLINE_POST:-YES}    # turn on inline post
  export USE_COLDSTART=.false.              # uncomment this line to turn on cold start step
 #export frac_grid=.false.
@@ -165,7 +165,7 @@ cd $CWD
  export use_fix_tiles=YES                  # uncomment for frac_grid=.true. and tiled fix files
  export use_fix_tiles=${use_fix_tiles:-NO}
 
-#export OUTPUT_FILE=netcdf                 # to turn on netcdf output (default nemsio)
+ export OUTPUT_FILE=netcdf                 # to turn on netcdf output (default nemsio)
  export OUTPUT_FILE=${OUTPUT_FILE:-nemsio} # to turn on netcdf output (default nemsio)
 #export QUILTING=.false.
  export QUILTING=${QUILTING:-.true.}
