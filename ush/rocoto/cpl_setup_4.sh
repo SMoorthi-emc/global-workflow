@@ -56,7 +56,7 @@ RES=$(echo $CASE|cut -c 2-)
 ATMRES=${6:-${ATMRES:-$RES}}
 
 # $PSLOT is the name of your experiment
- expt=_phybb
+ expt=_phybc
 #expt=_phyxd
 #expt=_phyai    # cmeps run
 
@@ -153,7 +153,7 @@ cd $CWD
 
 # turn on some options
 # --------------------
- export cplflx=.false.                     # turn on to run in uncoupled modeDcupule model
+#export cplflx=.false.                     # turn on to run in uncoupled modeDcupule model
  export cplflx=${cplflx:-.true.}           # default is to run in coupled mode
  export CPLD_APP=YES                       # use coupled app
  export INLINE_POST=NO                     # turn off inline post
@@ -203,7 +203,7 @@ cd $CWD
 #export app=ufs-weather-model_May14_prv2
  export app=ufs-weather-model_for_PR
 #export app=ufs-weather-model_for_PR_orig
-#export app=ufs-weather-model_May30
+ export app=ufs-weather-model_May30
  export MED_model=${MED_model:-cmeps}
 
  export appdate=Oct10
@@ -285,7 +285,7 @@ fi
 #export FHMAX_GFS_00=240
 #export FHMAX_GFS_00=27
 #export FHMAX_GFS_00=24
- export FHMAX_GFS_00=6
+#export FHMAX_GFS_00=6
 #export FHMAX_GFS_00=3
 #export FHMAX_GFS_00=2
 #export FHMAX_GFS_00=1
@@ -303,8 +303,8 @@ fi
 #export OCN_AVG=YES
  export OCN_AVG=${OCN_AVG:-NO}
 
-#export nth_f=2
-#export HYPT=on
+ export nth_f=2
+ export HYPT=on
  export nth_f=${nth_f:-1}
  export HYPT=${HYPT:-off}
  export FSICS=0

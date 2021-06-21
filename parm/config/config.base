@@ -374,8 +374,14 @@ if [ ${RUN_CCPP:-YES} = YES ] ; then
 
   if [ $DONST = NO ] ; then
    export CCPP_SUITE=FV3_GFS_cpld_rasmgshoc
+   if [ $imp_physics -eq 99 ] ; then
+     export CCPP_SUITE=FV3_GFS_2017_coupled
+   fi
   else
    export CCPP_SUITE=FV3_GFS_cpld_rasmgshocnsst
+   if [ $imp_physics -eq 99 ] ; then
+     export CCPP_SUITE=FV3_GFS_2017_couplednsst
+   fi
   fi
   if [ ${lkm:-0} -gt 0 ] ; then export CCPP_SUITE=FV3_GFS_cpld_rasmgshocnsst_flake ; fi
   if [ $satmedmf = .true. ] ; then
@@ -393,7 +399,7 @@ if [ ${RUN_CCPP:-YES} = YES ] ; then
     fi
     if [ ${lkm:-0} -gt 0 ] ; then export CCPP_SUITE=FV3_GFS_v17_cpldnsstras_flake ; fi
   fi
-  export CCPP_SUITE=FV3_GFS_2017_coupled
+# export CCPP_SUITE=FV3_GFS_2017_coupled
   export CCPP_SUITE=${CCPP_SUITE:-FV3_GFS_v15_rasmgshoc}
   if [ $CPLD_APP = NO ] ; then
 #  export CCPP_SUITE=FV3_GFS_v15_rasmgshoc
@@ -779,6 +785,7 @@ elif [ $imp_physics -eq 99 ] ; then
   export SHOC=NO
   export CSAW=NO
   export isatmedmf=0
+  export hybedmf=.true.
   export oz_phys=.true.
   export oz_phys_2015=.false.
 else
