@@ -56,7 +56,7 @@ RES=$(echo $CASE|cut -c 2-)
 ATMRES=${6:-${ATMRES:-$RES}}
 
 # $PSLOT is the name of your experiment
- expt=_phyad
+ expt=_phybb
 #expt=_phyxd
 #expt=_phyai    # cmeps run
 
@@ -153,10 +153,10 @@ cd $CWD
 
 # turn on some options
 # --------------------
-#export cplflx=.false.                     # turn on to run in uncoupled modeDcupule model
+ export cplflx=.false.                     # turn on to run in uncoupled modeDcupule model
  export cplflx=${cplflx:-.true.}           # default is to run in coupled mode
  export CPLD_APP=YES                       # use coupled app
-#export INLINE_POST=NO                     # turn off inline post
+ export INLINE_POST=NO                     # turn off inline post
  export INLINE_POST=${INLINE_POST:-YES}    # turn on inline post
  export USE_COLDSTART=.false.              # uncomment this line to turn on cold start step
 #export frac_grid=.false.
@@ -165,7 +165,7 @@ cd $CWD
  export use_fix_tiles=YES                  # uncomment for frac_grid=.true. and tiled fix files
  export use_fix_tiles=${use_fix_tiles:-NO}
 
- export OUTPUT_FILE=netcdf                 # to turn on netcdf output (default nemsio)
+#export OUTPUT_FILE=netcdf                 # to turn on netcdf output (default nemsio)
  export OUTPUT_FILE=${OUTPUT_FILE:-nemsio} # to turn on netcdf output (default nemsio)
 #export QUILTING=.false.
  export QUILTING=${QUILTING:-.true.}
@@ -203,7 +203,7 @@ cd $CWD
 #export app=ufs-weather-model_May14_prv2
  export app=ufs-weather-model_for_PR
 #export app=ufs-weather-model_for_PR_orig
- export app=ufs-weather-model_May30
+#export app=ufs-weather-model_May30
  export MED_model=${MED_model:-cmeps}
 
  export appdate=Oct10
@@ -215,10 +215,13 @@ cd $CWD
  export satmedmf=.false.
  export satmedmf=${satmedmf:-.true.}
 #export v17sas=YES
-#export v17ras=NO
+ export v17ras=NO
+# To run suite suite_FV3_GFS_2017_coupled.xml uncomment the two lines below
+ export DONST=NO
+ export imp_physics=99    # tp use zhao microphysic
 
  export v17sas=NO
- export v17ras=YES
+#export v17ras=YES
  export v17rasnoshal=NO
 #export d4_bg=0.15
 
@@ -282,7 +285,7 @@ fi
 #export FHMAX_GFS_00=240
 #export FHMAX_GFS_00=27
 #export FHMAX_GFS_00=24
-#export FHMAX_GFS_00=6
+ export FHMAX_GFS_00=6
 #export FHMAX_GFS_00=3
 #export FHMAX_GFS_00=2
 #export FHMAX_GFS_00=1
@@ -300,8 +303,8 @@ fi
 #export OCN_AVG=YES
  export OCN_AVG=${OCN_AVG:-NO}
 
- export nth_f=2
- export HYPT=on
+#export nth_f=2
+#export HYPT=on
  export nth_f=${nth_f:-1}
  export HYPT=${HYPT:-off}
  export FSICS=0
@@ -317,7 +320,7 @@ export iccn=${iccn:-0}
 #export lkm=1
 export lkm=${lkm:-0}
 
- export envars="LEVS=$LEVS,FHCYC=$FHCYC,IC_FROM=$IC_FROM,IAER=$IAER,iaerclm=$iaerclm,iccn=$iccn,app=$app,appdate=$appdate,cplflx=$cplflx,CPLD_APP=$CPLD_APP,frac_grid=$frac_grid,INLINE_POST=$INLINE_POST,cplwav=$cplwav,cplwav2atm=$cplwav2atm,CPLDWAV=$CPLDWAV,USE_WAVES=$USE_WAVES,ATMRES=$ATMRES,OCNRES=$OCNRES,DONST=$DONST,satmedmf=$satmedmf,v17sas=$v17sas,v17ras=$v17ras,v17rasnoshal=$v17rasnoshal,FH_CHUNK=$FH_CHUNK,restart_interval=$restart_interval,FHMAX_GFS_00=$FHMAX_GFS_00,FHMAX_GFS_06=$FHMAX_GFS_06,FHMAX_GFS_12=$FHMAX_GFS_12,FHMAX_GFS_18=$FHMAX_GFS_18,FHOUT_GFS=$FHOUT_GFS,nth_f=$nth_f,HYPT=$HYPT,NSOUT=$NSOUT,FHOUT_O=$FHOUT_O,OCN_AVG=$OCN_AVG,USE_COLDSTART=$USE_COLDSTART,FSICS=$FSICS,FSICL=$FSICL,OUTPUT_FILE=$OUTPUT_FILE,CPLSCRIPT=$CPLSCRIPT,CPLPREPSC=$CPLPREPSC,tau_rayl=$tau_rayl,rf_cutoff=$rf_cutoff,hord_opt=$hord_opt,d4_bg=$d4_bg,QUILTING=$QUILTING,RUN_CCPP=$RUN_CCPP,lkm=$lkm,use_fix_tiles=$use_fix_tiles,MED_model=$MED_model"
+ export envars="LEVS=$LEVS,FHCYC=$FHCYC,IC_FROM=$IC_FROM,IAER=$IAER,iaerclm=$iaerclm,iccn=$iccn,app=$app,appdate=$appdate,cplflx=$cplflx,CPLD_APP=$CPLD_APP,frac_grid=$frac_grid,INLINE_POST=$INLINE_POST,cplwav=$cplwav,cplwav2atm=$cplwav2atm,CPLDWAV=$CPLDWAV,USE_WAVES=$USE_WAVES,ATMRES=$ATMRES,OCNRES=$OCNRES,DONST=$DONST,satmedmf=$satmedmf,v17sas=$v17sas,v17ras=$v17ras,v17rasnoshal=$v17rasnoshal,FH_CHUNK=$FH_CHUNK,restart_interval=$restart_interval,FHMAX_GFS_00=$FHMAX_GFS_00,FHMAX_GFS_06=$FHMAX_GFS_06,FHMAX_GFS_12=$FHMAX_GFS_12,FHMAX_GFS_18=$FHMAX_GFS_18,FHOUT_GFS=$FHOUT_GFS,nth_f=$nth_f,HYPT=$HYPT,NSOUT=$NSOUT,FHOUT_O=$FHOUT_O,OCN_AVG=$OCN_AVG,USE_COLDSTART=$USE_COLDSTART,FSICS=$FSICS,FSICL=$FSICL,OUTPUT_FILE=$OUTPUT_FILE,CPLSCRIPT=$CPLSCRIPT,CPLPREPSC=$CPLPREPSC,tau_rayl=$tau_rayl,rf_cutoff=$rf_cutoff,hord_opt=$hord_opt,d4_bg=$d4_bg,QUILTING=$QUILTING,RUN_CCPP=$RUN_CCPP,lkm=$lkm,use_fix_tiles=$use_fix_tiles,MED_model=$MED_model,imp_physics=$imp_physics"
 
 echo $envars
 

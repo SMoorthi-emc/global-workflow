@@ -393,6 +393,7 @@ if [ ${RUN_CCPP:-YES} = YES ] ; then
     fi
     if [ ${lkm:-0} -gt 0 ] ; then export CCPP_SUITE=FV3_GFS_v17_cpldnsstras_flake ; fi
   fi
+  export CCPP_SUITE=FV3_GFS_2017_coupled
   export CCPP_SUITE=${CCPP_SUITE:-FV3_GFS_v15_rasmgshoc}
   if [ $CPLD_APP = NO ] ; then
 #  export CCPP_SUITE=FV3_GFS_v15_rasmgshoc
@@ -773,6 +774,13 @@ if [ $satmedmf = .true. ] ; then
     export oz_phys=.true.
     export oz_phys_2015=.false.
   fi
+elif [ $imp_physics -eq 99 ] ; then
+  export RAS=NO
+  export SHOC=NO
+  export CSAW=NO
+  export isatmedmf=0
+  export oz_phys=.true.
+  export oz_phys_2015=.false.
 else
   export imp_physics=10
   export MGVER=2
