@@ -56,7 +56,7 @@ RES=$(echo $CASE|cut -c 2-)
 ATMRES=${6:-${ATMRES:-$RES}}
 
 # $PSLOT is the name of your experiment
- expt=_phybf
+ expt=_phybg
 #expt=_phyxd
 #expt=_phyai    # cmeps run
 
@@ -216,9 +216,10 @@ cd $CWD
  export satmedmf=${satmedmf:-.true.}
 #export v17sas=YES
  export v17ras=NO
+ export imp_physics=10    # to use MG microphysic
 # To run suite suite_FV3_GFS_2017_coupled.xml uncomment the two lines below
 #export DONST=NO
-#export imp_physics=99    # tp use zhao microphysic
+#export imp_physics=99    # to use zhao microphysic
 
  export v17sas=NO
  export v17ras=YES
