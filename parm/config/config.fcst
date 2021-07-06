@@ -1012,6 +1012,12 @@ lkm=${lkm:-0}
 if [ $lkm -gt 0 ] ; then
   gfs_physics_nml="$gfs_physics_nml lkm = $lkm"
 fi
+
+use_cice_alb=${use_cice_alb:-.false.}
+if [ $use_cice_alb = .true. ] ; then
+  gfs_physics_nml="$gfs_physics_nml use_cice_alb = $use_cice_alb"
+fi
+
 if [ ${do_ca:-.false.} = .true. ] ; then
   ca_global=${ca_global:-.false.}
   ca_sgs=${ca_sgs:-.true.}

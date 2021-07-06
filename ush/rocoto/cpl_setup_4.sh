@@ -56,7 +56,7 @@ RES=$(echo $CASE|cut -c 2-)
 ATMRES=${6:-${ATMRES:-$RES}}
 
 # $PSLOT is the name of your experiment
- expt=_phybc
+ expt=_phybf
 #expt=_phyxd
 #expt=_phyai    # cmeps run
 
@@ -217,11 +217,11 @@ cd $CWD
 #export v17sas=YES
  export v17ras=NO
 # To run suite suite_FV3_GFS_2017_coupled.xml uncomment the two lines below
- export DONST=NO
- export imp_physics=99    # tp use zhao microphysic
+#export DONST=NO
+#export imp_physics=99    # tp use zhao microphysic
 
  export v17sas=NO
-#export v17ras=YES
+ export v17ras=YES
  export v17rasnoshal=NO
 #export d4_bg=0.15
 
@@ -319,8 +319,10 @@ export iaerclm=${iaerclm:-.false.}
 export iccn=${iccn:-0}
 #export lkm=1
 export lkm=${lkm:-0}
+use_cice_alb=.true.
+export use_cice_alb=${use_cice_alb:-.false.}
 
- export envars="LEVS=$LEVS,FHCYC=$FHCYC,IC_FROM=$IC_FROM,IAER=$IAER,iaerclm=$iaerclm,iccn=$iccn,app=$app,appdate=$appdate,cplflx=$cplflx,CPLD_APP=$CPLD_APP,frac_grid=$frac_grid,INLINE_POST=$INLINE_POST,cplwav=$cplwav,cplwav2atm=$cplwav2atm,CPLDWAV=$CPLDWAV,USE_WAVES=$USE_WAVES,ATMRES=$ATMRES,OCNRES=$OCNRES,DONST=$DONST,satmedmf=$satmedmf,v17sas=$v17sas,v17ras=$v17ras,v17rasnoshal=$v17rasnoshal,FH_CHUNK=$FH_CHUNK,restart_interval=$restart_interval,FHMAX_GFS_00=$FHMAX_GFS_00,FHMAX_GFS_06=$FHMAX_GFS_06,FHMAX_GFS_12=$FHMAX_GFS_12,FHMAX_GFS_18=$FHMAX_GFS_18,FHOUT_GFS=$FHOUT_GFS,nth_f=$nth_f,HYPT=$HYPT,NSOUT=$NSOUT,FHOUT_O=$FHOUT_O,OCN_AVG=$OCN_AVG,USE_COLDSTART=$USE_COLDSTART,FSICS=$FSICS,FSICL=$FSICL,OUTPUT_FILE=$OUTPUT_FILE,CPLSCRIPT=$CPLSCRIPT,CPLPREPSC=$CPLPREPSC,tau_rayl=$tau_rayl,rf_cutoff=$rf_cutoff,hord_opt=$hord_opt,d4_bg=$d4_bg,QUILTING=$QUILTING,RUN_CCPP=$RUN_CCPP,lkm=$lkm,use_fix_tiles=$use_fix_tiles,MED_model=$MED_model,imp_physics=$imp_physics"
+ export envars="LEVS=$LEVS,FHCYC=$FHCYC,IC_FROM=$IC_FROM,IAER=$IAER,iaerclm=$iaerclm,iccn=$iccn,app=$app,appdate=$appdate,cplflx=$cplflx,CPLD_APP=$CPLD_APP,frac_grid=$frac_grid,INLINE_POST=$INLINE_POST,cplwav=$cplwav,cplwav2atm=$cplwav2atm,CPLDWAV=$CPLDWAV,USE_WAVES=$USE_WAVES,ATMRES=$ATMRES,OCNRES=$OCNRES,DONST=$DONST,satmedmf=$satmedmf,v17sas=$v17sas,v17ras=$v17ras,v17rasnoshal=$v17rasnoshal,FH_CHUNK=$FH_CHUNK,restart_interval=$restart_interval,FHMAX_GFS_00=$FHMAX_GFS_00,FHMAX_GFS_06=$FHMAX_GFS_06,FHMAX_GFS_12=$FHMAX_GFS_12,FHMAX_GFS_18=$FHMAX_GFS_18,FHOUT_GFS=$FHOUT_GFS,nth_f=$nth_f,HYPT=$HYPT,NSOUT=$NSOUT,FHOUT_O=$FHOUT_O,OCN_AVG=$OCN_AVG,USE_COLDSTART=$USE_COLDSTART,FSICS=$FSICS,FSICL=$FSICL,OUTPUT_FILE=$OUTPUT_FILE,CPLSCRIPT=$CPLSCRIPT,CPLPREPSC=$CPLPREPSC,tau_rayl=$tau_rayl,rf_cutoff=$rf_cutoff,hord_opt=$hord_opt,d4_bg=$d4_bg,QUILTING=$QUILTING,RUN_CCPP=$RUN_CCPP,lkm=$lkm,use_fix_tiles=$use_fix_tiles,MED_model=$MED_model,imp_physics=$imp_physics,use_cice_alb=$use_cice_alb"
 
 echo $envars
 
