@@ -204,6 +204,7 @@ cd $CWD
  export app=ufs-weather-model_for_PR
 #export app=ufs-weather-model_for_PR_orig
  export app=ufs-weather-model_May30
+ export app=ufs-weather-model_July02
  export MED_model=${MED_model:-cmeps}
 
  export appdate=Oct10
