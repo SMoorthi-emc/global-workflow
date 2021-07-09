@@ -284,7 +284,7 @@ else
   fi
   export generate_landmask=false
 fi
-restart_ext=.true.
+#restart_ext=.true.
 restart_interval=${restart_interval:-86400}    # Interval in seconds to write restarts
 
 # Clean up un-needed files after cold start
@@ -685,7 +685,7 @@ nhours=$($NHOUR $CDATE ${year}010100)
 steps=$((nhours*stepsperhr))
 npt=$((FHMAX*$stepsperhr))      # Need this in order for dump_last to work
  
-USE_STEPS=YES
+#USE_STEPS=YES
 USE_STEPS=${USE_STEPS:-NO}
 YEAR_INIT=$(echo $CDATE|cut -c 1-4)
 MONTH_INIT=$(echo $CDATE|cut -c 5-6)
@@ -746,7 +746,7 @@ cat > ice_in << eof
     runid          = ${runid:-'cpcice'}
     ice_ic         = ${iceic:-'$iceic'}
     restart        = ${ice_restart:-.false.}
-    restart_ext    = ${restart_ext:-.true.}
+    restart_ext    = ${restart_ext:-.false.}
     use_restart_time = ${use_restart_time:-.false.}
     restart_format = ${restart_format:-'nc'}
     lcdf64         = .false.
