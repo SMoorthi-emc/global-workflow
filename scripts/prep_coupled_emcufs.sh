@@ -712,11 +712,16 @@ restart_dir=${restart_dir:-\'$ICE_RESTDIR/\'}
 history_dir=${history_dir:-\'$ICE_OUTDIR/\'}
 
 ktherm=${ktherm:-1}
-if [ $ktherm -eq 1 ] ; then export conduc=MU17 ; fi
+conduct=${conduct:-MU17}
 
-#################################################################################
-#ktherm=2
-#TFREEZE_OPTION=mushy
+if [ $ktherm -eq 1 ] ; then                      # BL99
+ export TFREEZE_OPTION=linear_salt
+elif [ $ktherm -eq 2 ] ; then                    # mushy ice thermodynamics
+ export TFREEZE_OPTION=mushy
+fi
+export FRAZIL_FWSALT=${FRAZIL_FWSALT:-.true.} # when true, allows for frazil fresh water and salt
+                                              # in fluxes sent to ocean see general/ice_init.F90 
+
 #################################################################################
 
 # , restart_dir    = ${restart_dir:-'./restart/'}
